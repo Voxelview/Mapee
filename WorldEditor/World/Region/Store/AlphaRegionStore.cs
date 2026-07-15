@@ -11,12 +11,18 @@ namespace WorldEditor
         public IEnumerable<Coords> Itemize(string directory)
         {
             _store.Clear();
+
+            bool ignoreDimensions = !Path.GetFileName(directory).Equals("DIM-1", StringComparison.OrdinalIgnoreCase);
             
             if (!Directory.Exists(directory)) return [];
             string[] files = Directory.GetFiles(directory, "c.*.*.dat", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {
+                if (ignoreDimensions && Path.GetRelativePath(directory, file).StartsWith("DIM-1", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
 
                 if (!Parser.TryParseChunkName(Path.GetFileName(file), out int chunkX, out int chunkZ))
                 {
