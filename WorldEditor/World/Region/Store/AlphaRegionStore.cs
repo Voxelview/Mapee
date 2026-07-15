@@ -12,14 +12,14 @@ namespace WorldEditor
         {
             _store.Clear();
 
-            bool ignoreDimensions = !directory.Contains("DIM");
+            bool ignoreDimensions = !Path.GetFileName(directory).Equals("DIM-1", StringComparison.OrdinalIgnoreCase);
             
             if (!Directory.Exists(directory)) return [];
             string[] files = Directory.GetFiles(directory, "c.*.*.dat", SearchOption.AllDirectories);
 
             foreach (var file in files)
             {
-                if (ignoreDimensions && file.Contains("DIM"))
+                if (ignoreDimensions && Path.GetRelativePath(directory, file).StartsWith("DIM-1", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
