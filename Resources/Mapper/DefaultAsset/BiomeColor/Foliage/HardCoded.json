@@ -14,10 +14,10 @@
     ],
 
     "Biomes": [
-        ["minecraft:swamp", "#6A7039"],
-        ["minecraft:mangrove_swamp", "#8DB127"],
-        ["minecraft:cherry_grove", "#B6DB61"],
-        ["minecraft:dappled_forest", "#E68E30"],
+        ["minecraft:swamp", "#616D37"],
+        ["minecraft:mangrove_swamp", "#7BAC26"],
+        ["minecraft:cherry_grove", "#A6D45E"],
+        ["minecraft:dappled_forest", "#DF9B2F"],
 
         {
             "Biomes": [
@@ -25,7 +25,7 @@
                 "minecraft:wooded_badlands",
                 "minecraft:eroded_badlands"
             ],
-            "Color": "#90814D"
+            "Color": "#8C844B"
         }
     ]
 }

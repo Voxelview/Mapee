@@ -39,7 +39,7 @@ namespace Mapper.Gui.Logic
         {
             if (_prevImage is null || _prevColor != args.Background.CheckedColorPair) 
             {
-                const int CHECKER_SIZE = 9, TILES_COUNT = 64;
+                const int CHECKER_SIZE = 14, TILES_COUNT = 40;
                 Size size = new(CHECKER_SIZE * TILES_COUNT, CHECKER_SIZE * TILES_COUNT);
 
                 _prevImage = CheckerImageGenerator.Generate(size, CHECKER_SIZE, args.Background.CheckedColorPair);

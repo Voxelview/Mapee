@@ -6,7 +6,7 @@
         "TransparentBlockStepIntensity": 2,
         "Background": {
             "IsChecker": true,
-            "ColorPair": [[10, 10, 10], [15, 15, 15]]
+            "ColorPair": [[18, 18, 18], [22, 22, 22]]
         }
     },
     "Dimensions": []

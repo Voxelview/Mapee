@@ -9,9 +9,9 @@ namespace Mapper.Gui.Model
         public Color Even { get; set; }
         public Color Odd { get; set; }
 
-        public static ColorPair Overworld => new(Color.FromRgb(10, 10, 10), Color.FromRgb(15, 15, 15));
-        public static ColorPair Nether => new(Color.FromRgb(12, 1, 2), Color.FromRgb(20, 2, 3));
-        public static ColorPair TheEnd => new(Color.FromRgb(8, 6, 12), Color.FromRgb(15, 10, 20));
+        public static ColorPair Overworld => new(Color.FromRgb(18, 18, 18), Color.FromRgb(22, 22, 22));
+        public static ColorPair Nether => new(Color.FromRgb(22, 2, 3), Color.FromRgb(29, 3, 5));
+        public static ColorPair TheEnd => new(Color.FromRgb(15, 11, 22), Color.FromRgb(22, 15, 29));
 
         public static bool operator ==(ColorPair left, ColorPair right)
         {
