@@ -667,7 +667,7 @@
         ["age == 1", "#58926E38"]
     ], {"Default": "#2E85863E"}],
     ["minecraft:azalea", "#FF657C2F"],
-    ["minecraft:azalea_leaves", "#C45A722C"],
+    ["minecraft:azalea_leaves", "#FF5A722C"],
     ["minecraft:bamboo*", [
         ["leaves == small", "#5247711A"],
         ["leaves == large", "#B9487519"]
@@ -893,7 +893,7 @@
     ["minecraft:fire", "#8BD38C35"],
     ["minecraft:fletching_table", "#FFC5B485"],
     ["minecraft:flowering_azalea", "#FF707940"],
-    ["minecraft:flowering_azalea_leaves", "#CC636F3C"],
+    ["minecraft:flowering_azalea_leaves", "#FF636F3C"],
     ["minecraft:flower_pot", "#317C4435"],
     ["minecraft:frogspawn", "#386E5F56"],
     ["minecraft:frosted_ice", "#BE8CB5FC"],
@@ -1008,7 +1008,7 @@
     ["minecraft:oak_door", "#FFA2804C"],
     ["minecraft:oak_fence", "#66A2824E"],
     ["minecraft:oak_fence_gate", "#59A2824E"],
-    ["minecraft:oak_leaves", "#AB707A70"],
+    ["minecraft:oak_leaves", "#FF707A70"],
     ["minecraft:oak_log*", [
         ["axis ||== [x z]", "#FF6D5532"]
     ], {"Default": "#FF977949"}],
@@ -1029,7 +1029,7 @@
     ["minecraft:spruce_door", "#FF795932"],
     ["minecraft:spruce_fence", "#66725430"],
     ["minecraft:spruce_fence_gate", "#59725430"],
-    ["minecraft:spruce_leaves", "#9F263C26"],
+    ["minecraft:spruce_leaves", "#FF263C26"],
     ["minecraft:spruce_log*", [
         ["axis ||== [x z]", "#FF3A2510"]
     ], {"Default": "#FF6C502E"}],
@@ -1050,7 +1050,7 @@
     ["minecraft:birch_door", "#FFD7CA93"],
     ["minecraft:birch_fence", "#66C0AF79"],
     ["minecraft:birch_fence_gate", "#59C0AF79"],
-    ["minecraft:birch_leaves", "#E5303F20"],
+    ["minecraft:birch_leaves", "#FF303F20"],
     ["minecraft:birch_log*", [
         ["axis ||== [x z]", "#FFD8D7D2"]
     ], {"Default": "#FFC1B387"}],
@@ -1071,7 +1071,7 @@
     ["minecraft:jungle_door", "#FFB88962"],
     ["minecraft:jungle_fence", "#66A07350"],
     ["minecraft:jungle_fence_gate", "#59A07350"],
-    ["minecraft:jungle_leaves", "#B1758A6B"],
+    ["minecraft:jungle_leaves", "#FF758A6B"],
     ["minecraft:jungle_log*", [
         ["axis ||== [x z]", "#FF554319"]
     ], {"Default": "#FF956D46"}],
@@ -1092,7 +1092,7 @@
     ["minecraft:acacia_door", "#FFBA6741"],
     ["minecraft:acacia_fence", "#66A85A32"],
     ["minecraft:acacia_fence_gate", "#59A85A32"],
-    ["minecraft:acacia_leaves", "#93787377"],
+    ["minecraft:acacia_leaves", "#FF787377"],
     ["minecraft:acacia_log*", [
         ["axis ||== [x z]", "#FF676056"]
     ], {"Default": "#FF965837"}],
@@ -1113,7 +1113,7 @@
     ["minecraft:dark_oak_door", "#FF533A21"],
     ["minecraft:dark_oak_fence", "#66422B14"],
     ["minecraft:dark_oak_fence_gate", "#59422B14"],
-    ["minecraft:dark_oak_leaves", "#B2616961"],
+    ["minecraft:dark_oak_leaves", "#FF616961"],
     ["minecraft:dark_oak_log*", [
         ["axis ||== [x z]", "#FF3C2E1A"]
     ], {"Default": "#FF432D16"}],
@@ -1134,7 +1134,7 @@
     ["minecraft:mangrove_door", "#FF804037"],
     ["minecraft:mangrove_fence", "#66753630"],
     ["minecraft:mangrove_fence_gate", "#59753630"],
-    ["minecraft:mangrove_leaves", "#D3676C66"],
+    ["minecraft:mangrove_leaves", "#FF676C66"],
     ["minecraft:mangrove_log*", [
         ["axis ||== [x z]", "#FF534229"]
     ], {"Default": "#FF66302A"}],
@@ -1155,7 +1155,7 @@
     ["minecraft:cherry_door", "#FFE6BDB7"],
     ["minecraft:cherry_fence", "#66E2B2AC"],
     ["minecraft:cherry_fence_gate", "#59E2B2AC"],
-    ["minecraft:cherry_leaves", "#D7C989A4"],
+    ["minecraft:cherry_leaves", "#FFC989A4"],
     ["minecraft:cherry_log*", [
         ["axis ||== [x z]", "#FF36212C"]
     ], {"Default": "#FFB98D89"}],
