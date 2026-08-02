@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
-        Background="#FF252525"
+        Background="#FF1D1D1D"
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="AddBlock" Height="65" Width="200" Loaded="Window_Loaded">
@@ -22,7 +22,7 @@
         </ResourceDictionary>
     </Window.Resources>
     
-    <Border BorderBrush="#FF707070" BorderThickness="1">
+    <Border BorderBrush="#FF5C5C5C" BorderThickness="1">
         <Grid Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -40,9 +40,9 @@
                 <Button x:Name="AddButton" Content="Add" Foreground="#FFEEEEEE" Grid.Column="0" Margin="0, 5, 0, 0" Width="50" Height="25" HorizontalAlignment="Left" Click="AddButton_Click">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF353535"/>
+                            <Setter Property="Background" Value="#FF2A2A2A"/>
                             <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="BorderBrush" Value="#FF454545"/>
+                            <Setter Property="BorderBrush" Value="#FF373737"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -54,10 +54,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF454545"/>
+                                    <Setter Property="Background" Value="#FF373737"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF606060"/>
+                                    <Setter Property="Background" Value="#FF4E4E4E"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -67,9 +67,9 @@
                 <Button x:Name="CloseButton" Content="Close" Foreground="#FFEEEEEE" Grid.Column="1" Margin="5, 5, 0, 0" Width="50" Height="25" HorizontalAlignment="Left" Click="CloseButton_Click"  >
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF353535"/>
+                            <Setter Property="Background" Value="#FF2A2A2A"/>
                             <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="BorderBrush" Value="#FF454545"/>
+                            <Setter Property="BorderBrush" Value="#FF373737"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -81,10 +81,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF454545"/>
+                                    <Setter Property="Background" Value="#FF373737"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF606060"/>
+                                    <Setter Property="Background" Value="#FF4E4E4E"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

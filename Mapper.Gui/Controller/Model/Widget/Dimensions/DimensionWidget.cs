@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Media.Imaging;
 using WorldEditor;
 
 namespace Mapper.Gui.Controller
@@ -40,9 +39,9 @@ namespace Mapper.Gui.Controller
 
         public DimensionWidget(Scene scene) 
         {
-            DimensionsWriteable.Add(new DimensionUI(Dimension.Overworld, new BitmapImage(new Uri("/Resources/Image/Dimension/Overworld_16px.png", UriKind.Relative))));
-            DimensionsWriteable.Add(new DimensionUI(Dimension.Nether, new BitmapImage(new Uri("/Resources/Image/Dimension/TheNether_16px.png", UriKind.Relative))));
-            DimensionsWriteable.Add(new DimensionUI(Dimension.TheEnd, new BitmapImage(new Uri("/Resources/Image/Dimension/TheEnd_16px.png", UriKind.Relative))));
+            DimensionsWriteable.Add(new DimensionUI(Dimension.Overworld, DimensionIcons.Get("Overworld")));
+            DimensionsWriteable.Add(new DimensionUI(Dimension.Nether, DimensionIcons.Get("TheNether")));
+            DimensionsWriteable.Add(new DimensionUI(Dimension.TheEnd, DimensionIcons.Get("TheEnd")));
 
             Scene = scene;
             Scene.WorldChanged += Scene_WorldChanged;

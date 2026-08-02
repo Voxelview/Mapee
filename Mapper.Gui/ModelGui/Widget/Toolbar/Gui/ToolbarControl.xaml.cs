@@ -154,22 +154,27 @@ namespace Mapper.Gui
 
             return output;
         }
-        private Image CreateImageControl(IToolButton button) 
+        private Image CreateImageControl(IToolButton button)
         {
-            Image output = new() 
+            Image output = new()
             {
-                Stretch = Stretch.None,
+                Stretch = Stretch.Uniform,
                 Margin = new Thickness(5, 0, 0, 0)
             };
 
-            if (button.Icon is not null)
-            {
-                output.Source = button.Icon;
-            }
-            else 
+            if (button.Icon is null)
             {
                 output.Visibility = Visibility.Collapsed;
                 return output;
+            }
+
+            output.Source = button.Icon;
+
+            Size? size = GlyphIcon.Measure(button.Icon);
+            if (size is not null)
+            {
+                output.Width = size.Value.Width;
+                output.Height = size.Value.Height;
             }
 
             return output;

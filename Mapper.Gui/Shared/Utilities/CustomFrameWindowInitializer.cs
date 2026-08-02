@@ -16,6 +16,7 @@ namespace Mapper.Gui
         public Window Window { get; }
         public ControlTemplate Template { get; }
         public Panel Frame { get; }
+        public Image WindowIcon { get; }
         public Button MinimizeButton { get; }
         public Button MaximizeButton { get; }
         public Button CloseButton { get; }
@@ -33,6 +34,14 @@ namespace Mapper.Gui
                 throw new NullReferenceException();
             }
             Frame = framePanel;
+
+            object windowIconObj = template.FindName("WindowIcon", window);
+            if (windowIconObj is null || windowIconObj is not Image windowIcon)
+            {
+                throw new NullReferenceException();
+            }
+            WindowIcon = windowIcon;
+            ApplyWindowIconRules();
 
             object minimizeButtonObj = template.FindName("MinimizeButton", window);
             if (minimizeButtonObj is null || minimizeButtonObj is not Button minimizeButton)
@@ -86,7 +95,25 @@ namespace Mapper.Gui
             CloseButton.Click += CloseButtonClick;
         }
 
-        public void SetSecondaryTitle(string secondaryTitle) 
+        /// <summary>
+        /// Sizes the title bar's icon the way the toolbar sizes the button that opens the window,
+        /// so the two show the same glyph at the same weight. The frame's slot is 18 square, and
+        /// fitting a glyph that overruns its grid into a square shrinks it to about 0.56 and takes
+        /// its strokes back under a pixel.
+        /// </summary>
+        private void ApplyWindowIconRules()
+        {
+            // Window.Icon rather than the image's own Source: the two are the same picture, but
+            // the image reaches it through a template binding and this runs while the template is
+            // still being walked. The window's property is already set either way.
+            Size? size = GlyphIcon.Measure(Window.Icon);
+            if (size is null) return;
+
+            WindowIcon.Width = size.Value.Width;
+            WindowIcon.Height = size.Value.Height;
+        }
+
+        public void SetSecondaryTitle(string secondaryTitle)
         {
             Label secondaryTitleLabel = (Label)Template.FindName("SecondaryTitle", Window);
             secondaryTitleLabel.Content = secondaryTitle;

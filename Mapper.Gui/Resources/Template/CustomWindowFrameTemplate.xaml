@@ -9,13 +9,13 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Border BorderBrush="#FF303030" BorderThickness="0, 0, 0, 1" VerticalAlignment="Bottom">
+                <Border BorderBrush="#FF252525" BorderThickness="0, 0, 0, 1" VerticalAlignment="Bottom">
                     <Grid x:Name="FramePanel" Grid.Row="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="34"/>
                         </Grid.RowDefinitions>
 
-                        <Grid Background="#FF1C1C1C" Margin="0, 0, 0, 1" Grid.Row="0">
+                        <Grid Background="#FF161616" Margin="0, 0, 0, 1" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -26,7 +26,10 @@
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
 
-                            <Image Grid.Column="0" Source="{Binding Icon,RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" Margin="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="18" Height="18" />
+                            <!-- 18 square suits a bitmap logo and the glyphs that fill their grid.
+                                 The two that overrun it are re-sized by CustomFrameWindowInitializer,
+                                 which is why this one is named. -->
+                            <Image Grid.Column="0" x:Name="WindowIcon" Source="{Binding Icon,RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" Margin="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="18" Height="18" />
                             <Label Grid.Column="1" Content="{Binding Title,RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" Foreground="#FFE5E5E5" Margin="3, 0, 0, 0" Padding="5, 1, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
                             <Label Grid.Column="2" x:Name="SecondaryTitle" Content="" Foreground="#FFB1B1B1" Margin="1, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
@@ -47,7 +50,7 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FF505050"/>
+                                                <Setter Property="Background" Value="#FF414141"/>
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter Property="Background" Value="#FF999999"/>
@@ -73,7 +76,7 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FF505050"/>
+                                                <Setter Property="Background" Value="#FF414141"/>
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
                                                 <Setter Property="Background" Value="#FF999999"/>

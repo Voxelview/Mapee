@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d" 
-             BorderBrush="#FF3F3F3F" BorderThickness="1"
+             BorderBrush="#FF313131" BorderThickness="1"
              Width="Auto" Height="Auto">
 
     <UserControl.Effect>
@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Height="Auto" Background="#FF1C1C1C">
+    <Grid Height="Auto" Background="#FF161616">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="7" />
@@ -28,8 +28,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="#FF3F3F3F" BorderThickness="0, 0, 0, 1" VerticalAlignment="Top" Grid.Row="0" Height="25">
-            <StackPanel Background="#FF282828">
+        <Border BorderBrush="#FF313131" BorderThickness="0, 0, 0, 1" VerticalAlignment="Top" Grid.Row="0" Height="25">
+            <StackPanel Background="#FF1F1F1F">
                 <Label Content="Styles" FontSize="14" Padding="0" Margin="0, 2, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFEEEEEE" Grid.Row="0" />
             </StackPanel>
         </Border>
@@ -44,13 +44,13 @@
             <Grid x:Name="StyleGrid" Width="Auto" Grid.Column="1" />
         </Grid>
 
-        <Border x:Name="MoreButtonBorder" Width="68" Height="19" Margin="7, 2, 0, 7" BorderThickness="1" BorderBrush="#FF3F3F3F" HorizontalAlignment="Left" Grid.Row="3">
+        <Border x:Name="MoreButtonBorder" Width="68" Height="19" Margin="7, 2, 0, 7" BorderThickness="1" BorderBrush="#FF313131" HorizontalAlignment="Left" Grid.Row="3">
             <Button x:Name="MoreButton" Foreground="#FFDDDDDD" Content="More" Width="68" Height="17" HorizontalAlignment="Left" Cursor="Hand" Click="MoreButton_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
-                        <Setter Property="Background" Value="#FF303030"/>
+                        <Setter Property="Background" Value="#FF252525"/>
                         <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="BorderBrush" Value="#FF404040"/>
+                        <Setter Property="BorderBrush" Value="#FF323232"/>
                         <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
                         <Setter Property="Template">
                             <Setter.Value>
@@ -63,10 +63,10 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF404040"/>
+                                <Setter Property="Background" Value="#FF323232"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF505050"/>
+                                <Setter Property="Background" Value="#FF414141"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>

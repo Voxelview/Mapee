@@ -1,4 +1,4 @@
-﻿using Mapper.Gui.Model;
+using Mapper.Gui.Model;
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -23,15 +23,32 @@ namespace Mapper.Gui.Logic
 
         private Color _chunkLineColor;
         private readonly SolidColorBrush _chunkLinePenBrush;
+        private readonly SolidColorBrush _chunkHaloPenBrush;
 
         private readonly SolidColorBrush _regionReallyThinLinPenBrush;
+        private readonly SolidColorBrush _regionReallyThinHaloPenBrush;
         private Color _regionReallyThinLineColor;
 
         public Pen ChunkLinePen { get; set; }
+        public Pen ChunkHaloPen { get; set; }
+
         public Pen RegionDashedLinePen { get; set; }
+        public Pen RegionDashedHaloPen { get; set; }
+
         public Pen RegionDashedLinePenThin { get; set; }
+        public Pen RegionDashedHaloPenThin { get; set; }
+
         public Pen RegionLinePenThin { get; set; }
+        public Pen RegionHaloPenThin { get; set; }
+
         public Pen RegionLinePenReallyThin { get; set; }
+        public Pen RegionHaloPenReallyThin { get; set; }
+
+        private static readonly Color REGION_LINE_COLOR = Color.FromRgb(255, 176, 46);
+
+        private static readonly double CHUNK_LINE_ZOOM_RATIO = 0.6D;
+        private static readonly byte MAX_CHUNK_LINE_ALPHA = 150;
+        private static readonly int MIN_CHUNK_HALO_ZOOM_LEVEL = 2;
 
         public GridTool(IScene scene)
         {
@@ -43,24 +60,33 @@ namespace Mapper.Gui.Logic
             _chunkLinePenBrush = new SolidColorBrush(_chunkLineColor);
             ChunkLinePen = new Pen(_chunkLinePenBrush, 1);
 
-            RegionDashedLinePen = new Pen(new SolidColorBrush(Color.FromArgb((byte)(a * 0.66D), r, r, r)), 3)
+            _chunkHaloPenBrush = new SolidColorBrush(PenUtilities.CreateHaloColor(_chunkLineColor.A));
+            ChunkHaloPen = PenUtilities.CreateHaloPen(ChunkLinePen, _chunkHaloPenBrush);
+
+            RegionDashedLinePen = new Pen(new SolidColorBrush(CreateRegionColor(235)), 3)
             {
                 DashStyle = new DashStyle(new double[] { 4, 3 }, 0)
             };
+            RegionDashedHaloPen = PenUtilities.CreateHaloPen(RegionDashedLinePen);
             RegionDashedLinePen.Freeze();
 
-            RegionDashedLinePenThin = new Pen(new SolidColorBrush(Color.FromArgb((byte)(a * 0.66D), r, r, r)), 2)
+            RegionDashedLinePenThin = new Pen(new SolidColorBrush(CreateRegionColor(235)), 2)
             {
                 DashStyle = new DashStyle(new double[] { 4, 3 }, 0)
             };
+            RegionDashedHaloPenThin = PenUtilities.CreateHaloPen(RegionDashedLinePenThin);
             RegionDashedLinePenThin.Freeze();
 
-            RegionLinePenThin = new Pen(new SolidColorBrush(Color.FromArgb((byte)(a * 0.5D), r, r, r)), 2);
+            RegionLinePenThin = new Pen(new SolidColorBrush(CreateRegionColor(210)), 2);
+            RegionHaloPenThin = PenUtilities.CreateHaloPen(RegionLinePenThin);
             RegionLinePenThin.Freeze();
 
-            _regionReallyThinLineColor = Color.FromArgb((byte)(a * 0.66D), r, r, r);
+            _regionReallyThinLineColor = CreateRegionColor(235);
             _regionReallyThinLinPenBrush = new SolidColorBrush(_regionReallyThinLineColor);
             RegionLinePenReallyThin = new Pen(_regionReallyThinLinPenBrush, 1);
+
+            _regionReallyThinHaloPenBrush = new SolidColorBrush(PenUtilities.CreateHaloColor(_regionReallyThinLineColor.A));
+            RegionHaloPenReallyThin = PenUtilities.CreateHaloPen(RegionLinePenReallyThin, _regionReallyThinHaloPenBrush);
         }
 
         public void Paint(DrawingContext drawingContext)
@@ -70,50 +96,63 @@ namespace Mapper.Gui.Logic
             int zoomLevel = Scene.ZoomLevel;
             if (zoomLevel > -5)
             {
-                double zoom = Scene.ZoomCoefficient * 0.33D;
+                double zoom = Scene.ZoomCoefficient * CHUNK_LINE_ZOOM_RATIO;
 
                 byte a;
                 if (zoom > 1) a = _chunkLineColor.A;
                 else a = (byte)(_chunkLineColor.A * zoom);
 
-                if (a >= 80) a = 80;
+                if (a >= MAX_CHUNK_LINE_ALPHA) a = MAX_CHUNK_LINE_ALPHA;
 
                 _chunkLinePenBrush.Color = Color.FromArgb(a, _chunkLineColor.R, _chunkLineColor.G, _chunkLineColor.B);
-                RenderInterval(drawingContext, 16, (Pen)ChunkLinePen.GetAsFrozen(), 512);
+                _chunkHaloPenBrush.Color = PenUtilities.CreateHaloColor(a);
+
+                Pen? chunkHaloPen = zoomLevel >= MIN_CHUNK_HALO_ZOOM_LEVEL ? (Pen)ChunkHaloPen.GetAsFrozen() : null;
+                RenderInterval(drawingContext, 16, (Pen)ChunkLinePen.GetAsFrozen(), chunkHaloPen, 512);
             }
 
-            Pen regionLinePen;
+            Pen regionLinePen, regionHaloPen;
             if (zoomLevel < -8)
             {
                 double zoom = Scene.ZoomCoefficient * 5;
-                byte a = (byte)(_regionReallyThinLineColor.A * zoom);
+                byte a = (byte)Math.Min(_regionReallyThinLineColor.A * zoom, _regionReallyThinLineColor.A);
 
                 _regionReallyThinLinPenBrush.Color = Color.FromArgb(a, _regionReallyThinLineColor.R, _regionReallyThinLineColor.G, _regionReallyThinLineColor.B);
+                _regionReallyThinHaloPenBrush.Color = PenUtilities.CreateHaloColor(a);
 
                 regionLinePen = (Pen)RegionLinePenReallyThin.GetAsFrozen();
+                regionHaloPen = (Pen)RegionHaloPenReallyThin.GetAsFrozen();
             }
             else if (zoomLevel < -4)
             {
                 regionLinePen = RegionLinePenThin;
+                regionHaloPen = RegionHaloPenThin;
             }
             else if (zoomLevel < 0)
             {
                 regionLinePen = RegionDashedLinePenThin;
+                regionHaloPen = RegionDashedHaloPenThin;
             }
             else
             {
                 regionLinePen = RegionDashedLinePen;
+                regionHaloPen = RegionDashedHaloPen;
             }
 
-            RenderInterval(drawingContext, 512, regionLinePen);
+            RenderInterval(drawingContext, 512, regionLinePen, regionHaloPen);
         }
-        private void RenderInterval(DrawingContext drawingContext, int interval, Pen pen, int ignoreMod = 0)
+        private void RenderInterval(DrawingContext drawingContext, int interval, Pen linePen, Pen? haloPen, int ignoreMod = 0)
         {
             Rect area = GetArea(interval);
 
             int xCount = IntervalMathUtilities.GetIntervalCount((int)area.X, (int)area.BottomRight.X, interval);
             int yCount = IntervalMathUtilities.GetIntervalCount((int)area.Y, (int)area.BottomRight.Y, interval);
 
+            if (haloPen != null) RenderLines(drawingContext, area, interval, haloPen, xCount, yCount, ignoreMod);
+            RenderLines(drawingContext, area, interval, linePen, xCount, yCount, ignoreMod);
+        }
+        private void RenderLines(DrawingContext drawingContext, Rect area, int interval, Pen pen, int xCount, int yCount, int ignoreMod)
+        {
             for (int x = 0; x < xCount; x++)
             {
                 XzPoint point0 = new((int)area.X + x * interval, (int)area.Y);
@@ -133,6 +172,11 @@ namespace Mapper.Gui.Logic
 
                 drawingContext.DrawLine(pen, Scene.XzToPointOnScreen(point0), Scene.XzToPointOnScreen(point1));
             }
+        }
+
+        private static Color CreateRegionColor(byte alpha)
+        {
+            return Color.FromArgb(alpha, REGION_LINE_COLOR.R, REGION_LINE_COLOR.G, REGION_LINE_COLOR.B);
         }
 
         private Rect GetArea(int interval)

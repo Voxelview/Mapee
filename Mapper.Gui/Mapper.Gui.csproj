@@ -9,18 +9,18 @@
     <OutputPath>$(SolutionDir)Build\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
-    <TieredCompilation>false</TieredCompilation>
-    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-    <TieredCompilationQuickJitForLoops>false</TieredCompilationQuickJitForLoops>
+    <TieredCompilation>true</TieredCompilation>
+    <TieredPGO>true</TieredPGO>
     <RetainVMGarbageCollection>false</RetainVMGarbageCollection>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <GarbageCollectionAdaptationMode>0</GarbageCollectionAdaptationMode>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <ApplicationIcon>Resources\Image\Logo\LogoIcon_48px.ico</ApplicationIcon>
     <AssemblyName>Mapee</AssemblyName>
-    <AssemblyVersion>1.2.0</AssemblyVersion>
-    <FileVersion>1.2.0</FileVersion>
-    <Version>1.2.0</Version>
+    <AssemblyVersion>1.3.0</AssemblyVersion>
+    <FileVersion>1.3.0</FileVersion>
+    <Version>1.3.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -47,14 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Icon\ToolButton\ExportAsImage_64px.ico" />
-    <None Remove="Resources\Icon\ToolButton\Filter_64px.ico" />
-    <None Remove="Resources\Icon\ToolButton\LoadWorld_64px.ico" />
-    <None Remove="Resources\Icon\ToolButton\RenderSettings_64px.ico" />
     <None Remove="Resources\Image\Dimension\ExtraDimensions_32px.png" />
-    <None Remove="Resources\Image\Dimension\Overworld_16px.png" />
-    <None Remove="Resources\Image\Dimension\TheEnd_16px.png" />
-    <None Remove="Resources\Image\Dimension\TheNether_16px.png" />
     <None Remove="Resources\Image\Logo\LogoIcon_128px.ico" />
     <None Remove="Resources\Image\Logo\LogoIcon_48px.ico" />
     <None Remove="Resources\Image\Logo\Logo_128px.png" />
@@ -63,17 +56,6 @@
     <None Remove="Resources\Image\Misc\Render_32px.png" />
     <None Remove="Resources\Image\Scanner\Add_64px.png" />
     <None Remove="Resources\Image\Scanner\Trash_64px.png" />
-    <None Remove="Resources\Image\ToolButton\Axis_22px.png" />
-    <None Remove="Resources\Image\ToolButton\ChunkHighlight_22px.png" />
-    <None Remove="Resources\Image\ToolButton\DayNightCycle_22px.png" />
-    <None Remove="Resources\Image\ToolButton\ExportAsImage_22px.png" />
-    <None Remove="Resources\Image\ToolButton\Filter_22px.png" />
-    <None Remove="Resources\Image\ToolButton\GoTo_22px.png" />
-    <None Remove="Resources\Image\ToolButton\Grid_22px.png" />
-    <None Remove="Resources\Image\ToolButton\LoadWorld_22px.png" />
-    <None Remove="Resources\Image\ToolButton\MeasureLength_22px.png" />
-    <None Remove="Resources\Image\ToolButton\RenderSettings_22px.png" />
-    <None Remove="Resources\Image\ToolButton\Slime_22px.png" />
     <None Remove="Resources\Image\WindowFrame\Close_16px.png" />
     <None Remove="Resources\Image\WindowFrame\Maximize_16px.png" />
     <None Remove="Resources\Image\WindowFrame\Minimize_16px.png" />
@@ -98,31 +80,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Icon\ToolButton\ExportAsImage_64px.ico" />
-    <Resource Include="Resources\Icon\ToolButton\Filter_64px.ico" />
-    <Resource Include="Resources\Icon\ToolButton\LoadWorld_64px.ico" />
-    <Resource Include="Resources\Icon\ToolButton\RenderSettings_64px.ico" />
     <Resource Include="Resources\Image\Dimension\ExtraDimensions_32px.png" />
-    <Resource Include="Resources\Image\Dimension\Overworld_16px.png" />
-    <Resource Include="Resources\Image\Dimension\TheEnd_16px.png" />
-    <Resource Include="Resources\Image\Dimension\TheNether_16px.png" />
     <Resource Include="Resources\Image\Logo\LogoIcon_48px.ico" />
     <Resource Include="Resources\Image\Logo\Logo_512px.png" />
     <Resource Include="Resources\Image\Misc\DefaultWorld_128px.png" />
     <Resource Include="Resources\Image\Misc\Render_32px.png" />
     <Resource Include="Resources\Image\Scanner\Add_64px.png" />
     <Resource Include="Resources\Image\Scanner\Trash_64px.png" />
-    <Resource Include="Resources\Image\ToolButton\Axis_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\ChunkHighlight_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\DayNightCycle_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\ExportAsImage_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\Filter_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\GoTo_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\Grid_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\LoadWorld_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\MeasureLength_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\RenderSettings_22px.png" />
-    <Resource Include="Resources\Image\ToolButton\Slime_22px.png" />
     <Resource Include="Resources\Image\WindowFrame\Close_16px.png" />
     <Resource Include="Resources\Image\WindowFrame\Maximize_16px.png" />
     <Resource Include="Resources\Image\WindowFrame\Minimize_16px.png" />

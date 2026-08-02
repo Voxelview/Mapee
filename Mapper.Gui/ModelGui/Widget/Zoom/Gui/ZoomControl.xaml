@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d" 
-             BorderBrush="#FF3F3F3F" BorderThickness="1"
-             Background="#FF1C1C1C"
+             BorderBrush="#FF313131" BorderThickness="1"
+             Background="#FF161616"
              Width="84" Height="35">
 
     <UserControl.Effect>
@@ -25,7 +25,7 @@
 
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
-                    <Setter Property="Background" Value="#FF282828"/>
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
@@ -37,10 +37,10 @@
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#FF505050"/>
+                            <Setter Property="Background" Value="#FF414141"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#FF707070"/>
+                            <Setter Property="Background" Value="#FF5C5C5C"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
@@ -54,7 +54,7 @@
 
             <Button.Style>
                 <Style TargetType="{x:Type Button}">
-                    <Setter Property="Background" Value="#FF282828"/>
+                    <Setter Property="Background" Value="#FF1F1F1F"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type Button}">
@@ -66,10 +66,10 @@
                     </Setter>
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#FF505050"/>
+                            <Setter Property="Background" Value="#FF414141"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#FF707070"/>
+                            <Setter Property="Background" Value="#FF5C5C5C"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>

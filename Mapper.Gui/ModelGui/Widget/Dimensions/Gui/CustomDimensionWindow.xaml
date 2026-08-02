@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
-        Background="#FF202020"
+        Background="#FF191919"
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="CustomDimensionWindow" Width="0" Height="0">
@@ -23,7 +23,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border BorderBrush="#FF3F3F3F" BorderThickness="1">
+    <Border BorderBrush="#FF313131" BorderThickness="1">
         <Grid x:Name="ButtonContainer" />
     </Border>
 </Window>

@@ -1,0 +1,301 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- The toolbar glyphs, drawn on the 24x24 grid the source SVGs are authored on
+         (MapeeWeb\src\mapee.theme\src\icons). Vectors rather than bitmaps because the strokes
+         are 1.333 wide: a fixed bitmap of one has nothing left to give a scaled monitor.
+
+         The grid renders at 18, which is what makes 1.333 come out as exactly one pixel - see
+         ToolbarControl.ICON_SIZE. Nothing here is clipped to the grid: block filter and
+         appearance are drawn from a lattice that runs past it on every side, and the web set
+         marks those `overflow="visible"` rather than trimming them, so they simply occupy more
+         room than the other nine. What every icon does carry is a transparent tile of the full
+         grid, which is what holds the ones that DON'T fill it - the bed, the ruler - on the same
+         centre and the same scale as the ones that do. -->
+
+    <!-- Every glyph's ink, and the base the tiers ride on - the ruler's 0.5 dither, the cube's
+         0.75 and 0.48 faces are all fractions of THIS, so retuning it moves the whole set. -->
+    <Color x:Key="ToolButtonIconColor">#FFFFFFFF</Color>
+    <SolidColorBrush x:Key="ToolButtonIconBrush" Color="{StaticResource ToolButtonIconColor}"/>
+
+    <RectangleGeometry x:Key="ToolButtonIconGrid" Rect="0,0,24,24"/>
+
+    <DrawingImage x:Key="CardinalAxis">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M10,24 V5.333 M0,14 H18.667">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{StaticResource ToolButtonIconBrush}"
+                                 Geometry="M4.667,5.333 L10,0 L15.333,5.333 Z M18.667,8.667 L24,14 L18.667,19.333 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="Gridlines">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M2,0 V24 M6,0 V24 M10,0 V24 M14,0 V24 M18,0 V24 M22,0 V24
+                                           M0,2 H24 M0,6 H24 M0,10 H24 M0,14 H24 M0,18 H24 M0,22 H24">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="HighlightChunk">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M0.667,0.667 H22 V22 H0.667 Z M11.333,0.667 V22 M0.667,11.333 H22">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M12,12.667 H21.333 M12,15.333 H21.333 M12,18 H21.333 M12,20.667 H21.333">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333" DashCap="Flat">
+                            <Pen.DashStyle>
+                                <DashStyle Dashes="1,1"/>
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M12,14 H21.333 M12,16.667 H21.333 M12,19.333 H21.333">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333" DashCap="Flat">
+                            <Pen.DashStyle>
+                                <DashStyle Dashes="1,1" Offset="1"/>
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="Measure">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M0.667,7.333 H23.333 V16.667 H0.667 Z
+                                           M4.667,7.333 V11.333 M10,7.333 V10 M14,7.333 V10 M19.333,7.333 V11.333">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M1.333,12.667 H22.666 M1.333,15.333 H22.666">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="1.333" DashCap="Flat">
+                            <Pen.Brush>
+                                <SolidColorBrush Color="{StaticResource ToolButtonIconColor}" Opacity="0.5"/>
+                            </Pen.Brush>
+                            <Pen.DashStyle>
+                                <DashStyle Dashes="1,1"/>
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M1.333,14 H22.666">
+                    <GeometryDrawing.Pen>
+                        <Pen Thickness="1.333" DashCap="Flat">
+                            <Pen.Brush>
+                                <SolidColorBrush Color="{StaticResource ToolButtonIconColor}" Opacity="0.5"/>
+                            </Pen.Brush>
+                            <Pen.DashStyle>
+                                <DashStyle Dashes="1,1" Offset="1"/>
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="NightMode">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M8.667,0.667 H15.333 V7.333 H8.667 Z M8.667,8 V23.333 H15.333 V8">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M9.333,2 H14.667 M9.333,4.667 H14.667">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333" DashCap="Flat">
+                            <Pen.DashStyle>
+                                <DashStyle Dashes="1,1"/>
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M9.333,3.333 H14.667 M9.333,6 H14.667">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333" DashCap="Flat">
+                            <Pen.DashStyle>
+                                <DashStyle Dashes="1,1" Offset="1"/>
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="SlimeChunks">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M0.667,0.667 H23.333 V23.333 H0.667 Z">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{StaticResource ToolButtonIconBrush}"
+                                 Geometry="M5.333,6.667 H9.333 V10.667 H5.333 Z
+                                           M14.667,6.667 H18.667 V10.667 H14.667 Z
+                                           M12,13.333 H16 V17.333 H12 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="GoTo">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <EllipseGeometry Center="12,12" RadiusX="8" RadiusY="8"/>
+                            <PathGeometry Figures="M12,0.8 V4 M12,20 V23.2 M0.8,12 H4 M20,12 H23.2"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.6"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{StaticResource ToolButtonIconBrush}"
+                                 Geometry="M11.2,11.2 H12.8 V12.8 H11.2 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="Export">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Brush="{StaticResource ToolButtonIconBrush}"
+                                 Geometry="M4,1.333 H9.333 V4 H4 Z M18.667,5.333 H21.333 V8 H18.667 Z"/>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <PathGeometry Figures="M0.667,3.333 H23.333 V20.667 H0.667 Z"/>
+                            <EllipseGeometry Center="12,12" RadiusX="4" RadiusY="4"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <!-- These two are drawn flat rather than isometric, which is a deliberate break from the web
+         set's lattice glyphs. A lattice edge runs at a slope of 1/SQRT3 - irrational, so it can
+         never land on the pixel grid at any size - and at 18px that is a grey smear rather than a
+         line. Aliasing would trade the smear for a hard stair, but RenderOptions.EdgeMode does
+         not reach geometry delivered inside a DrawingImage (measured, not assumed), so there is
+         no way to get one out of an Image. Flat art has no such problem: every stroke below is
+         axis-aligned, and every one sits on an odd multiple of 0.667 - a pixel centre at 0.75 -
+         so it covers exactly one pixel and needs no smoothing at all.
+
+         Both fill the grid, 18x18, which reads as the same size as the open-world cube beside
+         them. If you move a stroke, keep it on the 0.667 + 1.333n ladder or it will go soft. -->
+
+    <DrawingImage x:Key="BlockFilter">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <!-- One closed outline so the rim, bowl and stem join into each other rather than
+                     meeting as six separate capped segments. The join is Round because a miter at
+                     the rim's corners spikes 0.578 past the grid, and bounds that start off the
+                     ladder would carry every stroke in the glyph half a pixel with them. -->
+                <GeometryDrawing Geometry="M0.667,0.667 H23.333 L15.333,12.667 V23.333
+                                           H8.667 V12.667 Z">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"
+                             LineJoin="Round"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <!-- The sliders from MapeeWeb's own settings.svg, which suits a dialog of lighting, altitude
+         and background readings better than the layers glyph did. One change: the knobs are r
+         2.667 rather than 3.333, because at 3.333 the top one reaches 0.667 above the grid, and
+         a drawing whose bounds start half a pixel high puts all three tracks across a boundary. -->
+
+    <DrawingImage x:Key="Appearance">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <PathGeometry Figures="M0.667,3.333 H9.333 M18.667,3.333 H23.333
+                                                   M0.667,11.333 H4.667 M14,11.333 H23.333
+                                                   M0.667,19.333 H9.333 M18.667,19.333 H23.333"/>
+                            <EllipseGeometry Center="14,3.333" RadiusX="2.667" RadiusY="2.667"/>
+                            <EllipseGeometry Center="9.333,11.333" RadiusX="2.667" RadiusY="2.667"/>
+                            <EllipseGeometry Center="14,19.333" RadiusX="2.667" RadiusY="2.667"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <!-- Three faces of one cube, painted over each other rather than side by side: the right
+         face is the 0.48 fill on top of the 0.75 body, which composites to the mid tone that
+         sits between the body and the fully opaque top.
+
+         A cube is taller than it is wide - 2/SQRT3 - so one sized to fit the grid would read
+         small beside the eight glyphs that fill theirs. This one is sized by its WIDTH instead:
+         half of it is 12, a whole number of pixels at 0.75, which is what puts the two side
+         edges - the only straight ones a cube has - on 0 and 18 rather than across a boundary.
+         It spans the grid exactly across, and the height that follows from that runs 1.856 past
+         it at each end, which is why the source SVG carries overflow="visible". -->
+
+    <DrawingImage x:Key="OpenWorld">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="M12,-1.856 L24,5.072 V18.928 L12,25.856 L0,18.928 V5.072 Z">
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="{StaticResource ToolButtonIconColor}" Opacity="0.75"/>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M24,5.072 V18.928 L12,25.856 V12 Z">
+                    <GeometryDrawing.Brush>
+                        <SolidColorBrush Color="{StaticResource ToolButtonIconColor}" Opacity="0.48"/>
+                    </GeometryDrawing.Brush>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="{StaticResource ToolButtonIconBrush}"
+                                 Geometry="M12,-1.856 L24,5.072 L12,12 L0,5.072 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+</ResourceDictionary>

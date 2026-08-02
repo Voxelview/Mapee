@@ -14,9 +14,9 @@ namespace Mapper.Gui
         public ToolButtonHook LeftHook { get; }
         public ToolButtonHook RightHook { get; }
 
-        public Brush TurnedOffColor { get; } = new SolidColorBrush(Color.FromRgb(100, 100, 100));
-        public Brush TurnedOnColor { get; } = new SolidColorBrush(Color.FromRgb(160, 160, 160));
-        public Brush DisabledTurnedOnColor { get; } = new SolidColorBrush(Color.FromRgb(115, 115, 115));
+        public Brush TurnedOffColor { get; } = new SolidColorBrush(Color.FromRgb(82, 82, 82));
+        public Brush TurnedOnColor { get; } = new SolidColorBrush(Color.FromRgb(131, 131, 131));
+        public Brush DisabledTurnedOnColor { get; } = new SolidColorBrush(Color.FromRgb(94, 94, 94));
 
         public SeparatorHook(Panel separatorPanel, Border separator, ToolButtonHook leftHook, ToolButtonHook rightHook)
         {

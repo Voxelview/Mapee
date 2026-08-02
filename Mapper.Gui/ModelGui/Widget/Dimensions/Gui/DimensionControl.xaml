@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d" 
-             Background="#FF1C1C1C"
-             BorderBrush="#FF3F3F3F" BorderThickness="1"
+             Background="#FF161616"
+             BorderBrush="#FF313131" BorderThickness="1"
              Width="Auto" Height="35" Loaded="UserControl_Loaded">
 
     <UserControl.Effect>

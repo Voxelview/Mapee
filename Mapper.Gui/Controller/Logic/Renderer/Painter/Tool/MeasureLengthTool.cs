@@ -19,6 +19,10 @@ namespace Mapper.Gui.Logic
         public Pen DiagonalLinePen { get; set; }
         public Pen RectangularLinePen { get; set; }
 
+        public Pen GuideLineHaloPen { get; set; }
+        public Pen DiagonalLineHaloPen { get; set; }
+        public Pen RectangularLineHaloPen { get; set; }
+
         public Brush TextBackgroundBrush { get; set; }
 
         private bool _isDown = false;
@@ -31,22 +35,25 @@ namespace Mapper.Gui.Logic
             OutputControl = outputControl;
             RenderInvoker = renderInvoker;
 
-            GuideLinePen = new Pen(Brushes.Gray, 1)
+            GuideLinePen = new Pen(new SolidColorBrush(Color.FromArgb(235, 240, 240, 240)), 2)
             {
-                DashStyle = new DashStyle(new double[] { 8, 4 }, 0),
+                DashStyle = new DashStyle(new double[] { 4, 2 }, 0),
             };
+            GuideLineHaloPen = PenUtilities.CreateHaloPen(GuideLinePen);
             GuideLinePen.Freeze();
 
-            DiagonalLinePen = new Pen(Brushes.White, 3);
+            DiagonalLinePen = new Pen(Brushes.White, 4);
+            DiagonalLineHaloPen = PenUtilities.CreateHaloPen(DiagonalLinePen);
             DiagonalLinePen.Freeze();
 
-            RectangularLinePen = new Pen(new SolidColorBrush(Color.FromArgb(220, 200, 200, 200)), 3)
+            RectangularLinePen = new Pen(new SolidColorBrush(Color.FromArgb(245, 235, 235, 235)), 3)
             {
                 DashStyle = new DashStyle(new double[] { 2, 3 }, 0)
             };
+            RectangularLineHaloPen = PenUtilities.CreateHaloPen(RectangularLinePen);
             RectangularLinePen.Freeze();
 
-            TextBackgroundBrush = new SolidColorBrush(Color.FromArgb(192, 24, 24, 24));
+            TextBackgroundBrush = new SolidColorBrush(Color.FromArgb(224, 24, 24, 24));
             TextBackgroundBrush.Freeze();
 
             MouseHook.MouseDown += MouseHook_MouseDown;
@@ -68,7 +75,12 @@ namespace Mapper.Gui.Logic
             Point thirdPoint = Scene.XzToPointOnScreen(third);
             Point fourthPoint = Scene.XzToPointOnScreen(fourth);
 
-            drawingContext.DrawRectangle(null, RectangularLinePen, new Rect(thirdPoint, fourthPoint));
+            Rect rectangle = new(thirdPoint, fourthPoint);
+
+            drawingContext.DrawRectangle(null, RectangularLineHaloPen, rectangle);
+            drawingContext.DrawLine(DiagonalLineHaloPen, firstPoint, secondPoint);
+
+            drawingContext.DrawRectangle(null, RectangularLinePen, rectangle);
             drawingContext.DrawLine(DiagonalLinePen, firstPoint, secondPoint);
 
             FormattedText horizontalText = CreateHorizontalText(third, fourth);
@@ -99,10 +111,14 @@ namespace Mapper.Gui.Logic
         {
             Point verticalPoint0 = Scene.XzToPointOnScreen(new XzPoint(_currentMousePoint.X, Scene.TopLeft.Z));
             Point verticalPoint1 = Scene.XzToPointOnScreen(new XzPoint(_currentMousePoint.X, Scene.BottomRight.Z));
-            drawingContext.DrawLine(GuideLinePen, verticalPoint0, verticalPoint1);
 
             Point horizontalPoint0 = Scene.XzToPointOnScreen(new XzPoint(Scene.TopLeft.X, _currentMousePoint.Z));
             Point horizontalPoint1 = Scene.XzToPointOnScreen(new XzPoint(Scene.BottomRight.X, _currentMousePoint.Z));
+
+            drawingContext.DrawLine(GuideLineHaloPen, verticalPoint0, verticalPoint1);
+            drawingContext.DrawLine(GuideLineHaloPen, horizontalPoint0, horizontalPoint1);
+
+            drawingContext.DrawLine(GuideLinePen, verticalPoint0, verticalPoint1);
             drawingContext.DrawLine(GuideLinePen, horizontalPoint0, horizontalPoint1);
         }
 

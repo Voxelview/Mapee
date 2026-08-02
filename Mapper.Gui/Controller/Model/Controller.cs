@@ -137,7 +137,7 @@ namespace Mapper.Gui.Controller
         {
             TextPainter.SetText(null);
 
-            CheckDimensionIsEmpty(current.CurrentDimension);
+            TextPainter.SetText(GetDimensionText(current.CurrentDimension) ?? new Text("Loading world"));
         }
         private void Scene_WorldChanged(WorldDomain? old, WorldDomain current)
         {
@@ -157,28 +157,31 @@ namespace Mapper.Gui.Controller
             CheckDimensionIsEmpty(ImplementedScene.Domain.CurrentWorld.CurrentDimension);
         }
 
-        private void CheckDimensionIsEmpty(DimensionDomain current) 
+        private void CheckDimensionIsEmpty(DimensionDomain current)
         {
-            if (!ImplementedScene.Domain.CurrentStyle.IsDimensionAllowed(current.Dimension)) 
+            TextPainter.SetText(GetDimensionText(current));
+        }
+
+        private IText? GetDimensionText(DimensionDomain current)
+        {
+            if (!ImplementedScene.Domain.CurrentStyle.IsDimensionAllowed(current.Dimension))
             {
-                TextPainter.SetText(new Text($"{current.Dimension.Name} dimension does not support the current selected style"));
-                return;
+                return new Text($"{current.Dimension.Name} dimension does not support the current selected style");
             }
 
-            IText? text = null;
             int count = current.Scene.SceneParameter.RegionStore.Count;
             if (count < 1)
             {
-                text = new Text($"{current.Dimension.Name} dimension is empty");
+                return new Text($"{current.Dimension.Name} dimension is empty");
             }
             else if (current.Dimension == Dimension.Overworld &&
                 current.Scene.RenderedRegions.Count == 0 &&
                 current.Scene.SceneParameter.Level.Version.Version == Version.Pre_Beta_1_2)
             {
-                text = new Text("Loading Alpha chunks. This may take a moment");
+                return new Text("Loading Alpha chunks. This may take a moment");
             }
 
-            TextPainter.SetText(text);
+            return null;
         }
     }
 }

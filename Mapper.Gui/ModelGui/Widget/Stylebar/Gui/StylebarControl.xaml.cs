@@ -130,7 +130,7 @@ namespace Mapper.Gui
             }
 
             if (otherSelected) MoreButtonBorder.BorderBrush = Brushes.Gold;
-            else MoreButtonBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(63, 63, 63));
+            else MoreButtonBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(49, 49, 49));
         }
 
         private void MoreButton_Click(object sender, RoutedEventArgs e)

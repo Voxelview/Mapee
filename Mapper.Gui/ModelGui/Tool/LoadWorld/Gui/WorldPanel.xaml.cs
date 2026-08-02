@@ -29,10 +29,10 @@ namespace Mapper.Gui
 
             _background = Background;
 
-            _mouseOver = new SolidColorBrush(Color.FromRgb(40, 40, 40));
+            _mouseOver = new SolidColorBrush(Color.FromRgb(31, 31, 31));
             _mouseOver.Freeze();
 
-            _mouseDown = new SolidColorBrush(Color.FromRgb(50, 50, 50));
+            _mouseDown = new SolidColorBrush(Color.FromRgb(40, 40, 40));
             _mouseDown.Freeze();
 
             Entry = entry;

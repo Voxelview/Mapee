@@ -10,22 +10,22 @@ namespace Mapper.Gui
 
         public MouseColorProperties TurnedOff { get; } = new MouseColorProperties()
         {
-            Default = new SolidColorBrush(Color.FromRgb(28, 28, 28)),
-            MouseOver = new SolidColorBrush(Color.FromRgb(80, 80, 80)),
-            MouseDown = new SolidColorBrush(Color.FromRgb(100, 100, 100))
+            Default = new SolidColorBrush(Color.FromRgb(22, 22, 22)),
+            MouseOver = new SolidColorBrush(Color.FromRgb(65, 65, 65)),
+            MouseDown = new SolidColorBrush(Color.FromRgb(82, 82, 82))
         };
         public MouseColorProperties TurnedOn { get; } = new MouseColorProperties()
         {
-            Default = new SolidColorBrush(Color.FromRgb(100, 100, 100)),
-            MouseOver = new SolidColorBrush(Color.FromRgb(120, 120, 120)),
-            MouseDown = new SolidColorBrush(Color.FromRgb(140, 140, 140))
+            Default = new SolidColorBrush(Color.FromRgb(82, 82, 82)),
+            MouseOver = new SolidColorBrush(Color.FromRgb(98, 98, 98)),
+            MouseDown = new SolidColorBrush(Color.FromRgb(115, 115, 115))
         };
 
         public MouseColorProperties DisabledTurnedOn { get; } = new MouseColorProperties()
         {
-            Default = new SolidColorBrush(Color.FromRgb(50, 50, 50)),
-            MouseOver = new SolidColorBrush(Color.FromRgb(120, 120, 120)),
-            MouseDown = new SolidColorBrush(Color.FromRgb(140, 140, 140))
+            Default = new SolidColorBrush(Color.FromRgb(40, 40, 40)),
+            MouseOver = new SolidColorBrush(Color.FromRgb(98, 98, 98)),
+            MouseDown = new SolidColorBrush(Color.FromRgb(115, 115, 115))
         };
 
         private enum MouseState

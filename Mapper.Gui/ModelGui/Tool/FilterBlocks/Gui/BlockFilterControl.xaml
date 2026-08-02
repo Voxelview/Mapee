@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
-        BorderBrush="#FF454545"
+        BorderBrush="#FF373737"
         BorderThickness="1"
         ResizeMode="CanResize"
         UseLayoutRounding="True"
-        Icon="/Resources/Icon/ToolButton/Filter_64px.ico"
+        Icon="{DynamicResource BlockFilter}"
         Template="{DynamicResource CustomWindowFrameTemplate}"
-        Title="Block filter" Height="600" Width="805" Background="#FF232323" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Block filter" Height="600" Width="805" Background="#FF1B1B1B" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" CornerRadius="0" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
@@ -21,6 +21,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Template/CustomWindowFrameTemplate.xaml"/>
+                <ResourceDictionary Source="/Resources/Icon/ToolButtonIcons.xaml"/>
                 <ResourceDictionary Source="/Resources/Template/ScrollBarStyle.xaml"/>
                 <ResourceDictionary Source="/Resources/Template/TextBoxStyle.xaml"/>
                 <ResourceDictionary Source="/Resources/Template/DataGridStyle.xaml"/>
@@ -83,9 +84,9 @@
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#FF353535"/>
+                                <Setter Property="Background" Value="#FF2A2A2A"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="#FF454545"/>
+                                <Setter Property="BorderBrush" Value="#FF373737"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -97,10 +98,10 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#FF454545"/>
+                                        <Setter Property="Background" Value="#FF373737"/>
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#FF606060"/>
+                                        <Setter Property="Background" Value="#FF4E4E4E"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -112,9 +113,9 @@
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#FF353535"/>
+                                <Setter Property="Background" Value="#FF2A2A2A"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="#FF454545"/>
+                                <Setter Property="BorderBrush" Value="#FF373737"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -126,10 +127,10 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#FF454545"/>
+                                        <Setter Property="Background" Value="#FF373737"/>
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#FF606060"/>
+                                        <Setter Property="Background" Value="#FF4E4E4E"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -141,7 +142,7 @@
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Background" Value="#FF713535"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="#FF454545"/>
+                                <Setter Property="BorderBrush" Value="#FF373737"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -164,8 +165,8 @@
                     </Button>
                 </Grid>
 
-                <Border BorderBrush="#FF404040" BorderThickness="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2">
-                    <DataGrid x:Name="SolidBlockView" RowBackground="#FF191919" VerticalAlignment="Stretch" VerticalGridLinesBrush="#FF1C1C1C" HorizontalGridLinesBrush="#FF1C1C1C" BorderThickness="0" HeadersVisibility="Column" HorizontalAlignment="Stretch" Background="#FF191919" AutoGenerateColumns="False" IsReadOnly="True">
+                <Border BorderBrush="#FF323232" BorderThickness="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2">
+                    <DataGrid x:Name="SolidBlockView" RowBackground="#FF141414" VerticalAlignment="Stretch" VerticalGridLinesBrush="#FF161616" HorizontalGridLinesBrush="#FF161616" BorderThickness="0" HeadersVisibility="Column" HorizontalAlignment="Stretch" Background="#FF141414" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Block name" Width="*" Binding="{Binding BlockName}">
                                 <DataGridTextColumn.ElementStyle>
@@ -178,25 +179,25 @@
                                 </DataGridTextColumn.ElementStyle>
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="{x:Type DataGridCell}">
-                                        <Setter Property="Background" Value="#FF1C1C1C" />
+                                        <Setter Property="Background" Value="#FF161616" />
                                         <Setter Property="Foreground" Value="#FFEEEEEE" />
                                         <Setter Property="BorderThickness" Value="0" />
-                                        <Setter Property="BorderBrush" Value="#FF1C1C1C" />
+                                        <Setter Property="BorderBrush" Value="#FF161616" />
                                         <Setter Property="Height" Value="25" />
 
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FF303030" />
+                                                <Setter Property="Background" Value="#FF252525" />
                                             </Trigger>
                                             <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                                <Setter Property="Background" Value="#FF353535" />
+                                                <Setter Property="Background" Value="#FF2A2A2A" />
                                             </Trigger>
                                             <MultiTrigger>
                                                 <MultiTrigger.Conditions>
                                                     <Condition Property="IsMouseOver" Value="True"/>
                                                     <Condition Property="DataGridCell.IsSelected" Value="True"/>
                                                 </MultiTrigger.Conditions>
-                                                <Setter Property="Background" Value="#FF424242"/>
+                                                <Setter Property="Background" Value="#FF343434"/>
                                             </MultiTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -209,9 +210,9 @@
                 <Button x:Name="SolidBlocksResetToDefault" Content="Reset to default" Foreground="#FFEEEEEE" Grid.Row="3" Margin="0, 3, 0, 0" Width="100" Height="25" HorizontalAlignment="Right" Click="SolidBlocksResetToDefault_Click" >
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF3F3F3C"/>
+                            <Setter Property="Background" Value="#FF31312F"/>
                             <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="BorderBrush" Value="#FF454545"/>
+                            <Setter Property="BorderBrush" Value="#FF373737"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -223,10 +224,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF4C4C49"/>
+                                    <Setter Property="Background" Value="#FF3C3C39"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF595957"/>
+                                    <Setter Property="Background" Value="#FF474745"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -273,9 +274,9 @@
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#FF353535"/>
+                                <Setter Property="Background" Value="#FF2A2A2A"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="#FF454545"/>
+                                <Setter Property="BorderBrush" Value="#FF373737"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -287,10 +288,10 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#FF454545"/>
+                                        <Setter Property="Background" Value="#FF373737"/>
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#FF606060"/>
+                                        <Setter Property="Background" Value="#FF4E4E4E"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -302,9 +303,9 @@
 
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#FF353535"/>
+                                <Setter Property="Background" Value="#FF2A2A2A"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="#FF454545"/>
+                                <Setter Property="BorderBrush" Value="#FF373737"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -316,10 +317,10 @@
                                 </Setter>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#FF454545"/>
+                                        <Setter Property="Background" Value="#FF373737"/>
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Background" Value="#FF606060"/>
+                                        <Setter Property="Background" Value="#FF4E4E4E"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -331,7 +332,7 @@
                             <Style TargetType="{x:Type Button}">
                                 <Setter Property="Background" Value="#FF713535"/>
                                 <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="BorderBrush" Value="#FF454545"/>
+                                <Setter Property="BorderBrush" Value="#FF373737"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="{x:Type Button}">
@@ -354,8 +355,8 @@
                     </Button>
                 </Grid>
 
-                <Border BorderBrush="#FF404040" BorderThickness="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2">
-                    <DataGrid x:Name="TransparentBlockView" RowBackground="#FF191919"  VerticalAlignment="Stretch" VerticalGridLinesBrush="#FF1C1C1C" HorizontalGridLinesBrush="#FF1C1C1C" BorderThickness="0" HeadersVisibility="Column" HorizontalAlignment="Stretch" Background="#FF191919" AutoGenerateColumns="False" IsReadOnly="True">
+                <Border BorderBrush="#FF323232" BorderThickness="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2">
+                    <DataGrid x:Name="TransparentBlockView" RowBackground="#FF141414"  VerticalAlignment="Stretch" VerticalGridLinesBrush="#FF161616" HorizontalGridLinesBrush="#FF161616" BorderThickness="0" HeadersVisibility="Column" HorizontalAlignment="Stretch" Background="#FF141414" AutoGenerateColumns="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Block name" Width="*" Binding="{Binding BlockName}">
                                 <DataGridTextColumn.ElementStyle>
@@ -368,25 +369,25 @@
                                 </DataGridTextColumn.ElementStyle>
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="{x:Type DataGridCell}">
-                                        <Setter Property="Background" Value="#FF1C1C1C" />
+                                        <Setter Property="Background" Value="#FF161616" />
                                         <Setter Property="Foreground" Value="#FFEEEEEE" />
                                         <Setter Property="BorderThickness" Value="0" />
-                                        <Setter Property="BorderBrush" Value="#FF1C1C1C" />
+                                        <Setter Property="BorderBrush" Value="#FF161616" />
                                         <Setter Property="Height" Value="25" />
 
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FF303030" />
+                                                <Setter Property="Background" Value="#FF252525" />
                                             </Trigger>
                                             <Trigger Property="DataGridCell.IsSelected" Value="True">
-                                                <Setter Property="Background" Value="#FF353535" />
+                                                <Setter Property="Background" Value="#FF2A2A2A" />
                                             </Trigger>
                                             <MultiTrigger>
                                                 <MultiTrigger.Conditions>
                                                     <Condition Property="IsMouseOver" Value="True"/>
                                                     <Condition Property="DataGridCell.IsSelected" Value="True"/>
                                                 </MultiTrigger.Conditions>
-                                                <Setter Property="Background" Value="#FF424242"/>
+                                                <Setter Property="Background" Value="#FF343434"/>
                                             </MultiTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -399,9 +400,9 @@
                 <Button x:Name="TransparentBlocksResetToDefault" Content="Reset to default" Foreground="#FFEEEEEE" Grid.Row="3" Margin="0, 3, 0, 0" Width="100" Height="25" HorizontalAlignment="Right" Click="TransparentBlocksResetToDefault_Click" >
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF3F3F3C"/>
+                            <Setter Property="Background" Value="#FF31312F"/>
                             <Setter Property="BorderThickness" Value="1"/>
-                            <Setter Property="BorderBrush" Value="#FF454545"/>
+                            <Setter Property="BorderBrush" Value="#FF373737"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -413,10 +414,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF4C4C49"/>
+                                    <Setter Property="Background" Value="#FF3C3C39"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF595957"/>
+                                    <Setter Property="Background" Value="#FF474745"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -427,7 +428,7 @@
 
         <Label Content="Y level settings" FontWeight="Bold" Margin="-4, 10, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFEEEEEE" FontSize="15" Grid.Row="1" />
 
-        <Border BorderBrush="#FF606060" BorderThickness="0, 1, 0, 0" Grid.Row="2" HorizontalAlignment="Stretch"/>
+        <Border BorderBrush="#FF4E4E4E" BorderThickness="0, 1, 0, 0" Grid.Row="2" HorizontalAlignment="Stretch"/>
 
         <Grid Grid.Row="3" Margin="0, 15, 0, 15">
             <Grid.ColumnDefinitions>
@@ -442,9 +443,9 @@
                 </Grid.RowDefinitions>
 
                 <RadioButton x:Name="HeightmapRadioButton" GroupName="YLevel" Content="Heightmap" Foreground="#FFEEEEEE" IsChecked="True" Grid.Row="0" Checked="HeightmapRadioButton_Checked" />
-                <ComboBox x:Name="HeightmapComboBox" Height="25" Grid.Row="1" IsReadOnly="True" VerticalContentAlignment="Center" Padding="5, 0, 0, 0" BorderThickness="1" BorderBrush="#FF454545" Margin="0, 7, 0, 0" HorizontalAlignment="Stretch">
+                <ComboBox x:Name="HeightmapComboBox" Height="25" Grid.Row="1" IsReadOnly="True" VerticalContentAlignment="Center" Padding="5, 0, 0, 0" BorderThickness="1" BorderBrush="#FF373737" Margin="0, 7, 0, 0" HorizontalAlignment="Stretch">
                     <ComboBox.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FF303030" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FF252525" />
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                         <Style x:Key="FocusVisual">
                             <Setter Property="Control.Template">
@@ -465,29 +466,29 @@
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
-                        <SolidColorBrush x:Key="ComboBox.Static.Background" Color="#FF303030" />
-                        <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FF656565"/>
+                        <SolidColorBrush x:Key="ComboBox.Static.Background" Color="#FF252525" />
+                        <SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FF535353"/>
                         <SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF"/>
                         <SolidColorBrush x:Key="ComboBox.Static.Editable.Border" Color="#FFABADB3"/>
                         <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Background" Color="Transparent"/>
                         <SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Border" Color="Transparent"/>
                         <SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="#FFCCCCCC"/>
-                        <SolidColorBrush x:Key="ComboBox.MouseOver.Background" Color="#FF404040" />
+                        <SolidColorBrush x:Key="ComboBox.MouseOver.Background" Color="#FF323232" />
                         <SolidColorBrush x:Key="ComboBox.MouseOver.Border" Color="#FF909090"/>
                         <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Background" Color="#FFFFFFFF"/>
                         <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Border" Color="#FF7EB4EA"/>
-                        <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" Color="#FF303030" />
+                        <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" Color="#FF252525" />
                         <SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF7EB4EA"/>
                         <SolidColorBrush x:Key="ComboBox.Pressed.Glyph" Color="#FF909090"/>
-                        <SolidColorBrush x:Key="ComboBox.Pressed.Background" Color="#FF303030" />
+                        <SolidColorBrush x:Key="ComboBox.Pressed.Background" Color="#FF252525" />
                         <SolidColorBrush x:Key="ComboBox.Pressed.Border" Color="#FF569DE5"/>
                         <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Background" Color="#FFFFFFFF"/>
                         <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FF569DE5"/>
-                        <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Background" Color="#FF303030" />
+                        <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Background" Color="#FF252525" />
                         <SolidColorBrush x:Key="ComboBox.Pressed.Editable.Button.Border" Color="#FF569DE5"/>
-                        <SolidColorBrush x:Key="ComboBox.Disabled.Glyph" Color="#FF454545"/>
-                        <SolidColorBrush x:Key="ComboBox.Disabled.Background" Color="#404040"/>
-                        <SolidColorBrush x:Key="ComboBox.Disabled.Border" Color="#FF656565"/>
+                        <SolidColorBrush x:Key="ComboBox.Disabled.Glyph" Color="#FF373737"/>
+                        <SolidColorBrush x:Key="ComboBox.Disabled.Background" Color="#323232"/>
+                        <SolidColorBrush x:Key="ComboBox.Disabled.Border" Color="#FF535353"/>
                         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Background" Color="#FFFFFFFF"/>
                         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Border" Color="#FFBFBFBF"/>
                         <SolidColorBrush x:Key="ComboBox.Disabled.Editable.Button.Background" Color="Transparent"/>
@@ -638,8 +639,8 @@
                     </ComboBox.Template>
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
-                            <Setter Property="Background" Value="#FF303030"/>
-                            <Setter Property="BorderBrush" Value="#FF303030"/>
+                            <Setter Property="Background" Value="#FF252525"/>
+                            <Setter Property="BorderBrush" Value="#FF252525"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Padding" Value="5, 0, 0, 0"/>
                             <Setter Property="Height" Value="25"/>
@@ -675,7 +676,7 @@
 
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF303030"/>
+                            <Setter Property="Background" Value="#FF252525"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -687,10 +688,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF505050"/>
+                                    <Setter Property="Background" Value="#FF414141"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF656565"/>
+                                    <Setter Property="Background" Value="#FF535353"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

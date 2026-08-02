@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d"
-             Background="#FF1C1C1C" Height="25" Width="Auto">
+             Background="#FF161616" Height="25" Width="Auto">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -18,13 +18,14 @@
         </Grid.ColumnDefinitions>
 
         <Grid.Resources>
-            <SolidColorBrush x:Key="LabelColor">#FFAFAFAF</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelSeperatorColor">#FF808080</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelInformationColor">White</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelInformationDarkColor">#FFCDCDCD</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelNumberColor">#FF95ECF9</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelCoordsColor">#FFB2FFB6</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelSizeColor">#FFDEAA</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelColor">#FF9AA5BC</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelSeperatorColor">#FF6B7689</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelInformationColor">#FFC78BFF</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelInformationDarkColor">#FFC2CBDD</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelNumberColor">#FF3FD5F5</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelCoordsColor">#FF4BE06B</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelSizeColor">#FFFFB43C</SolidColorBrush>
+            <SolidColorBrush x:Key="LabelVersionColor">#FFFF6FB0</SolidColorBrush>
         </Grid.Resources>
 
         <TextBlock Padding="10,4,0,0" Grid.Column="0">
@@ -43,13 +44,13 @@
         <Label Content="|" FontSize="13" Foreground="{DynamicResource LabelSeperatorColor}" Padding="1,2,0,0" Grid.Column="3" HorizontalAlignment="Center" />
 
         <TextBlock Padding="0,4,0,0" Grid.Column="4">
-                <Run Text="Cursor over block:" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorHiddenLabel" Text=" None" Foreground="{DynamicResource LabelInformationColor}"/>
+                <Run Text="Cursor over block:" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorHiddenLabel" Text=" None" Foreground="{DynamicResource LabelInformationDarkColor}"/>
                 <Run x:Name="CursorBeginLabel" Text="(" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorOverBlockLabel" Foreground="{DynamicResource LabelCoordsColor}"/><Run x:Name="CursorMiddleLabel" Text=") in chunk: (" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorOverChunkLabel" Foreground="{DynamicResource LabelCoordsColor}"/><Run x:Name="CursorEndLabel" Text=")" Foreground="{DynamicResource LabelColor}"/>
         </TextBlock>
 
         <TextBlock x:Name="WorldTextBlock" Padding="0,4,0,0" Grid.Column="6">
                 <Run Text="World name: " Foreground="{DynamicResource LabelColor}"/><Run x:Name="WorldNameLabel" Foreground="{DynamicResource LabelInformationColor}"/><Run Text="; Version:" Foreground="{DynamicResource LabelColor}"/>
-                <Run x:Name="WorldVersionLabel" Foreground="{DynamicResource LabelInformationColor}"/>
+                <Run x:Name="WorldVersionLabel" Foreground="{DynamicResource LabelVersionColor}"/>
         </TextBlock>
     </Grid>
 </UserControl>

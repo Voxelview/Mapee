@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d" 
              UseLayoutRounding="True"
-             BorderBrush="#FF3F3F3F" BorderThickness="1"
-             Background="#FF1C1C1C" 
+             BorderBrush="#FF313131" BorderThickness="1"
+             Background="#FF161616" 
              Width="Auto" Height="35" Loaded="UserControl_Loaded">
 
     <UserControl.Effect>

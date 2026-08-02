@@ -1,6 +1,7 @@
 ﻿using Mapper.Gui.Controller;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
 
 namespace Mapper.Gui.Logic
@@ -31,6 +32,9 @@ namespace Mapper.Gui.Logic
             AddPainter(ScenePainter);
 
             AddScaleEvents();
+
+            GraphicsCanvas.SizeChanged += GraphicsCanvas_SizeChanged;
+
             Scene.WorldBeginChange += Scene_WorldBeginChange;
             Scene.WorldChanged += Scene_WorldChanged;
 
@@ -72,6 +76,11 @@ namespace Mapper.Gui.Logic
         {
             Scene.Map.ScaleBehaviour.OffsetChanged -= ScaleBehaviour_OffsetChanged;
             Scene.Map.ScaleBehaviour.ZoomChanged -= ScaleBehaviour_ZoomChanged;
+        }
+
+        private void GraphicsCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Render();
         }
 
         private void ScaleBehaviour_OffsetChanged(object? sender, EventArgs e)

@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
-        BorderBrush="#FF454545"
+        BorderBrush="#FF373737"
         BorderThickness="1"
         ResizeMode="NoResize"
         UseLayoutRounding="True"
-        Icon="/Resources/Icon/ToolButton/ExportAsImage_64px.ico"
+        Icon="{DynamicResource Export}"
         Template="{DynamicResource CustomWindowFrameTemplate}"
-        Title="Save as image" Height="325" Width="387" Background="#FF232323" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Save as image" Height="325" Width="387" Background="#FF1B1B1B" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" CornerRadius="0" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
@@ -21,6 +21,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Template/CustomWindowFrameTemplate.xaml"/>
+                <ResourceDictionary Source="/Resources/Icon/ToolButtonIcons.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -45,7 +46,7 @@
 
         <TextBlock x:Name="DescriptionLabel" Foreground="#FFBBBBBB" Text="Description:" FontStyle="Italic" TextWrapping="WrapWithOverflow" Margin="25, 5, 10, 0" Grid.Row="1" />
 
-        <Border BorderBrush="#FF606060" BorderThickness="0, 1, 0, 0" Grid.Row="2" HorizontalAlignment="Left">
+        <Border BorderBrush="#FF4E4E4E" BorderThickness="0, 1, 0, 0" Grid.Row="2" HorizontalAlignment="Left">
             <Grid x:Name="FullResolutionPanel" Margin="5, 8, 0, 0" Width="350">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -80,11 +81,11 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border Width="100" Height="25" BorderThickness="1" BorderBrush="#FF707070" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+            <Border Width="100" Height="25" BorderThickness="1" BorderBrush="#FF5C5C5C" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <Button x:Name="SaveButton" Content="Save as..." Width="100" Height="25" Foreground="#FFCCCCCC" Click="SaveButton_Click">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF353535"/>
+                            <Setter Property="Background" Value="#FF2A2A2A"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -96,10 +97,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF555555"/>
+                                    <Setter Property="Background" Value="#FF454545"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF707070"/>
+                                    <Setter Property="Background" Value="#FF5C5C5C"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

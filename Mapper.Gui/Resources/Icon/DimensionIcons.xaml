@@ -1,0 +1,96 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- The dimension buttons' art, converted from the 25x25 pixel-art SVGs in
+         MapeeWeb\src\mapee.theme\src\icons\button\dimension by scratchpad convert-dimensions.ps1.
+         Every rect is on whole coordinates and the slot in DimensionButtonPanel is 25 square,
+         so at 100% each cell is exactly one pixel; the Image there draws Aliased to keep them
+         square when a scaled display puts the grid on halves. Each group below is one flat
+         colour, which is why a whole group can be a single drawing. -->
+
+    <RectangleGeometry x:Key="DimensionIconGrid" Rect="0,0,25,25"/>
+
+    <DrawingImage x:Key="Overworld">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource DimensionIconGrid}"/>
+                <GeometryDrawing Brush="#FF6B9FFF"
+                                 Geometry="M0,0H25V2H0Z M0,2H20V3H0Z M22,2H23V3H22Z M0,3H2V5H0Z M0,5H3V6H0Z M0,6H9V7H0Z M6,5H15V6H6Z
+                                           M7,3H19V5H7Z M13,6H15V7H13Z M23,2H25V7H23Z"/>
+                <GeometryDrawing Brush="#FF96BEFF" Geometry="M0,7H9V8H0Z M0,8H15V10H0Z M13,7H15V8H13Z M23,7H25V10H23Z"/>
+                <GeometryDrawing Brush="#FFC1DDFF"
+                                 Geometry="M0,10H15V11H0Z M0,11H18V13H0Z M13,13H18V14H13Z M13,14H16V15H13Z M20,11H25V14H20Z
+                                           M23,10H25V11H23Z"/>
+                <GeometryDrawing Brush="#FFFFF4B4" Geometry="M19,3H23V5H19Z M20,2H22V3H20Z"/>
+                <GeometryDrawing Brush="#FFFFFFFF" Geometry="M2,3H7V5H2Z M3,5H6V6H3Z M9,6H13V8H9Z"/>
+                <GeometryDrawing Brush="#FF46BE28" Geometry="M2,17H6V18H2Z M9,13H13V14H9Z M15,5H23V6H15Z M17,7H19V8H17Z M20,16H24V17H20Z"/>
+                <GeometryDrawing Brush="#FF18821E"
+                                 Geometry="M2,18H6V19H2Z M9,14H13V16H9Z M15,7H17V8H15Z M15,6H23V7H15Z M15,8H23V11H15Z M19,7H23V8H19Z
+                                           M21,17H24V18H21Z"/>
+                <GeometryDrawing Brush="#FF5E3E1E" Geometry="M18,11H20V17H18Z"/>
+                <GeometryDrawing Brush="#FF6EDC46" Geometry="M0,13H9V16H0Z M13,15H18V16H13Z M16,14H18V15H16Z M20,14H25V16H20Z"/>
+                <GeometryDrawing Brush="#FF3CB33C"
+                                 Geometry="M0,18H1V20H0Z M0,17H2V18H0Z M0,16H7V17H0Z M2,21H4V23H2Z M2,19H11V20H2Z M5,21H7V23H5Z
+                                           M6,17H7V18H6Z M6,18H11V19H6Z M8,16H18V17H8Z M8,17H20V18H8Z M9,22H15V24H9Z M12,18H20V19H12Z
+                                           M12,19H25V20H12Z M18,21H23V23H18Z M21,18H25V19H21Z M24,16H25V18H24Z"/>
+                <GeometryDrawing Brush="#FFFFDC5A" Geometry="M1,18H2V19H1Z M4,21H5V22H4Z M7,16H8V17H7Z M11,18H12V19H11Z M15,22H16V23H15Z M20,17H21V18H20Z"/>
+                <GeometryDrawing Brush="#FFE65A5A" Geometry="M1,19H2V20H1Z M4,22H5V23H4Z M7,17H8V18H7Z M11,19H12V20H11Z M15,23H16V24H15Z M20,18H21V19H20Z"/>
+                <GeometryDrawing Brush="#FF248C28"
+                                 Geometry="M0,20H25V21H0Z M0,21H2V23H0Z M0,23H9V24H0Z M0,24H25V25H0Z M7,22H9V23H7Z M7,21H18V22H7Z
+                                           M16,22H18V23H16Z M16,23H25V24H16Z M23,21H25V23H23Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="TheNether">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource DimensionIconGrid}"/>
+                <GeometryDrawing Brush="#FF922E2C"
+                                 Geometry="M9,3H12V11H9Z M13,3H20V11H13Z M3,5H5V13H3Z M6,5H8V12H6Z M20,5H22V11H20Z M0,6H2V20H0Z
+                                           M12,6H13V11H12Z M22,6H23V11H22Z M8,8H9V11H8Z M23,8H25V11H23Z M5,9H6V12H5Z M3,14H11V19H3Z
+                                           M14,14H19V19H14Z M22,14H25V19H22Z M3,19H5V20H3Z"/>
+                <GeometryDrawing Brush="#FFA20000"
+                                 Geometry="M0,0H25V3H0Z M0,3H9V5H0Z M20,3H25V5H20Z M0,5H3V6H0Z M22,5H25V6H22Z M23,6H25V8H23Z M5,19H25V21H5Z
+                                           M8,21H25V22H8Z M9,22H25V23H9Z M11,23H25V25H11Z"/>
+                <GeometryDrawing Brush="#FF230B0F" Geometry="M8,11H25V14H8Z M5,12H8V14H5Z M3,13H5V14H3Z M11,14H14V19H11Z M19,14H22V19H19Z"/>
+                <GeometryDrawing Brush="#FF690000"
+                                 Geometry="M2,1H3V2H2Z M16,1H17V2H16Z M5,4H6V5H5Z M22,4H23V5H22Z M17,0H18V1H17Z M11,0H12V1H11Z
+                                           M20,1H21V2H20Z M7,2H8V3H7Z M24,3H25V4H24Z"/>
+                <GeometryDrawing Brush="#FFBC4E40" Geometry="M4,15H5V16H4Z M9,16H10V17H9Z M16,15H17V16H16Z M23,16H24V17H23Z M7,6H8V7H7Z M15,4H16V5H15Z"/>
+                <GeometryDrawing Brush="#FF16070A" Geometry="M10,5H11V6H10Z M16,7H17V8H16Z M4,6H5V7H4Z"/>
+                <GeometryDrawing Brush="#FF701C1A" Geometry="M18,15H19V16H18Z M6,16H7V17H6Z M24,15H25V16H24Z M13,5H14V6H13Z M19,7H20V8H19Z M10,8H11V9H10Z"/>
+                <GeometryDrawing Brush="#FFFF4900"
+                                 Geometry="M12,3H13V6H12Z M5,5H6V9H5Z M8,5H9V8H8Z M2,6H3V25H2Z M0,20H2V25H0Z M3,20H5V25H3Z M5,21H8V25H5Z
+                                           M8,22H9V25H8Z M9,23H11V25H9Z"/>
+                <GeometryDrawing Brush="#FFFFBE37" Geometry="M1,24H2V25H1Z M4,24H5V25H4Z M6,24H7V25H6Z M9,24H10V25H9Z M12,4H13V5H12Z"/>
+                <GeometryDrawing Brush="#FFFF6500" Geometry="M10,12H11V13H10Z M18,13H19V14H18Z M21,12H22V13H21Z"/>
+                <GeometryDrawing Brush="#FFFF7A3D" Geometry="M6,12H7V13H6Z M17,11H18V12H17Z M9,13H10V14H9Z"/>
+                <GeometryDrawing Brush="#FFB83028" Geometry="M12,20H13V21H12Z M15,22H16V23H15Z M9,21H10V22H9Z M19,23H20V24H19Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="TheEnd">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource DimensionIconGrid}"/>
+                <GeometryDrawing Brush="#FF5B16A1"
+                                 Geometry="M0,0H25V5H0Z M0,5H3V16H0Z M6,5H25V6H6Z M6,6H19V9H6Z M22,6H25V16H22Z M6,9H8V16H6Z M11,9H19V11H11Z
+                                           M11,11H14V16H11Z M17,11H19V16H17Z M0,16H2V25H0Z M23,16H25V25H23Z M2,18H3V25H2Z M3,19H4V25H3Z
+                                           M22,19H23V25H22Z M4,20H5V25H4Z M20,20H22V25H20Z M5,21H8V25H5Z M16,21H20V25H16Z M8,22H16V25H8Z"/>
+                <GeometryDrawing Brush="#FFD3BAFF"
+                                 Geometry="M2,1H3V2H2Z M9,2H10V3H9Z M16,1H17V2H16Z M21,3H22V4H21Z M13,4H14V5H13Z M0,3H1V4H0Z M6,0H7V1H6Z
+                                           M18,4H19V5H18Z M24,1H25V2H24Z M11,1H12V2H11Z"/>
+                <GeometryDrawing Brush="#FFEADEFF" Geometry="M4,4H5V5H4Z M20,5H21V6H20Z M9,8H10V9H9Z M15,10H16V11H15Z"/>
+                <GeometryDrawing Brush="#FFF8FB95" Geometry="M2,16H23V18H2Z M3,18H23V19H3Z M4,19H22V20H4Z M5,20H20V21H5Z M8,21H16V22H8Z"/>
+                <GeometryDrawing Brush="#FFD2D580" Geometry="M5,17H6V18H5Z M12,19H13V20H12Z M18,17H19V18H18Z M9,20H10V21H9Z"/>
+                <GeometryDrawing Brush="#FF000000" Geometry="M3,5H6V16H3Z M19,6H22V16H19Z M8,9H11V16H8Z M14,11H17V16H14Z"/>
+                <GeometryDrawing Brush="#FF2B1450" Geometry="M3,5H4V16H3Z M19,6H20V16H19Z M8,9H9V16H8Z M14,11H15V16H14Z"/>
+                <GeometryDrawing Brush="#FF9A9C68" Geometry="M15,19H16V20H15Z M7,21H8V22H7Z M10,17H11V18H10Z M20,18H21V19H20Z"/>
+                <GeometryDrawing Brush="#FF7A3FB0" Geometry="M6,14H8V16H6Z M6,13H7V14H6Z M17,15H19V17H17Z M18,14H19V15H18Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+</ResourceDictionary>

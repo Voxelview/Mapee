@@ -8,7 +8,7 @@
         Template="{DynamicResource CustomWindowFrameTemplate}"
         ResizeMode="CanResize"
         UseLayoutRounding="True"
-        BorderBrush="#FF303030"
+        BorderBrush="#FF252525"
         BorderThickness="1"
         Background="Transparent"
         WindowStartupLocation="CenterScreen"
@@ -43,7 +43,7 @@
         <DockPanel x:Name="VerticalScrollBarContainer" LastChildFill="True" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" />
         <DockPanel x:Name="FooterGrid" LastChildFill="True" Grid.Row="2" Grid.Column="0" />
 
-        <DockPanel LastChildFill="True" Background="#FF141414" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" />
-        <DockPanel LastChildFill="True" Background="#FF1C1C1C" Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" />
+        <DockPanel LastChildFill="True" Background="#FF101010" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" />
+        <DockPanel LastChildFill="True" Background="#FF161616" Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" />
     </Grid>
 </Window>

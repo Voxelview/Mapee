@@ -3,7 +3,7 @@
 
     <Style TargetType="TextBox">
         <Setter Property="Foreground" Value="#FFEEEEEE"/>
-        <Setter Property="Background" Value="#FF1C1C1C"/>
+        <Setter Property="Background" Value="#FF161616"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
 
         <Setter Property="Template">
@@ -17,10 +17,10 @@
                             <Setter Property="Opacity" TargetName="border" Value="0.56"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="BorderBrush" TargetName="border" Value="#FF606060"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="#FF4E4E4E"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="False">
-                            <Setter Property="BorderBrush" TargetName="border" Value="#FF454545"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="#FF373737"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
                             <Setter Property="BorderBrush" TargetName="border" Value="#FF858585"/>

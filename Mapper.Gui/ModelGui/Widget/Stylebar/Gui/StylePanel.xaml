@@ -21,8 +21,8 @@
     </UserControl.Resources>
 
     <Grid>
-        <Border x:Name="MainBorder" Margin="1, 1, 1, 1" BorderBrush="#FF4F4F4F" BorderThickness="1">
-            <Grid Width="68" Height="73" Background="#FF282828">
+        <Border x:Name="MainBorder" Margin="1, 1, 1, 1" BorderBrush="#FF404040" BorderThickness="1">
+            <Grid Width="68" Height="73" Background="#FF1F1F1F">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="18" />
                     <RowDefinition Height="*" />
@@ -30,7 +30,7 @@
 
                 <Label x:Name="StyleLabel" FontSize="11" FontWeight="SemiBold" Padding="0" Margin="0, 1, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFEEEEEE" Grid.Row="0" />
 
-                <Border x:Name="ImageContainer" BorderThickness="0, 1, 0, 0" BorderBrush="#FF4F4F4F" Margin="0" Grid.Row="1">
+                <Border x:Name="ImageContainer" BorderThickness="0, 1, 0, 0" BorderBrush="#FF404040" Margin="0" Grid.Row="1">
                     <Image x:Name="StyleIcon" RenderOptions.BitmapScalingMode="HighQuality" Stretch="Fill" Width="68" Height="68" MouseEnter="StyleIcon_MouseEnter" MouseLeave="StyleIcon_MouseLeave" MouseMove="StyleIcon_MouseMove" >
                         <Image.Style>
                             <Style TargetType="Image">

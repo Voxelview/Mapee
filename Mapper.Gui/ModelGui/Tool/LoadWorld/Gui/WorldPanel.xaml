@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              HorizontalAlignment="Stretch"
              Cursor="Hand"
-             Background="#FF1C1C1C" Height="63" BorderThickness="0">
+             Background="#FF161616" Height="63" BorderThickness="0">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -20,7 +20,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border BorderThickness="1" BorderBrush="#FF404040" Margin="9, 5, 9, 6">
+            <Border BorderThickness="1" BorderBrush="#FF323232" Margin="9, 5, 9, 6">
                 <Image x:Name="WorldIcon" Stretch="Fill" Width="50" Height="50" Margin="0" />
             </Border>
 
@@ -41,6 +41,6 @@
             </Grid>
         </Grid>
 
-        <Border BorderBrush="#FF2E2E2E" Grid.Row="1" Margin="30, 0, 30, 0" BorderThickness="0, 0, 0, 1" Panel.ZIndex="100" VerticalAlignment="Bottom" />
+        <Border BorderBrush="#FF242424" Grid.Row="1" Margin="30, 0, 30, 0" BorderThickness="0, 0, 0, 1" Panel.ZIndex="100" VerticalAlignment="Bottom" />
     </Grid>
 </UserControl>

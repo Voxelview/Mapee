@@ -102,7 +102,7 @@ namespace Mapper.Gui
         }
         private void SetFullScreenResolutionDescritpion()
         {
-            string description = "Saves the image as one pixel per block. Gridlines will note be visible. Image size can be rather large.";
+            string description = "Saves the image as one pixel per block. Gridlines will not be visible. Image size can be rather large.";
 
             if (DescriptionLabel is null) return;
             DescriptionLabel.Text = $"Description: {description}";

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d" 
-             Background="#FF141414"
+             Background="#FF101010"
              Width="Auto" Height="Auto">
     
     <UserControl.Resources>

@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
         Template="{DynamicResource CustomWindowFrameTemplate}"
-        Icon="/Resources/Icon/ToolButton/RenderSettings_64px.ico"
-        BorderBrush="#FF454545"
+        Icon="{DynamicResource Appearance}"
+        BorderBrush="#FF373737"
         BorderThickness="1"
         UseLayoutRounding="True"
-        Title="Render settings" Height="360" Width="450"  Background="#FF232323" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Render settings" Height="360" Width="450"  Background="#FF1B1B1B" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
 
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" CornerRadius="0" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
@@ -20,6 +20,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Template/CustomWindowFrameTemplate.xaml"/>
+                <ResourceDictionary Source="/Resources/Icon/ToolButtonIcons.xaml"/>
                 <ResourceDictionary Source="/Resources/Template/TextBoxStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -40,7 +41,7 @@
             </Grid.RowDefinitions>
 
             <Label Content="Miscellaneous settings" FontWeight="Bold" Margin="0, 8, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFEEEEEE" FontSize="15" Grid.Row="0" />
-            <Border BorderBrush="#FF606060" BorderThickness="0, 1, 0, 0" Grid.Row="1" HorizontalAlignment="Stretch"/>
+            <Border BorderBrush="#FF4E4E4E" BorderThickness="0, 1, 0, 0" Grid.Row="1" HorizontalAlignment="Stretch"/>
 
             <Grid Grid.Row="2" Margin="0, 7, 0, 0">
                 <Grid.ColumnDefinitions>
@@ -78,7 +79,7 @@
             </Grid.RowDefinitions>
 
             <Label Content="Background" FontWeight="Bold" Margin="0, 10, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFEEEEEE" FontSize="15" Grid.Row="0" />
-            <Border BorderBrush="#FF606060" BorderThickness="0, 1, 0, 0" Grid.Row="1" HorizontalAlignment="Stretch"/>
+            <Border BorderBrush="#FF4E4E4E" BorderThickness="0, 1, 0, 0" Grid.Row="1" HorizontalAlignment="Stretch"/>
 
             <Grid Margin="0, 10, 0, 0" Grid.Row="3">
                 <Grid.ColumnDefinitions>
@@ -107,7 +108,7 @@
 
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF303030"/>
+                            <Setter Property="Background" Value="#FF252525"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -119,10 +120,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF505050"/>
+                                    <Setter Property="Background" Value="#FF414141"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF656565"/>
+                                    <Setter Property="Background" Value="#FF535353"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>

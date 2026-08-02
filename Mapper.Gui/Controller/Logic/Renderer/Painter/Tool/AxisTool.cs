@@ -13,14 +13,17 @@ namespace Mapper.Gui.Logic
         public Pen XAxisPen { get; set; }
         public Pen ZAxisPen { get; set; }
 
+        public Pen XAxisHaloPen { get; set; }
+        public Pen ZAxisHaloPen { get; set; }
+
         public Brush TextBackgroundBrush { get; set; }
         public Brush XTextBrush { get; set; }
         public Brush ZTextBrush { get; set; }
 
         public Thickness Padding { get; set; } = new Thickness(97, 45, 5, 0);
 
-        private static readonly Color X_AXIS_COLOR = Color.FromRgb(240, 25, 0);
-        private static readonly Color Z_AXIS_COLOR = Color.FromRgb(43, 217, 255);
+        private static readonly Color X_AXIS_COLOR = Color.FromRgb(255, 48, 24);
+        private static readonly Color Z_AXIS_COLOR = Color.FromRgb(64, 226, 255);
 
         private const string POS_X_LABEL = "+X [East]";
         private const string Neg_X_LABEL = "-X [West]";
@@ -33,11 +36,14 @@ namespace Mapper.Gui.Logic
         {
             Scene = scene;
 
-            XAxisPen = new Pen(new SolidColorBrush(X_AXIS_COLOR), 3);
+            XAxisPen = new Pen(new SolidColorBrush(X_AXIS_COLOR), 4);
             XAxisPen.Freeze();
 
-            ZAxisPen = new Pen(new SolidColorBrush(Z_AXIS_COLOR), 3);
+            ZAxisPen = new Pen(new SolidColorBrush(Z_AXIS_COLOR), 4);
             ZAxisPen.Freeze();
+
+            XAxisHaloPen = PenUtilities.CreateHaloPen(XAxisPen);
+            ZAxisHaloPen = PenUtilities.CreateHaloPen(ZAxisPen);
 
             TextBackgroundBrush = new SolidColorBrush(Color.FromArgb(248, 24, 24, 24));
             TextBackgroundBrush.Freeze();
@@ -99,8 +105,14 @@ namespace Mapper.Gui.Logic
 
         private void DrawLines(double x, double z, Rect areaOnScreen, DrawingContext drawingContext)
         {
-            drawingContext.DrawLine(ZAxisPen, new Point(z, 0), new Point(z, areaOnScreen.Height));
-            drawingContext.DrawLine(XAxisPen, new Point(0, x), new Point(areaOnScreen.Width, x));
+            Point zPoint0 = new(z, 0), zPoint1 = new(z, areaOnScreen.Height);
+            Point xPoint0 = new(0, x), xPoint1 = new(areaOnScreen.Width, x);
+
+            drawingContext.DrawLine(ZAxisHaloPen, zPoint0, zPoint1);
+            drawingContext.DrawLine(XAxisHaloPen, xPoint0, xPoint1);
+
+            drawingContext.DrawLine(ZAxisPen, zPoint0, zPoint1);
+            drawingContext.DrawLine(XAxisPen, xPoint0, xPoint1);
         }
         private void DrawLabels(double x, double z, Rect areaOnScreen, DrawingContext drawingContext)
         {

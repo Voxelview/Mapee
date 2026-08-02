@@ -1,8 +1,6 @@
 ﻿using Mapper.Gui.Logic;
 using Mapper.Gui.Model;
-using System;
 using System.Collections.Generic;
-using System.Windows.Media.Imaging;
 
 namespace Mapper.Gui.Controller
 {
@@ -49,31 +47,31 @@ namespace Mapper.Gui.Controller
         {
             GridTool tool = new(ToolScene);
             Renderer.AddPainter(tool);
-            return CreateButton(tool, "Grid_22px.png", "Grid lines");
+            return CreateButton(tool, "Gridlines", "Grid lines");
         }
         private ToolButton CreateSlimeChunkButton() 
         {
             SlimeChunkTool tool = new(ToolScene, new SlimeChunkChecker(Renderer.Scene.Domain));
             Renderer.AddPainter(tool);
-            return CreateButton(tool, "Slime_22px.png", "Slime chunk viewer");
+            return CreateButton(tool, "SlimeChunks", "Slime chunk viewer");
         }
         private ToolButton CreateAxisButton() 
         {
             AxisTool tool = new(ToolScene);
             Renderer.AddPainter(tool);
-            return CreateButton(tool, "Axis_22px.png", "Cardinal (x; z) axes");
+            return CreateButton(tool, "CardinalAxis", "Cardinal (x; z) axes");
         }
         private ToolButton CreateChunkHighlightsButton()
         {
             HighlightChunkTool tool = new(ToolScene, RenderInvoker, Renderer.GraphicsCanvas);
             Renderer.AddPainter(tool);
-            return CreateButton(tool, "ChunkHighlight_22px.png", "Chunk cursor highlighter");
+            return CreateButton(tool, "HighlightChunk", "Chunk cursor highlighter");
         }
         private ToolButton CreateMeasureLengthButton()
         {
             MeasureLengthTool tool = new(ToolScene, RenderInvoker, Renderer.GraphicsCanvas);
             Renderer.AddPainter(tool);
-            return CreateButton(tool, "MeasureLength_22px.png", "Measure length");
+            return CreateButton(tool, "Measure", "Measure length");
         }
         private ToolButton CreateDayNightCycleButton() 
         {
@@ -81,7 +79,7 @@ namespace Mapper.Gui.Controller
             ToolButton output = new(tool)
             {
                 ToolTip = "Night mode",
-                Icon = new BitmapImage(new Uri("/Resources/Image/ToolButton/DayNightCycle_22px.png", UriKind.Relative))
+                Icon = ToolButtonIcons.Get("NightMode")
             };
 
             return output;
@@ -92,7 +90,7 @@ namespace Mapper.Gui.Controller
             ToolButton output = new(tool)
             {
                 ToolTip = "Go to position in world",
-                Icon = new BitmapImage(new Uri("/Resources/Image/ToolButton/GoTo_22px.png", UriKind.Relative))
+                Icon = ToolButtonIcons.Get("GoTo")
             };
 
             tool.Owner = output;
@@ -105,7 +103,7 @@ namespace Mapper.Gui.Controller
             ToolButton output = new(tool)
             {
                 ToolTip = "Export as image",
-                Icon = new BitmapImage(new Uri("/Resources/Image/ToolButton/ExportAsImage_22px.png", UriKind.Relative))
+                Icon = ToolButtonIcons.Get("Export")
             };
 
             return output;
@@ -115,7 +113,7 @@ namespace Mapper.Gui.Controller
             FilterTool tool = new(Renderer.Scene);
             ToolButton output = new(tool)
             {
-                Icon = new BitmapImage(new Uri("/Resources/Image/ToolButton/Filter_22px.png", UriKind.Relative)),
+                Icon = ToolButtonIcons.Get("BlockFilter"),
                 Name = "Block filter",
                 ToolTip = "Filter blocks"
             };
@@ -127,7 +125,7 @@ namespace Mapper.Gui.Controller
             RenderSettingsTool tool = new(Renderer.Scene);
             ToolButton output = new(tool)
             {
-                Icon = new BitmapImage(new Uri("/Resources/Image/ToolButton/RenderSettings_22px.png", UriKind.Relative)),
+                Icon = ToolButtonIcons.Get("Appearance"),
                 Name = "Render settings",
                 ToolTip = "Change render settings"
             };
@@ -139,21 +137,21 @@ namespace Mapper.Gui.Controller
             BrowseTool tool = new(Renderer.Scene, MainWindow);
             ToolButton output = new(tool)
             {
-                Icon = new BitmapImage(new Uri("/Resources/Image/ToolButton/LoadWorld_22px.png", UriKind.Relative)),
-                Name = "Load world ",
-                ToolTip = "Load a new world"
+                Icon = ToolButtonIcons.Get("OpenWorld"),
+                Name = "Open world ",
+                ToolTip = "Open a new world"
             };
 
             return output;
         }
 
-        private ToolButton CreateButton(IToggleableTool tool, string iconName, string toolTip) 
+        private ToolButton CreateButton(IToggleableTool tool, string iconKey, string toolTip)
         {
             ToolButton output = new(tool)
             {
                 Tool = tool,
                 ToolTip = toolTip,
-                Icon = new BitmapImage(new Uri($"/Resources/Image/ToolButton/{iconName}", UriKind.Relative))
+                Icon = ToolButtonIcons.Get(iconKey)
             };
 
             AddInvoker(tool);

@@ -28,7 +28,11 @@
 
     <Grid>
         <DockPanel x:Name="ImageContainer" Width="25" Height="25">
-            <Image x:Name="DimensionIcon" Width="25" Height="25" RenderOptions.BitmapScalingMode="NearestNeighbor" MouseMove="DimensionIcon_MouseMove" MouseEnter="DimensionIcon_MouseEnter" MouseLeave="DimensionIcon_MouseLeave">
+            <!-- The three dimension scenes are vector now, drawn on a 25 grid into this 25 slot,
+                 so EdgeMode keeps their cells square when a scaled display lands the grid on
+                 halves. BitmapScalingMode still matters: the extra-dimensions button in this same
+                 slot is a bitmap. -->
+            <Image x:Name="DimensionIcon" Width="25" Height="25" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" MouseMove="DimensionIcon_MouseMove" MouseEnter="DimensionIcon_MouseEnter" MouseLeave="DimensionIcon_MouseLeave">
                 <Image.Style>
                     <Style TargetType="Image">
                         <Style.Triggers>
