@@ -196,14 +196,20 @@ namespace Mapper.Gui.Logic
 
             int index = 0;
             Span<Coords> queueSpan = queue.Span;
-            foreach (XzPoint regionPoint in LoadPattern.CreatePattern(range)) 
+            foreach (XzPoint regionPoint in LoadPattern.CreatePattern(range))
             {
-                if (!renderedScene.SceneParameter.RegionStore.Exists(regionPoint.ToCoords())) 
+                Coords regionCoords = regionPoint.ToCoords();
+
+                if (!renderedScene.SceneParameter.RegionStore.Exists(regionCoords))
+                {
+                    continue;
+                }
+                if (renderedScene.RenderedRegions.ContainsKey(new XzPoint(regionCoords.X, regionCoords.Z)))
                 {
                     continue;
                 }
 
-                queueSpan[index++] = regionPoint.ToCoords();
+                queueSpan[index++] = regionCoords;
             }
 
             queue = queue[..index];
