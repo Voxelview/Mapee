@@ -38,9 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="zlibnet">
-      <HintPath>..\Assemblies\zlibnet.dll</HintPath>
-    </Reference>
+    <None Include="..\Assemblies\deflate.dll" Link="deflate.dll" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
