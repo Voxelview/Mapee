@@ -1,4 +1,4 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <ControlTemplate x:Key="CustomWindowFrameTemplate" TargetType="{x:Type Window}">
@@ -9,13 +9,16 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Border BorderBrush="#FF252525" BorderThickness="0, 0, 0, 1" VerticalAlignment="Bottom">
+                <!-- One of the three seams that frame the map - see RailControl and
+                     InformationControl. They are deliberately the same brush: all three have a
+                     panel on one side and the map on the other, and they meet at corners. -->
+                <Border BorderBrush="#FF1D1F21" BorderThickness="0, 0, 0, 1" VerticalAlignment="Bottom">
                     <Grid x:Name="FramePanel" Grid.Row="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="34"/>
                         </Grid.RowDefinitions>
 
-                        <Grid Background="#FF161616" Margin="0, 0, 0, 1" Grid.Row="0">
+                        <Grid Background="#FF0F1012" Margin="0, 0, 0, 1" Grid.Row="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                                 <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -32,6 +35,18 @@
                             <Image Grid.Column="0" x:Name="WindowIcon" Source="{Binding Icon,RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" Margin="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" Width="18" Height="18" />
                             <Label Grid.Column="1" Content="{Binding Title,RelativeSource={RelativeSource FindAncestor,AncestorType=Window}}" Foreground="#FFE5E5E5" Margin="3, 0, 0, 0" Padding="5, 1, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
                             <Label Grid.Column="2" x:Name="SecondaryTitle" Content="" Foreground="#FFB1B1B1" Margin="1, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+
+                            <!-- Host for window-specific title bar controls, filled through
+                                 CustomFrameWindowInitializer.SetTitleBarContent. This template is
+                                 shared by five windows and only the map viewer puts anything here,
+                                 so it stays empty - and therefore invisible - everywhere else.
+                                 It sits in the existing star column, which keeps the caption
+                                 buttons on the column indices the initializer's siblings expect.
+                                 Anything placed here must swallow its own left-button-down:
+                                 FramePanel.MouseDown drags the window, so a Label or a Border
+                                 leaks the press into a window drag (and un-maximizes, if
+                                 maximized). Buttons, sliders and text boxes are safe. -->
+                            <ContentControl Grid.Column="3" x:Name="TitleBarContent" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0, 0, 8, 0" />
 
                             <Button x:Name="MinimizeButton" Grid.Column="4" Height="34" Width="45">
                                 <Image Source="/Resources/Image/WindowFrame/Minimize_16px.png" Stretch="None"/>
@@ -50,10 +65,10 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FF414141"/>
+                                                <Setter Property="Background" Value="#FF42454B"/>
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="#FF999999"/>
+                                                <Setter Property="Background" Value="#FF8B8F94"/>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -76,10 +91,10 @@
                                         </Setter>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#FF414141"/>
+                                                <Setter Property="Background" Value="#FF42454B"/>
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
-                                                <Setter Property="Background" Value="#FF999999"/>
+                                                <Setter Property="Background" Value="#FF8B8F94"/>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>

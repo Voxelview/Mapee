@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d"
              Cursor="Hand"
-             Width="27" Height="27">
+             UseLayoutRounding="True"
+             Width="33" Height="33">
     
     <UserControl.Effect>
         <DropShadowEffect Direction="-75" ShadowDepth="2" Opacity="5" BlurRadius="4" Color="Black"/>
@@ -27,12 +28,19 @@
     </UserControl.Style>
 
     <Grid>
-        <DockPanel x:Name="ImageContainer" Width="25" Height="25">
-            <!-- The three dimension scenes are vector now, drawn on a 25 grid into this 25 slot,
-                 so EdgeMode keeps their cells square when a scaled display lands the grid on
-                 halves. BitmapScalingMode still matters: the extra-dimensions button in this same
-                 slot is a bitmap. -->
-            <Image x:Name="DimensionIcon" Width="25" Height="25" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" MouseMove="DimensionIcon_MouseMove" MouseEnter="DimensionIcon_MouseEnter" MouseLeave="DimensionIcon_MouseLeave">
+        <!-- Tracks the icon exactly. It is the white wash the icon lightens through on hover, so
+             any bigger and you get a white frame around the art instead of the art brightening. -->
+        <DockPanel x:Name="ImageContainer" Width="29" Height="29">
+            <!-- 29 is the largest the art can be here: the selection ring is 2 thick and rides
+                 the panel's 33 edge, so 29 leaves it exactly its own 2 a side to sit in without
+                 overlapping the scene. Odd against an odd panel, so both gutters are whole.
+
+                 The three dimension scenes are vector, drawn on a 25 grid, so EdgeMode keeps
+                 their cells square when a scaled display lands the grid on halves - and it is
+                 doing more work at 29 than it was at 25, since 1.16 is not a whole-number scale
+                 and some cells come out a pixel wider than others. BitmapScalingMode still
+                 matters too: the extra-dimensions button in this same slot is a bitmap. -->
+            <Image x:Name="DimensionIcon" Width="29" Height="29" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" MouseMove="DimensionIcon_MouseMove" MouseEnter="DimensionIcon_MouseEnter" MouseLeave="DimensionIcon_MouseLeave">
                 <Image.Style>
                     <Style TargetType="Image">
                         <Style.Triggers>
@@ -48,6 +56,14 @@
             </Image>
         </DockPanel>
         
-        <Border x:Name="DimensionBorder" BorderBrush="Gold" Width="27" Height="27" Panel.ZIndex="110"/>
+        <!-- The accent's "selected" tone, shared with a toggled-on rail button and with the
+             style picker's ring - see ToolButtonHook.TurnedOn.DefaultBorder. It was WPF's named
+             Gold, which is a good deal brighter than anything else in the chrome and did not
+             belong to the accent at all.
+
+             Tracks the panel, so the ring rides the button's outer edge. Both are odd, as is the
+             29 artwork between them, which is what keeps every gutter a whole number: 33 - 29
+             leaves 2 a side, exactly the ring's own thickness. -->
+        <Border x:Name="DimensionBorder" BorderBrush="#FFE3B200" Width="33" Height="33" Panel.ZIndex="110"/>
     </Grid>
 </UserControl>

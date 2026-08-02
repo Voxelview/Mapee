@@ -3,22 +3,36 @@
 
     <Style x:Key="ToolButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border Background="{TemplateBinding Background}">
+                    <!-- The thickness is always 1 and the brush goes transparent at rest, so a
+                         button never changes size as it gains or loses its outline. -->
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <!-- These drive the buttons nothing else owns - zoom, position, the dimension button.
+             The rail's tools set their own brushes from ToolButtonHook, and a local value beats
+             a style trigger, so those are unaffected by what is set here. The four below are
+             copies of that hook's TurnedOff hover and press pairs, so the two paths agree; they
+             have to be updated alongside it, which is exactly what was missed when the accent
+             went from green to yellow and left these buttons hovering green on their own. -->
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF414141"/>
+                <Setter Property="Background" Value="#FF554200"/>
+                <Setter Property="BorderBrush" Value="#FFAC8700"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="#FF5C5C5C"/>
+                <Setter Property="Background" Value="#FF725900"/>
+                <Setter Property="BorderBrush" Value="#FFD2A500"/>
             </Trigger>
         </Style.Triggers>
     </Style>

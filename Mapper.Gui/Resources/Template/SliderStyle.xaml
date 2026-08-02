@@ -1,0 +1,100 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- A dialog slider, as opposed to the one ZoomControl keeps to itself. That one is tuned to
+         the title bar - a 1px track, no fill, a round knob sized to sit on the caption line - and
+         a dialog wants the opposite: a groove you can see at rest and a filled portion that says
+         how far along the value is without reading the box beside it.
+
+         Keyed, not implicit. Nothing else in this app uses a Slider, but an implicit style would
+         reach into any ControlTemplate that later grew one. -->
+
+    <Style x:Key="DialogSliderRepeatButton" TargetType="{x:Type RepeatButton}">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <!-- Transparent and not null: a bare Track leaves the groove inert, and
+                         clicking a slider anywhere along it should move the value. -->
+                    <Border Background="Transparent"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The half behind the thumb. Same hit-testing job as its sibling, plus the accent fill. -->
+    <Style x:Key="DialogSliderFilledRepeatButton" TargetType="{x:Type RepeatButton}"
+           BasedOn="{StaticResource DialogSliderRepeatButton}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border Background="Transparent">
+                        <Border Height="3" VerticalAlignment="Center" Background="#FFE3B200"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DialogSliderThumb" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="11"/>
+        <Setter Property="Height" Value="15"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <!-- Square rather than the zoom rail's ellipse: this one has to read against
+                         a 3px groove with a fill running into it, and a circle at that size loses
+                         its edge where the two meet. -->
+                    <Rectangle x:Name="Knob" Fill="#FFC9CDD2" Stroke="#FF0F1012" StrokeThickness="1"
+                               SnapsToDevicePixels="True"/>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Knob" Property="Fill" Value="#FFF2BE00"/>
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="Knob" Property="Fill" Value="#FFFFC700"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DialogSlider" TargetType="{x:Type Slider}">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="MinWidth" Value="60"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Slider}">
+                    <!-- Transparent fills the control's height, so a press anywhere in the row
+                         belongs to the slider rather than falling through to the panel. -->
+                    <Grid Background="Transparent" SnapsToDevicePixels="True">
+                        <Border Height="3" VerticalAlignment="Center"
+                                Background="#FF2B2F33" BorderBrush="#FF35393E" BorderThickness="1"/>
+
+                        <Track x:Name="PART_Track">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="Slider.DecreaseLarge"
+                                              Style="{StaticResource DialogSliderFilledRepeatButton}"/>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="Slider.IncreaseLarge"
+                                              Style="{StaticResource DialogSliderRepeatButton}"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource DialogSliderThumb}"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

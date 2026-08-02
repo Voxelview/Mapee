@@ -1,56 +1,124 @@
-﻿<UserControl x:Class="Mapper.Gui.InformationControl"
+<UserControl x:Class="Mapper.Gui.InformationControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Mapper.Gui"
              mc:Ignorable="d"
-             Background="#FF161616" Height="25" Width="Auto">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="30" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="30" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+             UseLayoutRounding="True"
+             BorderBrush="#FF1D1F21" BorderThickness="0, 1, 0, 0"
+             Background="#FF0F1012" Height="26" Width="Auto">
 
-        <Grid.Resources>
-            <SolidColorBrush x:Key="LabelColor">#FF9AA5BC</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelSeperatorColor">#FF6B7689</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelInformationColor">#FFC78BFF</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelInformationDarkColor">#FFC2CBDD</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelNumberColor">#FF3FD5F5</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelCoordsColor">#FF4BE06B</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelSizeColor">#FFFFB43C</SolidColorBrush>
-            <SolidColorBrush x:Key="LabelVersionColor">#FFFF6FB0</SolidColorBrush>
-        </Grid.Resources>
+    <!-- One of the three seams that frame the map, all on the same brush: the title bar's
+         hairline, the rail's right edge and this. They have to match - the rail runs the full
+         height of the window body, so its edge and this one meet at the bottom-left corner,
+         and two tones there would show as a step. 26 rather than 25 because the rule is added
+         above the bar, not taken out of it - at 25 the border would leave a 24px content
+         region and the 19px chips would centre on a half pixel, which layout rounding has to
+         break one way or the other. -->
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Template/StatusColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
 
-        <TextBlock Padding="10,4,0,0" Grid.Column="0">
-                <Run Text="Loaded regions:" Foreground="{DynamicResource LabelColor}"/>
-                <Run x:Name="LoadedRegionsLabel" Text="0" FontWeight="SemiBold" Foreground="{DynamicResource LabelNumberColor}"/><Run Text="; Size:" Foreground="{DynamicResource LabelColor}"/>
-                <Run x:Name="LoadedSizeLabel" Text="Empty" Foreground="{DynamicResource LabelSizeColor}"/>
-        </TextBlock>
+            <!-- One chip per fact. The four groups used to run together as coloured sentences
+                 separated by pipes, which left every value a different hue and none of them
+                 findable; boxing each one makes them scannable by position instead. -->
+            <Style x:Key="StatusCell" TargetType="Border">
+                <Setter Property="BorderBrush" Value="#FF272A2D"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Background" Value="#FF191B1C"/>
+                <Setter Property="Padding" Value="8, 0, 9, 0"/>
+                <Setter Property="Margin" Value="0, 0, 4, 0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Height" Value="19"/>
+            </Style>
 
-        <Label Content="|" FontSize="13" Foreground="{DynamicResource LabelSeperatorColor}" Padding="1,2,0,0" Grid.Column="1" HorizontalAlignment="Center" />
+            <Style x:Key="StatusKey" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="9"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{DynamicResource LabelColor}"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="0, 1, 7, 0"/>
+            </Style>
 
-        <TextBlock Padding="0,4,0,0" Grid.Column="2">
-                <Run Text="Visible area: (" Foreground="{DynamicResource LabelColor}"/><Run x:Name="VisibleAreaTopLeftLabel" Text="0; 0" Foreground="{DynamicResource LabelCoordsColor}"/><Run Text=") to (" Foreground="{DynamicResource LabelColor}"/><Run x:Name="VisibleAreaBottomRightLabel" Text="0; 0" Foreground="{DynamicResource LabelCoordsColor}"/><Run Text="); Size:" Foreground="{DynamicResource LabelColor}"/>
-                <Run x:Name="VisibleAreaSizeLabel" Text="0x0" Foreground="{DynamicResource LabelSizeColor}"/>
-        </TextBlock>
+            <!-- Every value carries a fixed width. The numbers behind them change constantly as
+                 you pan - coordinates gain and lose digits and a minus sign - and on auto width
+                 each chip resized under its own text and shoved the chips to its right along
+                 with it, so the whole bar crawled. The widths below hold the largest value each
+                 field can reach. -->
+            <Style x:Key="StatusValue" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="TextAlignment" Value="Left"/>
+            </Style>
 
-        <Label Content="|" FontSize="13" Foreground="{DynamicResource LabelSeperatorColor}" Padding="1,2,0,0" Grid.Column="3" HorizontalAlignment="Center" />
+            <Style x:Key="StatusArrow" TargetType="TextBlock" BasedOn="{StaticResource StatusValue}">
+                <Setter Property="Foreground" Value="{DynamicResource LabelSeperatorColor}"/>
+                <Setter Property="Margin" Value="5, 0, 5, 0"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-        <TextBlock Padding="0,4,0,0" Grid.Column="4">
-                <Run Text="Cursor over block:" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorHiddenLabel" Text=" None" Foreground="{DynamicResource LabelInformationDarkColor}"/>
-                <Run x:Name="CursorBeginLabel" Text="(" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorOverBlockLabel" Foreground="{DynamicResource LabelCoordsColor}"/><Run x:Name="CursorMiddleLabel" Text=") in chunk: (" Foreground="{DynamicResource LabelColor}"/><Run x:Name="CursorOverChunkLabel" Foreground="{DynamicResource LabelCoordsColor}"/><Run x:Name="CursorEndLabel" Text=")" Foreground="{DynamicResource LabelColor}"/>
-        </TextBlock>
+    <DockPanel LastChildFill="False" Margin="8, 0, 8, 0">
 
-        <TextBlock x:Name="WorldTextBlock" Padding="0,4,0,0" Grid.Column="6">
-                <Run Text="World name: " Foreground="{DynamicResource LabelColor}"/><Run x:Name="WorldNameLabel" Foreground="{DynamicResource LabelInformationColor}"/><Run Text="; Version:" Foreground="{DynamicResource LabelColor}"/>
-                <Run x:Name="WorldVersionLabel" Foreground="{DynamicResource LabelVersionColor}"/>
-        </TextBlock>
-    </Grid>
+        <Border Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="REGIONS" Style="{StaticResource StatusKey}"/>
+                <TextBlock x:Name="LoadedRegionsLabel" Text="0" Width="34" Style="{StaticResource StatusValue}"
+                           FontWeight="SemiBold" Foreground="{DynamicResource LabelNumberColor}"/>
+                <TextBlock Text="LOADED" Style="{StaticResource StatusKey}" Margin="9, 1, 7, 0"/>
+                <TextBlock x:Name="LoadedSizeLabel" Text="Empty" Width="72" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelSizeColor}"/>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="VIEW" Style="{StaticResource StatusKey}"/>
+                <TextBlock x:Name="VisibleAreaTopLeftLabel" Text="0; 0" Width="82" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelCoordsColor}"/>
+                <TextBlock Text="&#x2192;" Style="{StaticResource StatusArrow}"/>
+                <TextBlock x:Name="VisibleAreaBottomRightLabel" Text="0; 0" Width="82" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelCoordsColor}"/>
+                <TextBlock Text="SIZE" Style="{StaticResource StatusKey}" Margin="9, 1, 7, 0"/>
+                <TextBlock x:Name="VisibleAreaSizeLabel" Text="0x0" Width="70" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelSizeColor}"/>
+            </StackPanel>
+        </Border>
+
+        <Border Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="CURSOR" Style="{StaticResource StatusKey}"/>
+                <!-- Same width on both: they swap as the pointer enters and leaves the map, and
+                     unequal widths would make the cell jump on the swap. -->
+                <TextBlock x:Name="CursorHiddenLabel" Text="None" Width="74" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelInformationDarkColor}"/>
+                <TextBlock x:Name="CursorOverBlockLabel" Width="74" Style="{StaticResource StatusValue}" Visibility="Collapsed"
+                           Foreground="{DynamicResource LabelCoordsColor}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Starts collapsed to match the cursor cell's None: nothing has moved over the map
+             yet at startup, so no cursor event has run and an empty box would sit here. -->
+        <Border x:Name="ChunkCell" Style="{StaticResource StatusCell}" DockPanel.Dock="Left" Visibility="Collapsed">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="CHUNK" Style="{StaticResource StatusKey}"/>
+                <TextBlock x:Name="CursorOverChunkLabel" Width="58" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelCoordsColor}"/>
+            </StackPanel>
+        </Border>
+
+        <Border x:Name="WorldTextBlock" Style="{StaticResource StatusCell}" DockPanel.Dock="Right" Margin="4, 0, 0, 0">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="WORLD" Style="{StaticResource StatusKey}"/>
+                <TextBlock x:Name="WorldNameLabel" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelInformationColor}"/>
+                <TextBlock Text="&#x00B7;" Style="{StaticResource StatusArrow}"/>
+                <TextBlock x:Name="WorldVersionLabel" Style="{StaticResource StatusValue}"
+                           Foreground="{DynamicResource LabelVersionColor}"/>
+            </StackPanel>
+        </Border>
+    </DockPanel>
 </UserControl>

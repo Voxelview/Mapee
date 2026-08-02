@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Mapper.Gui.WorldPanel"
+<UserControl x:Class="Mapper.Gui.WorldPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              HorizontalAlignment="Stretch"
              Cursor="Hand"
-             Background="#FF161616" Height="63" BorderThickness="0">
+             Background="#FF0F1012" Height="63" BorderThickness="0">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -20,7 +20,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border BorderThickness="1" BorderBrush="#FF323232" Margin="9, 5, 9, 6">
+            <Border BorderThickness="1" BorderBrush="#FF313438" Margin="9, 5, 9, 6">
                 <Image x:Name="WorldIcon" Stretch="Fill" Width="50" Height="50" Margin="0" />
             </Border>
 

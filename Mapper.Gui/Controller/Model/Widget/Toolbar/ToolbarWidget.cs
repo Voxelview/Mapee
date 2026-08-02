@@ -8,6 +8,8 @@ namespace Mapper.Gui.Controller
     {
         public IList<IToolButtonSegment> ToolButtonSegments { get; } = new List<IToolButtonSegment>();
 
+        public IToolButton? PrimaryButton { get; }
+
         public MapViewer MainWindow { get; }
         public Renderer Renderer { get; }
         public ToolScene ToolScene { get; }
@@ -20,27 +22,40 @@ namespace Mapper.Gui.Controller
             ToolScene = new ToolScene(Renderer.Scene);
             RenderInvoker = new RenderInvoker(Renderer);
 
-            ToolButtonSegment shortSegment = new();
-            shortSegment.Tools.Add(CreateGridToolButton());
-            shortSegment.Tools.Add(CreateSlimeChunkButton());
-            shortSegment.Tools.Add(CreateAxisButton());
-            shortSegment.Tools.Add(CreateChunkHighlightsButton());
-            shortSegment.Tools.Add(CreateMeasureLengthButton());
-            shortSegment.Tools.Add(CreateDayNightCycleButton());
-            shortSegment.Tools.Add(CreateGoToButton());
-            shortSegment.Tools.Add(CreateExportAsImageButton());
+            // Opening a world is the one thing you do before anything else here works, so it
+            // sits above the dimension button at the top of the rail rather than among the
+            // tools, and is drawn at the dimension art's size instead of the glyph size.
+            PrimaryButton = CreateBrowseButton();
 
-            ToolButtonSegment longSegment = new()
+            // Segments are the grouping mechanism: the rail draws one divider between segments
+            // and none inside them, so buttons sit together by sharing a segment.
+
+            // What you draw onto the map.
+            ToolButtonSegment overlaySegment = new();
+            overlaySegment.Tools.Add(CreateGridToolButton());
+            overlaySegment.Tools.Add(CreateSlimeChunkButton());
+            overlaySegment.Tools.Add(CreateAxisButton());
+            overlaySegment.Tools.Add(CreateChunkHighlightsButton());
+            overlaySegment.Tools.Add(CreateMeasureLengthButton());
+
+            // What changes how the map itself comes out.
+            ToolButtonSegment renderSegment = new();
+            renderSegment.Tools.Add(CreateDayNightCycleButton());
+            renderSegment.Tools.Add(CreateExportAsImageButton());
+
+            // Settings, held at the foot of the rail - reached around the work rather than
+            // during it, so they stay out of the run of tools you actually use on the map.
+            ToolButtonSegment settingsSegment = new()
             {
-                LeftGap = 63
+                AlignToEnd = true
             };
 
-            longSegment.Tools.Add(CreateFilterButton());
-            longSegment.Tools.Add(CreateRenderSettingsButton());
-            longSegment.Tools.Add(CreateBrowseButton());
+            settingsSegment.Tools.Add(CreateFilterButton());
+            settingsSegment.Tools.Add(CreateRenderSettingsButton());
 
-            ToolButtonSegments.Add(shortSegment);
-            ToolButtonSegments.Add(longSegment);
+            ToolButtonSegments.Add(overlaySegment);
+            ToolButtonSegments.Add(renderSegment);
+            ToolButtonSegments.Add(settingsSegment);
         }
 
         private ToolButton CreateGridToolButton() 
@@ -81,19 +96,6 @@ namespace Mapper.Gui.Controller
                 ToolTip = "Night mode",
                 Icon = ToolButtonIcons.Get("NightMode")
             };
-
-            return output;
-        }
-        private ToolButton CreateGoToButton()
-        {
-            GoToTool tool = new(Renderer.Scene, Renderer.GraphicsCanvas);
-            ToolButton output = new(tool)
-            {
-                ToolTip = "Go to position in world",
-                Icon = ToolButtonIcons.Get("GoTo")
-            };
-
-            tool.Owner = output;
 
             return output;
         }
@@ -138,7 +140,7 @@ namespace Mapper.Gui.Controller
             ToolButton output = new(tool)
             {
                 Icon = ToolButtonIcons.Get("OpenWorld"),
-                Name = "Open world ",
+                Name = "Open world",
                 ToolTip = "Open a new world"
             };
 

@@ -8,11 +8,14 @@ namespace Mapper.Gui.Controller
 {
     public class ImageSaver : IImageSaver
     {
-        public FullResolutionImageArgs DefaultFullResArgs => new FullResolutionImageArgs() 
+        public FullResolutionImageArgs DefaultFullResArgs => new FullResolutionImageArgs()
         {
             ClipArea = true,
             CheckerPatternEnabled = true,
-            BackgroundColor = Colors.Black
+            // The checker never reads SolidColor - Draw only reaches it when the pattern is
+            // off - so black here was a second, contradictory answer to the same question.
+            // Transparent lets the struct round-trip back through the window unchanged.
+            BackgroundColor = Color.FromArgb(0, 0, 0, 0)
         };
 
         public ImageScreenshotSaver ScreenshotSaver { get; set; }
@@ -31,6 +34,10 @@ namespace Mapper.Gui.Controller
         public Size GetFullResolutionSize(FullResolutionImageArgs args)
         {
             return ImageFullResolutionSaver.GetSize(args);
+        }
+        public ColorPair GetCheckerColors()
+        {
+            return ImageFullResolutionSaver.GetCheckerColors();
         }
 
         public void SaveAsScreenshot(string path)

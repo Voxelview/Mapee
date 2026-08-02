@@ -92,7 +92,9 @@ namespace Mapper.Gui
             }
             else
             {
-                WorldTextBlock.Visibility = Visibility.Hidden;
+                // Collapsed rather than Hidden: the cell is a bordered box now, and a hidden one
+                // would still hold its space as a gap the size of a world name.
+                WorldTextBlock.Visibility = Visibility.Collapsed;
             }
 
             static string SizeToString(XzPoint size)
@@ -111,16 +113,18 @@ namespace Mapper.Gui
             CursorOverChunkLabel.Text = BlockToChunk(point).ToString("N0");
         }
 
+        /// <summary>
+        /// Off the map there is no cursor position to report, so the cursor cell says None and
+        /// the chunk cell - which would otherwise sit there empty and boxed - goes away.
+        /// </summary>
         private void SetCursorSegmentVisibility(bool visible)
         {
-            CursorHiddenLabel.Text = visible ? string.Empty : " None";
-
             CursorOverBlockLabel.Text = string.Empty;
             CursorOverChunkLabel.Text = string.Empty;
 
-            CursorBeginLabel.Text = visible ? "(" : string.Empty;
-            CursorMiddleLabel.Text = visible ? ") in chunk: (" : string.Empty;
-            CursorEndLabel.Text = visible ? ")" : string.Empty;
+            CursorHiddenLabel.Visibility = visible ? Visibility.Collapsed : Visibility.Visible;
+            CursorOverBlockLabel.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+            ChunkCell.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
         }
         private static XzPoint BlockToChunk(XzPoint block)
         {

@@ -1,4 +1,4 @@
-﻿using Mapper.Gui.Model;
+using Mapper.Gui.Model;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,16 +22,16 @@ namespace Mapper.Gui
             Scrollbar.Update += Scrollbar_Update;
         }
 
-        private void DockPanel_Loaded(object sender, RoutedEventArgs e)
+        private void Scrollbar_Loaded(object sender, RoutedEventArgs e)
         {
             SetScrollbar();
         }
-        private void ScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Scrollbar_ValueChanged(object? sender, double value)
         {
             if (_preventScrollBarUpdate) return;
 
             _preventScrollBarUpdate = true;
-            Scrollbar.SetLeftMostVisiblePoint(e.NewValue);
+            Scrollbar.SetLeftMostVisiblePoint(value);
             _preventScrollBarUpdate = false;
         }
 
@@ -43,7 +43,12 @@ namespace Mapper.Gui
         }
         private void SetScrollbar()
         {
-            ScrollbarUtilities.AdjustScrollbar(ScrollbarControl, Scrollbar, ScrollbarControl.Track.ActualWidth);
+            bool needed = ScrollbarUtilities.AdjustScrollbar(ScrollbarControl, Scrollbar);
+
+            // Hidden rather than Collapsed: the bar has to keep being arranged, because it
+            // measures its thumb against its own arranged length, and a collapsed control
+            // measures zero and could never work out that it is needed again.
+            Visibility = needed ? Visibility.Visible : Visibility.Hidden;
         }
     }
 }

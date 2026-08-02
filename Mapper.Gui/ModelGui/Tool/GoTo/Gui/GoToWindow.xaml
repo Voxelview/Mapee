@@ -1,11 +1,11 @@
-﻿<Window x:Class="Mapper.Gui.GoToWindow"
+<Window x:Class="Mapper.Gui.GoToWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
-        Background="#FF1B1B1B"
+        Background="#FF191B1C"
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="GoToWindow" Height="109" Width="220">
@@ -22,7 +22,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border BorderBrush="#FF5C5C5C" BorderThickness="1">
+    <Border BorderBrush="#FF5F636A" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="29" />
@@ -38,10 +38,10 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox x:Name="CoordinateTextBox" Text="0; 0" FontSize="15" Height="25" Padding="3, 1, 0, 0" Margin="2" Grid.Column="0" />
-                <Button Content="Go to point" Foreground="#FFE0E0E0" Grid.Column="1" BorderBrush="#FF5C5C5C" BorderThickness="2" Click="GoToButton_Click">
+                <Button Content="Go to point" Foreground="#FFE0E0E0" Grid.Column="1" BorderBrush="#FF5F636A" BorderThickness="2" Click="GoToButton_Click">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF1B1B1B"/>
+                            <Setter Property="Background" Value="#FF191B1C"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="{x:Type Button}">
@@ -53,10 +53,10 @@
                             </Setter>
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF323232"/>
+                                    <Setter Property="Background" Value="#FF313438"/>
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF414141"/>
+                                    <Setter Property="Background" Value="#FF42454B"/>
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
@@ -64,10 +64,10 @@
                 </Button>
             </Grid>
 
-            <Button x:Name="PlayerPositionButton" Content="Player position" Foreground="#FFE0E0E0" Grid.Row="1" BorderBrush="#FF5C5C5C" BorderThickness="2" Click="PlayerPositionButton_Click">
+            <Button x:Name="PlayerPositionButton" Content="Player position" Foreground="#FFE0E0E0" Grid.Row="1" BorderBrush="#FF5F636A" BorderThickness="2" Click="PlayerPositionButton_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
-                        <Setter Property="Background" Value="#FF1B1B1B"/>
+                        <Setter Property="Background" Value="#FF191B1C"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type Button}">
@@ -79,20 +79,20 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF323232"/>
+                                <Setter Property="Background" Value="#FF313438"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF414141"/>
+                                <Setter Property="Background" Value="#FF42454B"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
             </Button>
 
-            <Button x:Name="PlayerSpawnButton" Content="Player spawn" Foreground="#FFE0E0E0" Grid.Row="2" BorderBrush="#FF5C5C5C" BorderThickness="2" Click="PlayerSpawnButton_Click" >
+            <Button x:Name="PlayerSpawnButton" Content="Player spawn" Foreground="#FFE0E0E0" Grid.Row="2" BorderBrush="#FF5F636A" BorderThickness="2" Click="PlayerSpawnButton_Click" >
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
-                        <Setter Property="Background" Value="#FF1B1B1B"/>
+                        <Setter Property="Background" Value="#FF191B1C"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type Button}">
@@ -104,20 +104,20 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF323232"/>
+                                <Setter Property="Background" Value="#FF313438"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF414141"/>
+                                <Setter Property="Background" Value="#FF42454B"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
             </Button>
 
-            <Button x:Name="WorldSpawnButton" Content="World sparw" Foreground="#FFE0E0E0" Grid.Row="3" BorderBrush="#FF5C5C5C" BorderThickness="2" Click="WorldSpawnButton_Click" >
+            <Button x:Name="WorldSpawnButton" Content="World sparw" Foreground="#FFE0E0E0" Grid.Row="3" BorderBrush="#FF5F636A" BorderThickness="2" Click="WorldSpawnButton_Click" >
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
-                        <Setter Property="Background" Value="#FF1B1B1B"/>
+                        <Setter Property="Background" Value="#FF191B1C"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="{x:Type Button}">
@@ -129,10 +129,10 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF323232"/>
+                                <Setter Property="Background" Value="#FF313438"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF414141"/>
+                                <Setter Property="Background" Value="#FF42454B"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>

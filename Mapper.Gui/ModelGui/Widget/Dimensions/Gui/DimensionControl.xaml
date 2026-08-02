@@ -1,17 +1,52 @@
-﻿<UserControl x:Class="Mapper.Gui.DimensionControl"
+<UserControl x:Class="Mapper.Gui.DimensionControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Mapper.Gui"
-             mc:Ignorable="d" 
-             Background="#FF161616"
-             BorderBrush="#FF313131" BorderThickness="1"
-             Width="Auto" Height="35" Loaded="UserControl_Loaded">
+             mc:Ignorable="d"
+             UseLayoutRounding="True"
+             Width="Auto" Height="Auto" Loaded="UserControl_Loaded">
 
-    <UserControl.Effect>
-        <DropShadowEffect Direction="-75" ShadowDepth="2" Opacity="5" BlurRadius="6" Color="Black"/>
-    </UserControl.Effect>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Template/ToolButton.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/ToolTip.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-    <Grid x:Name="DimensionContainer" Margin="0, 0, 4, 0" />
+    <!-- Stretches to the rail's full inner width, which is what the popup is placed against. -->
+    <Grid x:Name="DimensionRoot">
+        <!-- Matches a rail button, and the artwork is 26 rather than the 25 it is drawn on. That
+             is a parity fix, not a size preference: the button is even, so an odd icon leaves 2.5
+             a side and layout rounding has to break that half pixel one way, which is what put
+             the icon visibly off centre. 26 leaves exactly 2.
+
+             It costs a little. The dimension scenes are pixel art on a 25 grid meant to run one
+             cell to one pixel, and 26 is a 1.04 scale, so one row and one column come out 2px
+             wide. At this size that reads as a slightly thicker line rather than a smear - the
+             miscentring was the more visible of the two. Anything further from 1 is not worth it;
+             the next clean step is 50, which the rail has no room for. -->
+        <Button x:Name="CurrentDimensionButton" Width="30" Height="30" Cursor="Hand" Margin="0, 3, 0, 3"
+                Style="{StaticResource ToolButton}" Click="CurrentDimensionButton_Click">
+            <Image x:Name="CurrentDimensionIcon" Width="26" Height="26"
+                   RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased"/>
+        </Button>
+
+        <!-- Opens beside the rail rather than under the button, because the rail runs down the
+             left edge and there is nothing below it to drop into.
+
+             Placed against the root rather than the button, because the button is inset within
+             the rail and measuring from its right edge started the popup inside the rail. The
+             offset out to the map's edge is measured at open time rather than written here -
+             see AlignPopupToMapEdge. -->
+        <Popup x:Name="DimensionPopup" PlacementTarget="{Binding ElementName=DimensionRoot}"
+               Placement="Right" StaysOpen="False" AllowsTransparency="True">
+            <Border Background="#FF0F1012" BorderBrush="#FF303337" BorderThickness="1">
+                <Grid x:Name="DimensionContainer" Margin="5" />
+            </Border>
+        </Popup>
+    </Grid>
 </UserControl>

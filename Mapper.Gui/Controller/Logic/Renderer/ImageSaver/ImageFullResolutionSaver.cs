@@ -26,6 +26,16 @@ namespace Mapper.Gui.Logic
 
             return new Size((int)area.Width, (int)area.Height);
         }
+        /// <summary>
+        /// The pair Draw paints the checker with. Exposed because the export window shows a
+        /// swatch of it, and a swatch that is drawn from a second source is a swatch that can
+        /// disagree with the file - the three dimensions each carry their own pair.
+        /// </summary>
+        public ColorPair GetCheckerColors()
+        {
+            Background background = Scene.Domain.CurrentWorld?.CurrentDimension.RenderSettings.Background ?? Background.Empty;
+            return background.CheckedColorPair;
+        }
         public void SaveAsFullResolutionImage(string outputFile, FullResolutionImageArgs args)
         {
             XzRange visible = ProvideVisibleArea(args);
@@ -50,8 +60,13 @@ namespace Mapper.Gui.Logic
             XzRange visible = GetVisibleArea();
             if (!args.ClipArea) return visible;
 
+            // Nothing loaded means there is nothing to clip against. Zeroing the range instead
+            // made "clip area" intersect the viewport with the origin, which collapses a full
+            // screen of map to a couple of pixels - harmless while nobody showed the number,
+            // but the export window puts it on the mode card now.
+            if (Scene.Domain.CurrentWorld is null) return visible;
+
             XzRange loadedArea = Scene.RegionLoader.LoadedArea;
-            if (Scene.Domain.CurrentWorld is null) loadedArea = new XzRange(0, 0, 0, 0);
 
             double topLeftX = visible.TopLeftPoint.X, topLeftZ = visible.TopLeftPoint.Z;
 
@@ -93,11 +108,10 @@ namespace Mapper.Gui.Logic
             using DrawingContext drawingContext = drawingGroup.Open();
             drawingContext.PushClip(new RectangleGeometry(area));
 
-            Background background = Scene.Domain.CurrentWorld?.CurrentDimension.RenderSettings.Background ?? Background.Empty;
-            background = new Background()
+            Background background = new Background()
             {
                 Type = args.CheckerPatternEnabled ? BackgroundType.Checker : BackgroundType.Solid,
-                CheckedColorPair = background.CheckedColorPair,
+                CheckedColorPair = GetCheckerColors(),
                 SolidColor = args.BackgroundColor
             };
 

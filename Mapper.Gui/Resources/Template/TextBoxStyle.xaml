@@ -1,9 +1,9 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style TargetType="TextBox">
         <Setter Property="Foreground" Value="#FFEEEEEE"/>
-        <Setter Property="Background" Value="#FF161616"/>
+        <Setter Property="Background" Value="#FF0F1012"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
 
         <Setter Property="Template">
@@ -17,10 +17,10 @@
                             <Setter Property="Opacity" TargetName="border" Value="0.56"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="BorderBrush" TargetName="border" Value="#FF4E4E4E"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="#FF50545A"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="False">
-                            <Setter Property="BorderBrush" TargetName="border" Value="#FF373737"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="#FF383B3F"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
                             <Setter Property="BorderBrush" TargetName="border" Value="#FF858585"/>

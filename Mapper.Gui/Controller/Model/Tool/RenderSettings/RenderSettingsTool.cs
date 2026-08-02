@@ -70,7 +70,16 @@ namespace Mapper.Gui.Controller
 
             _isActive = true;
 
-            RenderSettingsControl window = new(Scene.Domain.CurrentWorld.CurrentDimension.RenderSettings, Scene.Domain.CurrentWorld.CurrentDimension.Dimension.Name);
+            // GetProfile is the style's own per-dimension lookup with its default as the fallback,
+            // and nothing outside RenderSettingsReader ever writes to what it reads - so this is
+            // still the shipped profile however far the user has moved the live one.
+            Model.RenderSettings defaultSettings = Scene.Domain.CurrentWorld.Style
+                .GetProfile(Scene.Domain.CurrentWorld.CurrentDimension.Dimension).RenderSettings;
+
+            RenderSettingsControl window = new(
+                Scene.Domain.CurrentWorld.CurrentDimension.RenderSettings,
+                defaultSettings,
+                Scene.Domain.CurrentWorld.CurrentDimension.Dimension.Name);
             _window = window;
             window.Show();
 

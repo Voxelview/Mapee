@@ -1,4 +1,4 @@
-﻿<Window x:Class="Mapper.Gui.RenderSettingsControl"
+<Window x:Class="Mapper.Gui.RenderSettingsControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,11 +6,15 @@
         xmlns:local="clr-namespace:Mapper.Gui"
         mc:Ignorable="d"
         Template="{DynamicResource CustomWindowFrameTemplate}"
-        Icon="{DynamicResource Appearance}"
-        BorderBrush="#FF373737"
+        Icon="{DynamicResource AppearanceAccent}"
+        BorderBrush="#FF383B3F"
         BorderThickness="1"
+        ResizeMode="NoResize"
         UseLayoutRounding="True"
-        Title="Render settings" Height="360" Width="450"  Background="#FF1B1B1B" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="Render settings"
+        Width="442" SizeToContent="Height"
+        Background="#FF191B1C" WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
 
     <WindowChrome.WindowChrome>
         <WindowChrome GlassFrameThickness="0" CornerRadius="0" CaptionHeight="0" UseAeroCaptionButtons="False" ResizeBorderThickness="7"/>
@@ -21,117 +25,414 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Template/CustomWindowFrameTemplate.xaml"/>
                 <ResourceDictionary Source="/Resources/Icon/ToolButtonIcons.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/StatusColors.xaml"/>
                 <ResourceDictionary Source="/Resources/Template/TextBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/CheckBoxStyle.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/SliderStyle.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/DialogButton.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/ToolTip.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- The alpha checker is the export window's; this one only needs the map's own,
+                 which is built in code-behind from the dimension's pair. -->
+
+            <!-- Same shape as the export window's mode cards, and for the same reason: the group
+                 is what makes the presets exclusive, and arrows move within it for free. -->
+            <Style x:Key="PresetCard" TargetType="{x:Type RadioButton}">
+                <Setter Property="Background" Value="#FF202325"/>
+                <Setter Property="BorderBrush" Value="#FF34383D"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Top"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type RadioButton}">
+                            <Border x:Name="Card" SnapsToDevicePixels="True"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter Margin="10, 8, 10, 10"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Card" Property="Background" Value="#FF252A2D"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FF6B7280"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Card" Property="Background" Value="#FF2E2C1E"/>
+                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FFE3B200"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsChecked" Value="True"/>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="Card" Property="Background" Value="#FF34301B"/>
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="SwatchCard" TargetType="{x:Type RadioButton}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Foreground" Value="#FFBBBBBB"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type RadioButton}">
+                            <Border x:Name="Ring" Padding="3" Background="Transparent" SnapsToDevicePixels="True"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}">
+                                <StackPanel>
+                                    <Border Height="30" BorderBrush="#FF34383D" BorderThickness="1">
+                                        <Rectangle Fill="{TemplateBinding Background}" RenderOptions.EdgeMode="Aliased"/>
+                                    </Border>
+                                    <TextBlock x:Name="Caption" Text="{TemplateBinding Content}"
+                                               Margin="0, 5, 0, 0" FontSize="11"
+                                               HorizontalAlignment="Center"
+                                               Foreground="{TemplateBinding Foreground}"/>
+                                </StackPanel>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FF50545A"/>
+                                    <Setter TargetName="Caption" Property="Foreground" Value="#FFEEEEEE"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FFE3B200"/>
+                                    <Setter TargetName="Caption" Property="Foreground" Value="#FFEEEEEE"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FF9AA5BC"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- The disclosure. A framed, full-width bar rather than a line of text with an
+                 arrow: it is the only way to reach four of the six settings, so it has to look
+                 like a control from across the window rather than like a caption. -->
+            <Style x:Key="DisclosureBar" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border x:Name="Bar" Background="#FF202325" BorderBrush="#FF34383D"
+                                    BorderThickness="1" Padding="11, 0, 11, 0" Height="34"
+                                    SnapsToDevicePixels="True">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- A trigger can only target a named element, and a transform
+                                         is not one - so the checked state swaps the whole
+                                         RenderTransform rather than animating an Angle. -->
+                                    <Path x:Name="Chevron" Grid.Column="0" Width="8" Height="9"
+                                          VerticalAlignment="Center" Fill="#FFE3B200"
+                                          Data="M 0,0 L 5,4.5 L 0,9 Z"
+                                          RenderTransformOrigin="0.5, 0.5"/>
+
+                                    <TextBlock Grid.Column="1" Text="Fine tuning" FontSize="13" FontWeight="SemiBold"
+                                               Margin="10, 0, 0, 0" VerticalAlignment="Center" Foreground="#FFEEEEEE"/>
+
+                                    <TextBlock x:Name="Hint" Grid.Column="2" Text="{TemplateBinding Content}"
+                                               FontSize="11" Margin="12, 0, 0, 0" TextTrimming="CharacterEllipsis"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Foreground="#FF8A9099"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Bar" Property="Background" Value="#FF252A2D"/>
+                                    <Setter TargetName="Bar" Property="BorderBrush" Value="#FF50545A"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="Bar" Property="BorderBrush" Value="#FF6B7280"/>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Chevron" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <RotateTransform Angle="90"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter TargetName="Bar" Property="Background" Value="#FF232628"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Margin="15, 0, 15, 15" Grid.Row="1">
+    <!-- Every row Auto, no star: SizeToContent="Height" has no natural height to give one. -->
+    <Grid Margin="15, 12, 15, 14">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid x:Name="InteractionRoot" Grid.Row="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Miscellaneous settings" FontWeight="Bold" Margin="0, 8, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFEEEEEE" FontSize="15" Grid.Row="0" />
-            <Border BorderBrush="#FF4E4E4E" BorderThickness="0, 1, 0, 0" Grid.Row="1" HorizontalAlignment="Stretch"/>
-
-            <Grid Grid.Row="2" Margin="0, 7, 0, 0">
+            <!-- 442 outer, less 1px of frame border a side and 15 of margin a side, is 410
+                 usable. Less a 10 gutter that is 200 a card. -->
+            <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="25" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="29" />
-                    <RowDefinition Height="29" />
-                    <RowDefinition Height="29" />
-                    <RowDefinition Height="29" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Label Content="Sky light (0.00 to 1.00):" Width="Auto" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="#FFEEEEEE" FontSize="12" Grid.Column="0" Grid.Row="0" />
-                <TextBox x:Name="SkyLightTextBox" FontSize="14" Height="25" Padding="4, 1, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="0" />
+                <RadioButton x:Name="DefaultPreset" Grid.Row="0" Grid.Column="0" GroupName="RenderPreset"
+                             Style="{StaticResource PresetCard}" Checked="Preset_Checked"
+                             ToolTip="The values this dimension ships with in the current style.">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Default" FontSize="13" FontWeight="Bold" Foreground="#FFEEEEEE"/>
+                            <Border x:Name="DimensionTag" Margin="7, 1, 0, 0" Padding="4, 0, 4, 1"
+                                    BorderBrush="#FFE3B200" BorderThickness="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="DimensionTagLabel" FontSize="10" Foreground="#FFE3B200"/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="What this dimension ships with." FontSize="11" TextWrapping="Wrap"
+                                   LineHeight="15" LineStackingStrategy="BlockLineHeight"
+                                   Margin="0, 6, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                </RadioButton>
 
-                <Label Content="Ambient light (0.00 to 1.00):" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFEEEEEE" FontSize="12" Grid.Column="0" Grid.Row="1" />
-                <TextBox x:Name="AmbientLightTextBox" FontSize="14" Height="25" Padding="4, 1, 0, 0" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="1" />
+                <RadioButton x:Name="FlatPreset" Grid.Row="0" Grid.Column="2" GroupName="RenderPreset"
+                             Style="{StaticResource PresetCard}" Checked="Preset_Checked"
+                             ToolTip="Sky light down, ambient up. Almost no directional shading.">
+                    <StackPanel>
+                        <TextBlock Text="Flat" FontSize="13" FontWeight="Bold" Foreground="#FFEEEEEE"/>
+                        <TextBlock Text="Even light, no shading. Good for build plans." FontSize="11" TextWrapping="Wrap"
+                                   LineHeight="15" LineStackingStrategy="BlockLineHeight"
+                                   Margin="0, 6, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                </RadioButton>
 
-                <Label Content="Altitude Y offset:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFEEEEEE" FontSize="12" Grid.Column="0" Grid.Row="2" />
-                <TextBox x:Name="AltitudeTextBox" FontSize="14" Height="25" Padding="4, 1, 0, 0" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="2" />
+                <RadioButton x:Name="ContrastPreset" Grid.Row="2" Grid.Column="0" GroupName="RenderPreset"
+                             Style="{StaticResource PresetCard}" Checked="Preset_Checked"
+                             ToolTip="Full sky light, no ambient lift. The hardest shading available.">
+                    <StackPanel>
+                        <TextBlock Text="High contrast" FontSize="13" FontWeight="Bold" Foreground="#FFEEEEEE"/>
+                        <TextBlock Text="Hard shadows. Terrain shape reads sharply." FontSize="11" TextWrapping="Wrap"
+                                   LineHeight="15" LineStackingStrategy="BlockLineHeight"
+                                   Margin="0, 6, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                </RadioButton>
 
-                <Label Content="Transparent block step intensity:" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFEEEEEE" FontSize="12" Grid.Column="0" Grid.Row="3" />
-                <TextBox x:Name="StepIntensityTextBox" FontSize="14" Height="25" Padding="4, 1, 0, 0" HorizontalAlignment="Stretch" Grid.Column="2" Grid.Row="3" />
+                <RadioButton x:Name="SoftPreset" Grid.Row="2" Grid.Column="2" GroupName="RenderPreset"
+                             Style="{StaticResource PresetCard}" Checked="Preset_Checked"
+                             ToolTip="Sky light eased off and ambient raised a little.">
+                    <StackPanel>
+                        <TextBlock Text="Soft" FontSize="13" FontWeight="Bold" Foreground="#FFEEEEEE"/>
+                        <TextBlock Text="Gentle shading. Colours stay close to the block art." FontSize="11" TextWrapping="Wrap"
+                                   LineHeight="15" LineStackingStrategy="BlockLineHeight"
+                                   Margin="0, 6, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                </RadioButton>
+            </Grid>
+
+            <ToggleButton x:Name="FineTuningToggle" Grid.Row="1" Margin="0, 12, 0, 0"
+                          Style="{StaticResource DisclosureBar}" Content="Sky, ambient, altitude, step"
+                          Checked="FineTuningToggle_Changed" Unchecked="FineTuningToggle_Changed"/>
+
+            <!-- Collapsed, not Hidden: a collapsed element measures 0x0 and its margin goes with
+                 it, so the window closes back up to the preset grid exactly. -->
+            <Grid x:Name="FineTuningPanel" Grid.Row="2" Margin="0, 12, 0, 0" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="128"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="11"/>
+                        <ColumnDefinition Width="66"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="Sky light" FontSize="12" Foreground="#FFEEEEEE"/>
+                        <TextBlock x:Name="SkyLightDefaultLabel" FontSize="11" Margin="0, 1, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                    <!-- Snapped, so dragging yields 0.42 rather than 0.4237051. A value that
+                         arrives finer than the tick - the Overworld ships 0.125 ambient - keeps
+                         its precision, because the text box is what gets committed, not this. -->
+                    <Slider x:Name="SkyLightSlider" Grid.Column="1" VerticalAlignment="Center"
+                            Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1"
+                            IsSnapToTickEnabled="True" TickFrequency="0.01"
+                            Style="{StaticResource DialogSlider}" ValueChanged="Slider_ValueChanged"/>
+                    <TextBox x:Name="SkyLightTextBox" Grid.Column="3" FontSize="13" Height="24"
+                             Padding="4, 2, 4, 0" TextAlignment="Right" BorderThickness="1"
+                             VerticalAlignment="Center" TextChanged="ValueTextBox_TextChanged"/>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0, 8, 0, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="128"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="11"/>
+                        <ColumnDefinition Width="66"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="Ambient light" FontSize="12" Foreground="#FFEEEEEE"/>
+                        <TextBlock x:Name="AmbientLightDefaultLabel" FontSize="11" Margin="0, 1, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                    <Slider x:Name="AmbientLightSlider" Grid.Column="1" VerticalAlignment="Center"
+                            Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1"
+                            IsSnapToTickEnabled="True" TickFrequency="0.01"
+                            Style="{StaticResource DialogSlider}" ValueChanged="Slider_ValueChanged"/>
+                    <TextBox x:Name="AmbientLightTextBox" Grid.Column="3" FontSize="13" Height="24"
+                             Padding="4, 2, 4, 0" TextAlignment="Right" BorderThickness="1"
+                             VerticalAlignment="Center" TextChanged="ValueTextBox_TextChanged"/>
+                </Grid>
+
+                <!-- Sky and ambient are 0 to 1 by definition, so their tracks are the range.
+                     These two are unbounded in the model, so their tracks are a comfortable
+                     working span instead - the shipped styles use 0 to 60 for the offset and
+                     only 1 or 2 for the step - and the code widens the track rather than clamp
+                     a value that arrives from outside it. -->
+                <Grid Grid.Row="2" Margin="0, 10, 0, 0"
+                      ToolTip="Shifts where height shading starts. Every shipped style uses 0 to 60.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="128"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="11"/>
+                        <ColumnDefinition Width="66"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="Altitude Y offset" FontSize="12" Foreground="#FFEEEEEE"/>
+                        <TextBlock x:Name="AltitudeDefaultLabel" FontSize="11" Margin="0, 1, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                    <Slider x:Name="AltitudeSlider" Grid.Column="1" VerticalAlignment="Center"
+                            Minimum="-64" Maximum="128" SmallChange="1" LargeChange="8"
+                            IsSnapToTickEnabled="True" TickFrequency="1"
+                            Style="{StaticResource DialogSlider}" ValueChanged="Slider_ValueChanged"/>
+                    <TextBox x:Name="AltitudeTextBox" Grid.Column="3" FontSize="13" Height="24"
+                             Padding="4, 2, 4, 0" TextAlignment="Right" BorderThickness="1"
+                             VerticalAlignment="Center" TextChanged="ValueTextBox_TextChanged"/>
+                </Grid>
+
+                <Grid Grid.Row="3" Margin="0, 8, 0, 0"
+                      ToolTip="How much each layer of water or glass darkens what is under it.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="128"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="11"/>
+                        <ColumnDefinition Width="66"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="Transparent step" FontSize="12" Foreground="#FFEEEEEE"/>
+                        <TextBlock x:Name="StepIntensityDefaultLabel" FontSize="11" Margin="0, 1, 0, 0" Foreground="#FF8A9099"/>
+                    </StackPanel>
+                    <Slider x:Name="StepIntensitySlider" Grid.Column="1" VerticalAlignment="Center"
+                            Minimum="0" Maximum="8" SmallChange="0.1" LargeChange="1"
+                            IsSnapToTickEnabled="True" TickFrequency="0.1"
+                            Style="{StaticResource DialogSlider}" ValueChanged="Slider_ValueChanged"/>
+                    <TextBox x:Name="StepIntensityTextBox" Grid.Column="3" FontSize="13" Height="24"
+                             Padding="4, 2, 4, 0" TextAlignment="Right" BorderThickness="1"
+                             VerticalAlignment="Center" TextChanged="ValueTextBox_TextChanged"/>
+                </Grid>
+
+                <Label Grid.Row="4" Content="Background" FontSize="15" FontWeight="Bold"
+                       Foreground="#FFEEEEEE" Margin="0, 15, 0, 0" Padding="0, 0, 0, 3" HorizontalAlignment="Left"/>
+                <Border Grid.Row="5" BorderBrush="#FF50545A" BorderThickness="0, 1, 0, 0" HorizontalAlignment="Stretch"/>
+
+                <!-- Two swatches, so two star columns. The export window has three and this was
+                     carrying its third, which left a third of the row empty. -->
+                <Grid Grid.Row="6" Margin="0, 10, 0, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- CheckerSwatch's fill is assigned in Window_Loaded from this dimension's
+                         own pair, the same way the export window does it. -->
+                    <RadioButton x:Name="CheckerBackgroundRadioBox" Grid.Column="0" GroupName="RenderBackground"
+                                 Style="{StaticResource SwatchCard}" Content="Checker pattern"
+                                 Checked="BackgroundSwatch_Checked"/>
+                    <RadioButton x:Name="SolidBackgroundRadioBox" Grid.Column="2" GroupName="RenderBackground"
+                                 Style="{StaticResource SwatchCard}" Content="Black"
+                                 Background="#FF000000" Checked="BackgroundSwatch_Checked"/>
+                </Grid>
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <Border Grid.Row="1" BorderBrush="#FF50545A" BorderThickness="0, 1, 0, 0" Margin="0, 16, 0, 0"/>
 
-            <Label Content="Background" FontWeight="Bold" Margin="0, 10, 0, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#FFEEEEEE" FontSize="15" Grid.Row="0" />
-            <Border BorderBrush="#FF4E4E4E" BorderThickness="0, 1, 0, 0" Grid.Row="1" HorizontalAlignment="Stretch"/>
-
-            <Grid Margin="0, 10, 0, 0" Grid.Row="3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <RadioButton x:Name="CheckerBackgroundRadioBox" Content="Checker pattern" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2, 0, 0, 0" Foreground="#FFEEEEEE" FontSize="12" Grid.Column="0" />
-                <RadioButton x:Name="SolidBackgroundRadioBox" Content="Black" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15, 0, 0, 0" Foreground="#FFEEEEEE" FontSize="12" Grid.Column="1" />
-            </Grid>
-        </Grid>
-
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="2" Margin="0, 12, 0, 0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Width="90" Height="25" BorderThickness="1" BorderBrush="#FF528753" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                <Button Width="90" Height="25" Foreground="White" Click="Render_Click">
+            <!-- No separate reset button. The Default card restores the whole profile, including
+                 the background, so a second control for the same thing would only be a second
+                 place to look. -->
+            <TextBlock x:Name="CustomLabel" Grid.Column="0" Text="Custom" FontSize="11"
+                       VerticalAlignment="Center" Visibility="Hidden" Foreground="#FFE3B200"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0, 0, 12, 0" Width="Auto" Height="25">
-                        <Image Source="/Resources/Image/Misc/Render_32px.png" Margin="0, 0, 0, 2" VerticalAlignment="Center" HorizontalAlignment="Left" Stretch="Fill" Width="15" Height="15" />
-                        <TextBlock Margin="4, 0, 0, 3" HorizontalAlignment="Right" VerticalAlignment="Center" Text="Render" />
-                    </StackPanel>
+            <CheckBox x:Name="CloseWindowCheckBox" Grid.Column="2" IsChecked="True"
+                      VerticalAlignment="Center" Margin="10, 1, 12, 0"
+                      Content="Close after render"/>
 
-                    <Button.Style>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Background" Value="#FF252525"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <Border Background="{TemplateBinding Background}" >
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#FF414141"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter Property="Background" Value="#FF535353"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </Border>
-
-            <CheckBox x:Name="CloseWindowCheckBox" IsChecked="True" Grid.Column="1" Margin="10, 0, 0, 4" VerticalAlignment="Bottom" Foreground="#FFEEEEEE" Content="Close this window automatically"/>
+            <Button x:Name="RenderButton" Grid.Column="3" Width="98" Height="26" IsDefault="True"
+                    Style="{StaticResource DialogPrimaryButton}" Click="Render_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/Image/Misc/Render_32px.png" Width="15" Height="15"
+                           Margin="0, 0, 6, 1" VerticalAlignment="Center" Stretch="Fill"/>
+                    <TextBlock Text="Render" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
         </Grid>
+
+        <!-- Inline. This used to be a MessageBox that appeared only once you pressed Render, by
+             which point the value had been wrong for as long as it took you to notice. -->
+        <TextBlock x:Name="ValidationLabel" Grid.Row="3" FontSize="11" Margin="0, 10, 0, 0"
+                   TextWrapping="Wrap" Visibility="Collapsed" Foreground="#FFE58A82"/>
     </Grid>
 </Window>

@@ -18,6 +18,7 @@ namespace Mapper.Gui.Controller
 
         public ToolbarWidget ToolbarWidget { get; private set; }
         public ZoomWidget ZoomWidget { get; private set; }
+        public PositionWidget PositionWidget { get; private set; }
         public DimensionWidget DimensionWidget { get; private set; }
         public StylebarWidget StylebarWidget { get; private set; }
 
@@ -51,86 +52,79 @@ namespace Mapper.Gui.Controller
             ImplementedScene.StyleBeginReset += Scene_StyleReset;
         }
 
-        private MapViewerArgs CreateMainWindowArgs() 
+        private MapViewerArgs CreateMainWindowArgs()
         {
             MapViewerArgs args = new(
                 GraphicsCanvas,
                 new InformationControl(InformationWidget),
                 new HorizontalScrollbarControl(HorizontalScrollbarWidget),
-                new VerticalScrollbarControl(VerticalScrollbarWidget));
+                new VerticalScrollbarControl(VerticalScrollbarWidget),
+                CreateRailControl());
 
-            args.Widgets.Add(CreateZoomControl());
+            args.TitleBarContent = CreateTitleBarContent();
             args.Widgets.Add(CreateStylebarControl());
-            args.Widgets.Add(CreateToolbarControl());
-            args.Widgets.Add(CreateDimensionControl());
 
             return args;
         }
 
-        private Control CreateZoomControl() 
+        /// <summary>
+        /// Position and zoom, in that order, for the right end of the title bar. Both describe
+        /// where you are looking rather than what is drawn, which is why neither is on the rail.
+        /// </summary>
+        private FrameworkElement CreateTitleBarContent()
+        {
+            StackPanel output = new()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            output.Children.Add(CreatePositionControl());
+            output.Children.Add(CreateZoomControl());
+
+            return output;
+        }
+
+        private Control CreateZoomControl()
         {
             ZoomWidget = new ZoomWidget(ImplementedScene.Map.ScaleBehaviour, GraphicsCanvas);
 
-            Thickness defaultMargin = new Thickness(7, 5, 0, 0);
-            Thickness maxMargin = new Thickness(defaultMargin.Left + 6, defaultMargin.Top, defaultMargin.Right, defaultMargin.Bottom);
-
-            ZoomControl output = new ZoomControl(ZoomWidget)
-            {
-                VerticalAlignment = VerticalAlignment.Top,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = defaultMargin
-            };
-
-            MainWindow.SizeChanged += (sender, e) => 
-            {
-                if (MainWindow.WindowState == WindowState.Maximized) output.Margin = maxMargin;
-                else output.Margin = defaultMargin;
-            };
-
-            return output;
+            return new ZoomControl(ZoomWidget);
         }
-        private Control CreateStylebarControl() 
+        private Control CreatePositionControl()
+        {
+            PositionWidget = new PositionWidget(ImplementedScene, GraphicsCanvas);
+
+            return new PositionControl(PositionWidget)
+            {
+                Margin = new Thickness(0, 0, 10, 0)
+            };
+        }
+        private Control CreateStylebarControl()
         {
             StylebarWidget = new StylebarWidget(ImplementedScene);
 
-            Thickness defaultMargin = new(7, 25, 0, 0);
-            Thickness maxMargin = new(defaultMargin.Left + 6, defaultMargin.Top, defaultMargin.Right, defaultMargin.Bottom);
-
-            StylebarControl output = new(StylebarWidget)
+            return new StylebarControl(StylebarWidget)
             {
-                VerticalAlignment = VerticalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = defaultMargin
+                Margin = new Thickness(7, 0, 0, 7)
             };
-
-            MainWindow.SizeChanged += (sender, e) =>
-            {
-                if (MainWindow.WindowState == WindowState.Maximized) output.Margin = maxMargin;
-                else output.Margin = defaultMargin;
-            };
-
-            return output;
         }
-        private Control CreateToolbarControl() 
+
+        /// <summary>
+        /// The rail owns the dimension button as well as the tools: it is the one control that
+        /// says which world you are looking at, so it sits above them rather than among them.
+        /// </summary>
+        private Control CreateRailControl()
         {
             ToolbarWidget = new ToolbarWidget(MainWindow, ImplementedRenderer);
-
-            return new ToolbarControl(ToolbarWidget)
-            {
-                VerticalAlignment = VerticalAlignment.Top,
-                Margin = new Thickness(0, 5, 0, 0)
-            };
-        }
-        private Control CreateDimensionControl() 
-        {
             DimensionWidget = new DimensionWidget(ImplementedScene);
 
-            return new DimensionControl(DimensionWidget)
-            {
-                VerticalAlignment = VerticalAlignment.Top,
-                HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 5, 7, 0)
-            };
+            RailControl output = new(ToolbarWidget);
+            output.SetHeader(new DimensionControl(DimensionWidget));
+
+            return output;
         }
 
         private void Scene_WorldBeginChange(WorldDomain? old, WorldDomain current)

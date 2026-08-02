@@ -1,0 +1,123 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Eight files used to declare a near-identical inline Button.Style, across three different
+         hover/press pairs for the same visual role. This is that style, once.
+
+         Keyed, never implicit. An implicit TargetType=Button style reaches into ControlTemplate
+         content, so it would capture the minimise/maximise/close buttons inside
+         CustomWindowFrameTemplate - which survive today only because each sets an inline style
+         of its own. Keying it removes the landmine rather than stepping around it.
+
+         Height is deliberately not set here. Callers size their own buttons, and pinning it
+         would move every migrated button by a pixel for no reason. -->
+    <Style x:Key="DialogButton" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#FF272A2C"/>
+        <Setter Property="BorderBrush" Value="#FF5F636A"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="#FFCCCCCC"/>
+        <Setter Property="FontSize" Value="12"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <!-- The outline belongs to the template. Every dialog in this app used to
+                         wrap its button in an outer Border to fake one, and paid for it twice:
+                         a duplicated Width and Height on the wrapper, and a hover fill that
+                         stopped short of an outline that never moved with it. -->
+                    <Border x:Name="Face" SnapsToDevicePixels="True"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Background only, so a variant style needs to override nothing but
+                             its own two colours and can leave the states alone. -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Face" Property="Background" Value="#FF383B3F"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Face" Property="Background" Value="#FF50545A"/>
+                        </Trigger>
+                        <!-- The old inline styles had no disabled state at all, so a disabled
+                             button looked exactly like a live one. -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Green outline, matching the Render button this app already leads its dialogs with.
+         Not cyan: cyan is carrying "selected" and "pixel count" elsewhere, and a third meaning
+         on the widest control in the window would win every glance. -->
+    <Style x:Key="DialogPrimaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DialogButton}">
+        <Setter Property="BorderBrush" Value="#FF528753"/>
+        <Setter Property="Foreground" Value="#FFEEEEEE"/>
+    </Style>
+
+    <Style x:Key="DialogDestructiveButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DialogButton}">
+        <Setter Property="Background" Value="#FF713535"/>
+        <Setter Property="BorderBrush" Value="#FF9B4949"/>
+        <Setter Property="Foreground" Value="#FFEEEEEE"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Face" SnapsToDevicePixels="True"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Face" Property="Background" Value="#FF843E3E"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Face" Property="Background" Value="#FF9B4949"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- For buttons that sit on a panel rather than in a dialog - no fill and no outline until
+         the pointer arrives. -->
+    <Style x:Key="DialogTransparentButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DialogButton}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Face" SnapsToDevicePixels="True"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Face" Property="Background" Value="#FF313438"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Face" Property="Background" Value="#FF42454B"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

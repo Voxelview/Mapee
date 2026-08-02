@@ -1,4 +1,4 @@
-﻿<Window x:Class="Mapper.Gui.MapViewer"
+<Window x:Class="Mapper.Gui.MapViewer"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,7 +8,7 @@
         Template="{DynamicResource CustomWindowFrameTemplate}"
         ResizeMode="CanResize"
         UseLayoutRounding="True"
-        BorderBrush="#FF252525"
+        BorderBrush="#FF222426"
         BorderThickness="1"
         Background="Transparent"
         WindowStartupLocation="CenterScreen"
@@ -23,27 +23,89 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/Template/CustomWindowFrameTemplate.xaml"/>
+                <!-- The widgets merge this for themselves; the window needs it too now that the
+                     title bar carries controls of its own, which sit outside every widget. -->
+                <ResourceDictionary Source="/Resources/Template/ToolTip.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
+    <!-- Column 0 is the tool rail: it reserves its width rather than floating, which is
+         what keeps the map a clean rectangle. It spans all three rows so the rail runs the
+         full height of the window body, with the scrollbars and footer starting to its right.
+         Overlay widgets carry no Grid.Column of their own, so MapViewer.Initialize pins them
+         to the canvas cell explicitly - without that they would land in the rail column. -->
     <Grid x:Name="GlobalContainer" Background="Black" Grid.Row="1">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="720*"/>
-            <ColumnDefinition Width="17"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="720*"/>
-            <RowDefinition Height="18"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DockPanel x:Name="CanvasContainer" LastChildFill="True" Background="Black" Grid.Row="0" />
-        <DockPanel x:Name="HorizontalScrollBarContainer" LastChildFill="True" Grid.Row="1" Grid.RowSpan="1" />
-        <DockPanel x:Name="VerticalScrollBarContainer" LastChildFill="True" Grid.Row="0" Grid.RowSpan="1" Grid.Column="1" />
-        <DockPanel x:Name="FooterGrid" LastChildFill="True" Grid.Row="2" Grid.Column="0" />
+        <DockPanel x:Name="RailContainer" LastChildFill="True" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" />
 
-        <DockPanel LastChildFill="True" Background="#FF101010" Grid.Row="1" Grid.RowSpan="1" Grid.Column="1" />
-        <DockPanel LastChildFill="True" Background="#FF161616" Grid.Row="2" Grid.RowSpan="1" Grid.Column="1" />
+        <DockPanel x:Name="CanvasContainer" LastChildFill="True" Background="Black" Grid.Row="0" Grid.Column="1" />
+
+        <!-- The chrome casting onto the map. These are gradient strips inside the canvas cell
+             rather than DropShadowEffects on the panels themselves: an Effect forces its whole
+             subtree into a composited layer, which would cost the title bar's text its
+             ClearType for the sake of a shadow it throws downwards anyway. Each strip is
+             anchored to the edge whose neighbour casts it, and none of them take the mouse.
+             ZIndex sits above the canvas and below the 100 the overlay widgets get. -->
+        <!-- Wide and weak. The middle stop is what makes them read as diffuse: a plain two-stop
+             ramp falls off in a straight line and shows its far edge, while dropping most of
+             the alpha in the first third and trailing the rest out over the remainder gives the
+             soft shoulder a real shadow has. -->
+        <Rectangle Grid.Row="0" Grid.Column="1" Panel.ZIndex="50" IsHitTestVisible="False"
+                   Width="16" HorizontalAlignment="Left">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#42060709" Offset="0"/>
+                    <GradientStop Color="#17060709" Offset="0.35"/>
+                    <GradientStop Color="#00060709" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <Rectangle Grid.Row="0" Grid.Column="1" Panel.ZIndex="50" IsHitTestVisible="False"
+                   Height="16" VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#42060709" Offset="0"/>
+                    <GradientStop Color="#17060709" Offset="0.35"/>
+                    <GradientStop Color="#00060709" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- The footer is the only chrome left along the bottom, so it is the only thing with a
+             shadow to cast up. Nothing borders the map on the right any more. -->
+        <Rectangle Grid.Row="0" Grid.Column="1" Panel.ZIndex="50" IsHitTestVisible="False"
+                   Height="12" VerticalAlignment="Bottom">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                    <GradientStop Color="#33060709" Offset="0"/>
+                    <GradientStop Color="#12060709" Offset="0.35"/>
+                    <GradientStop Color="#00060709" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <!-- Both bars overlay the map rather than holding a strip of their own. That is what
+             lets an unneeded bar vanish without reflowing anything: the canvas is always the
+             full cell, so the style chip pinned to its bottom-left never moves. Above the
+             shadows, below the 100 the widgets get. -->
+        <DockPanel x:Name="HorizontalScrollBarContainer" LastChildFill="True" Panel.ZIndex="60"
+                   Grid.Row="0" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" />
+        <!-- Flush against the window's right edge, which overlaps WindowChrome's 7px resize
+             border. The bar wins that overlap by declaring itself hit-testable in the chrome
+             (see VerticalScrollbarControl); the edge above and below it still resizes. -->
+        <DockPanel x:Name="VerticalScrollBarContainer" LastChildFill="True" Panel.ZIndex="60"
+                   Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
+
+        <DockPanel x:Name="FooterGrid" LastChildFill="True" Grid.Row="1" Grid.Column="1" />
     </Grid>
 </Window>

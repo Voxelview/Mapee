@@ -1,39 +1,33 @@
-﻿using System.Windows.Controls.Primitives;
-using System.Windows;
 using Mapper.Gui.Model;
 
 namespace Mapper.Gui
 {
     public static class ScrollbarUtilities
     {
-        public static void AdjustScrollbar(ScrollBar scrollbarControl, IScrollbarWidget scrollbar, double trackLength) 
+        /// <summary>
+        /// Pushes the scene's extents into the bar and reports whether there is anything to
+        /// scroll. The caller uses that to hide the bar entirely - it overlays the map, so a
+        /// track left showing with no thumb in it is a band of dimmed map for no reason.
+        /// <para>
+        /// This used to solve backwards for a viewport size that would make WPF's ScrollBar
+        /// draw a thumb of the length we wanted. <see cref="MapScrollbar"/> measures its own
+        /// thumb from the extents, so the extents are all it needs.
+        /// </para>
+        /// </summary>
+        public static bool AdjustScrollbar(MapScrollbar scrollbarControl, IScrollbarWidget scrollbar)
         {
-            if (scrollbar.LoadedArea is null || scrollbar.VisibleArea is null ||
-                scrollbarControl.Track is null || scrollbar.LoadedArea.Value.IsEmpty())
+            if (scrollbar.LoadedArea is null || scrollbar.VisibleArea is null || scrollbar.LoadedArea.Value.IsEmpty())
             {
-                scrollbarControl.Visibility = Visibility.Hidden;
-                return;
+                return false;
             }
 
+            // Order matters: the range has to be in place before Value, which clamps to it.
             scrollbarControl.Minimum = scrollbar.LoadedArea.Value.Point1;
             scrollbarControl.Maximum = scrollbar.LoadedArea.Value.Point2 - scrollbar.VisibleArea.Value.Size + 1;
+            scrollbarControl.ViewportSize = scrollbar.VisibleArea.Value.Size;
+            scrollbarControl.Value = scrollbar.VisibleArea.Value.Point1;
 
-            double portSize = FindViewportSize(scrollbar.VisibleArea.Value.Size / scrollbar.LoadedArea.Value.Size * trackLength, trackLength, scrollbarControl.Maximum, scrollbarControl.Minimum);
-            if (scrollbar.LoadedArea.Value.Size > 0 && !double.IsNaN(portSize) && portSize > 0)
-            {
-                scrollbarControl.ViewportSize = portSize;
-                scrollbarControl.Value = scrollbar.VisibleArea.Value.Point1;
-                scrollbarControl.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                scrollbarControl.Visibility = Visibility.Hidden;
-            }
-
-            static double FindViewportSize(double thumbSize, double trackLength, double max, double min)
-            {
-                return (-thumbSize * max + thumbSize * min) / (thumbSize - trackLength);
-            }
+            return scrollbarControl.HasThumb;
         }
     }
 }

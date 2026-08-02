@@ -1,10 +1,9 @@
-﻿using Mapper.Gui.Model;
+using Mapper.Gui.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Mapper.Gui
 {
@@ -16,10 +15,12 @@ namespace Mapper.Gui
         public IStylebarWidget Stylebar { get; }
 
         private IList<StylePanel> _styles = new List<StylePanel>();
-        private IList<StylePanel> _otherStyles = new List<StylePanel>();
 
-        private bool _collapsed = true;
-
+        /// <summary>
+        /// How tall a column of styles gets before the next one starts. The set is in a popup
+        /// now rather than down the window's edge, so this is only about the popup's shape - it
+        /// no longer decides how many styles you can see without a second click.
+        /// </summary>
         private const int MAX_STYLES_IN_COLUMN = 5;
 
         public StylebarControl(IStylebarWidget stylebar)
@@ -28,57 +29,42 @@ namespace Mapper.Gui
 
             Stylebar = stylebar;
             SetStylePanels();
-            SetState(true);
+            SetChip();
 
             Stylebar.StyleCollectionChanged += Stylebar_StyleCollectionChanged;
         }
 
         private void SetStylePanels()
         {
-            IList<IStyle> mainStyles = Stylebar.Styles.Take(MAX_STYLES_IN_COLUMN).ToList();
-
-            SetMainStyleGrid(mainStyles);
-            SetOtherStyleGrid(Stylebar.Styles.Skip(mainStyles.Count).ToList());
-        }
-
-        private void SetMainStyleGrid(IList<IStyle> styles) 
-        {
-            _styles.Clear();
-
-            AddToStyleGrid(MainStyleGrid, styles, _styles);
-        }
-        private void SetOtherStyleGrid(IList<IStyle> styles) 
-        {
-            _otherStyles.Clear();
             StyleGrid.ColumnDefinitions.Clear();
             StyleGrid.Children.Clear();
+            _styles.Clear();
 
-            MoreButtonBorder.Visibility = styles.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-            StyleGrid.Visibility = styles.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-            if (styles.Count == 0) return;
+            IReadOnlyList<IStyle> styles = Stylebar.Styles;
 
-            for (int i = 0, index = 0; i < styles.Count; i += MAX_STYLES_IN_COLUMN, index++) 
+            for (int i = 0; i < styles.Count; i += MAX_STYLES_IN_COLUMN)
             {
-                Grid grid = new() 
+                Grid column = new()
                 {
                     Width = double.NaN,
                     Height = double.NaN,
-                    Margin = new Thickness(0, 0, 6, 0),
+                    Margin = new Thickness(i == 0 ? 0 : 6, 0, 0, 0),
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-                StyleGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Auto) });
+                StyleGrid.ColumnDefinitions.Add(new ColumnDefinition()
+                {
+                    Width = new GridLength(0, GridUnitType.Auto)
+                });
 
-                Grid.SetRow(grid, 0);
-                Grid.SetColumn(grid, StyleGrid.ColumnDefinitions.Count - 1);
-                StyleGrid.Children.Add(grid);
+                Grid.SetRow(column, 0);
+                Grid.SetColumn(column, StyleGrid.ColumnDefinitions.Count - 1);
+                StyleGrid.Children.Add(column);
 
-                AddToStyleGrid(grid, styles.Skip(i).Take(Math.Min(MAX_STYLES_IN_COLUMN, styles.Count - i)).ToList(), _otherStyles);
+                AddToStyleGrid(column, styles.Skip(i).Take(Math.Min(MAX_STYLES_IN_COLUMN, styles.Count - i)).ToList());
             }
-
-            _styles = _styles.Concat(_otherStyles).ToList();
         }
-        private void AddToStyleGrid(Grid grid, IList<IStyle> styles, IList<StylePanel> output) 
+        private void AddToStyleGrid(Grid grid, IList<IStyle> styles)
         {
             grid.RowDefinitions.Clear();
             grid.Children.Clear();
@@ -89,69 +75,63 @@ namespace Mapper.Gui
 
                 StylePanel panel = new(style)
                 {
-                    Margin = new Thickness(0, 0, 0, i == styles.Count - 1 ? 6 : 7),
+                    Margin = new Thickness(0, i == 0 ? 0 : 6, 0, 0),
                     VerticalAlignment = VerticalAlignment.Top
                 };
                 panel.MouseDown += Style_MouseDown;
 
-                grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(0, GridUnitType.Auto) });
+                grid.RowDefinitions.Add(new RowDefinition()
+                {
+                    Height = new GridLength(0, GridUnitType.Auto)
+                });
 
                 Grid.SetRow(panel, grid.RowDefinitions.Count - 1);
                 Grid.SetColumn(panel, 0);
                 grid.Children.Add(panel);
 
-                output.Add(panel);
+                _styles.Add(panel);
                 if (Stylebar.SelectedStyleId == style.Id) panel.Select();
                 else panel.Deselect();
             }
         }
 
-        private void Style_MouseDown(object? sender, EventArgs e) 
+        /// <summary>
+        /// The chip wears the current style, so the collapsed state still answers "what am I
+        /// looking at" without opening anything.
+        /// </summary>
+        private void SetChip()
+        {
+            foreach (IStyle style in Stylebar.Styles)
+            {
+                if (style.Id != Stylebar.SelectedStyleId) continue;
+
+                ChipIcon.Source = style.Icon;
+                ChipLabel.Text = style.Name;
+                return;
+            }
+        }
+
+        private void ChipButton_Click(object sender, RoutedEventArgs e)
+        {
+            StylePopup.IsOpen = !StylePopup.IsOpen;
+        }
+
+        private void Style_MouseDown(object? sender, EventArgs e)
         {
             if (sender is null || sender is not StylePanel panel) return;
+
             Stylebar.SelectedStyleId = panel.Style.Id;
+            StylePopup.IsOpen = false;
         }
-        private void Stylebar_StyleCollectionChanged(object? sender, IStyle style) 
+        private void Stylebar_StyleCollectionChanged(object? sender, IStyle style)
         {
-            foreach (StylePanel panel in _styles) 
+            foreach (StylePanel panel in _styles)
             {
                 if (panel.Style != style) panel.Deselect();
                 else panel.Select();
             }
 
-            bool otherSelected = false;
-            foreach (StylePanel panel in _otherStyles)
-            {
-                if (panel.Style != style) panel.Deselect();
-                else {
-                    panel.Select();
-                    otherSelected = true;
-                }
-            }
-
-            if (otherSelected) MoreButtonBorder.BorderBrush = Brushes.Gold;
-            else MoreButtonBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(49, 49, 49));
-        }
-
-        private void MoreButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetState(!_collapsed);
-        }
-        private void SetState(bool state) 
-        {
-            _collapsed = state;
-
-            if (_collapsed)
-            {
-                MoreButton.Content = "More";
-                MoreButton.ToolTip = "Show more styles";
-                StyleGrid.Visibility = Visibility.Collapsed;
-                return;
-            }
-
-            MoreButton.Content = "Collapse";
-            MoreButton.ToolTip = "Show less styles";
-            StyleGrid.Visibility = Visibility.Visible;
+            SetChip();
         }
     }
 }

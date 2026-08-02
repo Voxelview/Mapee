@@ -1,23 +1,27 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- The thumb is the bar. Nothing here sizes it: it takes its length from the Track and its
+         thickness from whatever the Track is running in, so the bar's thickness is set in one
+         place - the Width/Height setters below - and the thumb follows. -->
     <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Grid x:Name="Grid">
-                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
-                        <Border x:Name="Rectangle1" CornerRadius="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto"  Background="{TemplateBinding Background}" />
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="Tag" Value="Horizontal">
-                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
-                            <Setter TargetName="Rectangle1" Property="Height" Value="7" />
-                        </Trigger>
-                        <Trigger Property="Tag" Value="Vertical">
-                            <Setter TargetName="Rectangle1" Property="Width" Value="5" />
-                            <Setter TargetName="Rectangle1" Property="Height" Value="Auto" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                    <!-- A dark fill inside a lighter hairline. Over terrain that runs from dark
+                         water to bright orange, a single flat value has to lose against one end
+                         or the other; an outline reads against both, and lets the fill stay
+                         dark enough to sit on the map rather than on top of it.
+
+                         Snapped to device pixels. A Track places its thumb at a fractional
+                         offset along the bar, so without this the thumb's bounds land between
+                         pixels and a 1-wide edge gets rounded away rather than drawn - which is
+                         why one side of the outline kept going missing on both bars. -->
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            UseLayoutRounding="True"
+                            SnapsToDevicePixels="True" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -25,20 +29,40 @@
 
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Foreground" Value="#FF252525" />
+        <!-- Carries the whole bar on its own, now that the track behind it is invisible. Slate
+             rather than a flat grey, so it belongs to the same family as the chrome around it,
+             and pitched to the middle of the range: light enough to read over dark water, dark
+             enough not to glare off bright terrain. -->
+        <!-- Foreground is the thumb's fill, BorderBrush its outline. -->
+        <Setter Property="Foreground" Value="#FF262B31" />
+        <Setter Property="BorderBrush" Value="#FF6B7480" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Width" Value="7" />
+        <Setter Property="Width" Value="10" />
         <Setter Property="Template">
             <Setter.Value>
+                <!-- This used to build the horizontal bar by rotating a vertical one twice - a
+                     LayoutTransform on the root and another on the Track. That works for the
+                     look but scrambles which axis is which, so a thickness set on the thumb
+                     landed on the wrong one and the thumb never filled its bar. Track already
+                     knows how to be horizontal; letting it, instead of rotating it, means width
+                     is width in every frame. -->
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <Grid x:Name="GridRoot" Width="7" Background="{TemplateBinding Background}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="0.00001*" />
-                        </Grid.RowDefinitions>
-
-                        <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                    <Grid x:Name="GridRoot" Background="{TemplateBinding Background}">
+                        <Track x:Name="PART_Track" Orientation="{TemplateBinding Orientation}"
+                               IsDirectionReversed="True" Focusable="false">
                             <Track.Thumb>
-                                <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                                <!-- The vertical bar sits flush against the window's right edge,
+                                     which WindowChrome reserves as a resize border: without this
+                                     the grip wins the overlap and reaching for the thumb gets you
+                                     a resize cursor instead. Declared on the thumb alone rather
+                                     than on the whole bar, so only the few pixels the thumb is
+                                     currently occupying lose the resize grip - the rest of the
+                                     edge still resizes. Harmless on bars nowhere near an edge:
+                                     the flag only decides who wins inside a chrome region. -->
+                                <Thumb x:Name="Thumb" WindowChrome.IsHitTestVisibleInChrome="True"
+                                       Background="{TemplateBinding Foreground}"
+                                       BorderBrush="{TemplateBinding BorderBrush}"
+                                       Style="{DynamicResource ScrollThumbs}" />
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
                                 <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
@@ -51,29 +75,24 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
-                            <Setter Value="#FF323232" TargetName="Thumb" Property="Background" />
+                            <Setter Value="#FF343B43" TargetName="Thumb" Property="Background" />
+                            <Setter Value="#FF8A94A1" TargetName="Thumb" Property="BorderBrush" />
                         </Trigger>
                         <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
-                            <Setter Value="#FF525252" TargetName="Thumb" Property="Background" />
+                            <Setter Value="#FF444D58" TargetName="Thumb" Property="Background" />
+                            <Setter Value="#FFA6B0BD" TargetName="Thumb" Property="BorderBrush" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
                         </Trigger>
+
                         <Trigger Property="Orientation" Value="Horizontal">
-                            <Setter TargetName="GridRoot" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="-90" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="PART_Track" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="-90" />
-                                </Setter.Value>
-                            </Setter>
                             <Setter Property="Width" Value="Auto" />
-                            <Setter Property="Height" Value="8" />
-                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                            <Setter Property="Height" Value="10" />
+                            <!-- A horizontal Track runs left to right unreversed; only the
+                                 vertical one counts downwards from its maximum. -->
+                            <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" />
                             <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
                             <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
                         </Trigger>

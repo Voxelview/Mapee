@@ -31,10 +31,10 @@ namespace Mapper.Gui
         {
             Brush backroundBrush = Background;
 
-            Brush mouseOverBackgroundBrush = new SolidColorBrush(Color.FromRgb(31, 31, 31));
+            Brush mouseOverBackgroundBrush = new SolidColorBrush(Color.FromRgb(29, 31, 33));
             mouseOverBackgroundBrush.Freeze();
 
-            Brush mouseDownBackgroundBrush = new SolidColorBrush(Color.FromRgb(43, 43, 43));
+            Brush mouseDownBackgroundBrush = new SolidColorBrush(Color.FromRgb(41, 44, 48));
             mouseDownBackgroundBrush.Freeze();
 
             bool isDown = false;

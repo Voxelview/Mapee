@@ -1,0 +1,16 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- The readout palette. These lived inside InformationControl's own Grid.Resources, which
+         was fine while the footer was the only thing that reported a coordinate; the title bar
+         reports one too now, and both should be the same green. -->
+
+    <SolidColorBrush x:Key="LabelColor">#FF9AA5BC</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelSeperatorColor">#FF6B7689</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelInformationColor">#FFC78BFF</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelInformationDarkColor">#FFC2CBDD</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelNumberColor">#FF3FD5F5</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelCoordsColor">#FF4BE06B</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelSizeColor">#FFFFB43C</SolidColorBrush>
+    <SolidColorBrush x:Key="LabelVersionColor">#FFFF6FB0</SolidColorBrush>
+</ResourceDictionary>

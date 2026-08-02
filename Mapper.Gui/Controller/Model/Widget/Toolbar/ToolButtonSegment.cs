@@ -9,5 +9,7 @@ namespace Mapper.Gui.Controller
 
         public double LeftGap { get; set; }
         public double RightGap { get; set; }
+
+        public bool AlignToEnd { get; set; }
     }
 }

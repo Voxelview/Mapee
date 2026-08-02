@@ -119,11 +119,34 @@ namespace Mapper.Gui
             secondaryTitleLabel.Content = secondaryTitle;
         }
 
+        /// <summary>
+        /// Puts a window's own controls into the title bar, between the version label and the
+        /// caption buttons. Unlike the parts resolved in the constructor this one is optional:
+        /// the template is shared with dialogs that never call it, and the host stays empty
+        /// there rather than throwing.
+        /// </summary>
+        public void SetTitleBarContent(object content)
+        {
+            if (Template.FindName("TitleBarContent", Window) is not ContentControl host) return;
+            host.Content = content;
+
+            // FramePanel.MouseDown drags the window, and it sits under everything in the title
+            // bar. Controls that take a press of their own - buttons, the slider's thumb and
+            // track - already stop it, but the gaps between them and any plain label do not,
+            // and a leaked press there both drags the window and un-maximizes it mid-gesture.
+            // Swallowing it once here covers whatever a window chooses to put up here.
+            host.MouseLeftButtonDown += (sender, e) => e.Handled = true;
+        }
+
         private void WindowStateChanged(object? sender, EventArgs e)
         {
             if (Window.WindowState == WindowState.Maximized)
             {
-                Window.BorderThickness = new Thickness(7);
+                // A maximized WindowChrome window is placed at -8,-8 and sized to the work area
+                // plus 16, so exactly 8 of each edge sits off-screen; this pads the content back
+                // in by the same. It was 7, which left every edge a pixel short - only visible
+                // on something drawn hard against one, which the scrollbar is.
+                Window.BorderThickness = new Thickness(8);
                 MaximizeButton.Content = NormalizeImage;
             }
             else

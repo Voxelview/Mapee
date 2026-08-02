@@ -1,16 +1,12 @@
-﻿<UserControl x:Class="Mapper.Gui.StylebarControl"
+<UserControl x:Class="Mapper.Gui.StylebarControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Mapper.Gui"
-             mc:Ignorable="d" 
-             BorderBrush="#FF313131" BorderThickness="1"
+             mc:Ignorable="d"
+             UseLayoutRounding="True"
              Width="Auto" Height="Auto">
-
-    <UserControl.Effect>
-        <DropShadowEffect Direction="-75" ShadowDepth="2" Opacity="5" BlurRadius="6" Color="Black"/>
-    </UserControl.Effect>
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -20,37 +16,18 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid Height="Auto" Background="#FF161616">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="7" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <Grid>
+        <!-- The whole set used to sit open down the left edge, which is the space the rail now
+             takes. Collapsed to a chip that names the style you are in and opens the rest. -->
+        <Border x:Name="ChipBorder" BorderBrush="#FF303337" BorderThickness="1" Background="#FF0F1012" Height="27">
+            <Border.Effect>
+                <DropShadowEffect Direction="-75" ShadowDepth="2" Opacity="5" BlurRadius="6" Color="Black"/>
+            </Border.Effect>
 
-        <Border BorderBrush="#FF313131" BorderThickness="0, 0, 0, 1" VerticalAlignment="Top" Grid.Row="0" Height="25">
-            <StackPanel Background="#FF1F1F1F">
-                <Label Content="Styles" FontSize="14" Padding="0" Margin="0, 2, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFEEEEEE" Grid.Row="0" />
-            </StackPanel>
-        </Border>
-
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <Grid x:Name="MainStyleGrid" Width="Auto" Height="Auto" Margin="6, 0, 6, 0" HorizontalAlignment="Center" Grid.Column="0" />
-            <Grid x:Name="StyleGrid" Width="Auto" Grid.Column="1" />
-        </Grid>
-
-        <Border x:Name="MoreButtonBorder" Width="68" Height="19" Margin="7, 2, 0, 7" BorderThickness="1" BorderBrush="#FF313131" HorizontalAlignment="Left" Grid.Row="3">
-            <Button x:Name="MoreButton" Foreground="#FFDDDDDD" Content="More" Width="68" Height="17" HorizontalAlignment="Left" Cursor="Hand" Click="MoreButton_Click">
+            <Button x:Name="ChipButton" Cursor="Hand" ToolTip="Change render style" Click="ChipButton_Click">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
-                        <Setter Property="Background" Value="#FF252525"/>
-                        <Setter Property="BorderThickness" Value="1"/>
-                        <Setter Property="BorderBrush" Value="#FF323232"/>
+                        <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
                         <Setter Property="Template">
                             <Setter.Value>
@@ -63,15 +40,48 @@
                         </Setter>
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FF323232"/>
+                                <Setter Property="Background" Value="#FF313438"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" Value="#FF414141"/>
+                                <Setter Property="Background" Value="#FF42454B"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
+
+                <StackPanel Orientation="Horizontal" Margin="4, 0, 8, 0">
+                    <Image x:Name="ChipIcon" Width="19" Height="19" RenderOptions.BitmapScalingMode="HighQuality" Stretch="Fill"/>
+                    <TextBlock x:Name="ChipLabel" Text="Style" FontSize="11.5" Foreground="#FFDDDDDD"
+                               VerticalAlignment="Center" Margin="7, 0, 0, 0"/>
+                </StackPanel>
             </Button>
         </Border>
+
+        <!-- Above the chip: the chip sits on the bottom edge of the map, so there is nothing
+             below it to open into. -->
+        <Popup x:Name="StylePopup" PlacementTarget="{Binding ElementName=ChipBorder}"
+               Placement="Top" VerticalOffset="-2" StaysOpen="False" AllowsTransparency="True">
+            <Border Background="#FF0F1012" BorderBrush="#FF303337" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect Direction="-75" ShadowDepth="2" Opacity="5" BlurRadius="6" Color="Black"/>
+                </Border.Effect>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border BorderBrush="#FF303337" BorderThickness="0, 0, 0, 1" Grid.Row="0" Height="25">
+                        <StackPanel Background="#FF1D1F21">
+                            <Label Content="Styles" FontSize="14" Padding="0" Margin="0, 2, 0, 0"
+                                   HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFEEEEEE"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Grid x:Name="StyleGrid" Grid.Row="1" Margin="6" />
+                </Grid>
+            </Border>
+        </Popup>
     </Grid>
 </UserControl>

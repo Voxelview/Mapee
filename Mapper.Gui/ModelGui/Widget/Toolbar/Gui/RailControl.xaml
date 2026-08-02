@@ -1,0 +1,62 @@
+<UserControl x:Class="Mapper.Gui.RailControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Mapper.Gui"
+             mc:Ignorable="d"
+             UseLayoutRounding="True"
+             Width="Auto" Height="Auto" Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Template/ToolButton.xaml"/>
+                <!-- Implicit Image style: dims a disabled tool's glyph to 0.33. -->
+                <ResourceDictionary Source="/Resources/Template/ToolButtonImage.xaml"/>
+                <ResourceDictionary Source="/Resources/Template/ToolTip.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- The rail is docked rather than floating, so it gets a seam against the map instead of
+         the box-and-drop-shadow the old toolbar wore. The width is set here rather than left to
+         the buttons: at exactly button width the 1px seam eats one side's gutter and the column
+         reads a pixel off centre.
+
+         Everything in this column is an EVEN number, and has to stay that way. The glyphs are
+         18 wide; centring an 18 in a 31 button leaves 6.5 a side, and layout rounding has to
+         resolve that half pixel one way or the other, which puts a 1.333 stroke half a pixel
+         off its grid and visibly shifts the icon. 40 and 30 divide cleanly at every step. -->
+    <Border BorderBrush="#FF1D1F21" BorderThickness="0, 0, 1, 0" Background="#FF0F1012">
+        <Grid Width="40">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <!-- Takes the rest of the height, so a segment marked AlignToEnd has somewhere
+                     to be pushed down to. -->
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- The open-world button, built from IToolbarWidget.PrimaryButton. The margin is on
+                 top of the gap the button carries itself, so the rail starts with a little air
+                 rather than the button sitting hard against the title bar. -->
+            <ContentControl x:Name="PrimaryHost" Grid.Row="0" Margin="0, 4, 0, 0" />
+
+            <!-- Filled by SetHeader with the dimension button. Kept a slot rather than built
+                 in, because the dimension widget has its own model and lifetime. -->
+            <ContentControl x:Name="HeaderHost" Grid.Row="1" />
+
+            <!-- Same rule the segment boundaries get, at the same weight. -->
+            <Border x:Name="HeaderSeparator" Grid.Row="2" Visibility="Collapsed"
+                    BorderBrush="#FF303337" BorderThickness="0, 0, 0, 1" Margin="7, 5, 7, 5" />
+
+            <!-- The bottom margin mirrors the one above the open-world button, so a segment
+                 pushed to the foot of the rail ends the same distance off it as the first
+                 button sits below the title bar. Both land at 7 once the buttons' own gap is
+                 counted. -->
+            <Grid x:Name="ButtonContainer" Grid.Row="3" Margin="0, 0, 0, 4" />
+        </Grid>
+    </Border>
+</UserControl>

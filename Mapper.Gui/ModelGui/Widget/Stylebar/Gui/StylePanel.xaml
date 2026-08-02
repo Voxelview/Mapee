@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Mapper.Gui.StylePanel"
+<UserControl x:Class="Mapper.Gui.StylePanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -21,8 +21,8 @@
     </UserControl.Resources>
 
     <Grid>
-        <Border x:Name="MainBorder" Margin="1, 1, 1, 1" BorderBrush="#FF404040" BorderThickness="1">
-            <Grid Width="68" Height="73" Background="#FF1F1F1F">
+        <Border x:Name="MainBorder" Margin="1, 1, 1, 1" BorderBrush="#FF414449" BorderThickness="1">
+            <Grid Width="68" Height="73" Background="#FF1D1F21">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="18" />
                     <RowDefinition Height="*" />
@@ -30,7 +30,7 @@
 
                 <Label x:Name="StyleLabel" FontSize="11" FontWeight="SemiBold" Padding="0" Margin="0, 1, 0, 0" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#FFEEEEEE" Grid.Row="0" />
 
-                <Border x:Name="ImageContainer" BorderThickness="0, 1, 0, 0" BorderBrush="#FF404040" Margin="0" Grid.Row="1">
+                <Border x:Name="ImageContainer" BorderThickness="0, 1, 0, 0" BorderBrush="#FF414449" Margin="0" Grid.Row="1">
                     <Image x:Name="StyleIcon" RenderOptions.BitmapScalingMode="HighQuality" Stretch="Fill" Width="68" Height="68" MouseEnter="StyleIcon_MouseEnter" MouseLeave="StyleIcon_MouseLeave" MouseMove="StyleIcon_MouseMove" >
                         <Image.Style>
                             <Style TargetType="Image">
@@ -49,6 +49,8 @@
             </Grid>
         </Border>
 
-        <Border x:Name="IconBorder" Margin="0, 0, 0, 0" BorderBrush="Gold" Width="70" Height="76" Panel.ZIndex="100"/>
+        <!-- The accent's "selected" tone, shared with a toggled-on rail button and with the
+             dimension picker's ring - see ToolButtonHook.TurnedOn.DefaultBorder. -->
+        <Border x:Name="IconBorder" Margin="0, 0, 0, 0" BorderBrush="#FFE3B200" Width="70" Height="76" Panel.ZIndex="100"/>
     </Grid>
 </UserControl>

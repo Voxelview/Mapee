@@ -13,6 +13,10 @@ namespace Mapper.Gui.Controller
 
         public double ZoomPercentage => ScaleBehaviour.CurrentZoomCoefficient;
 
+        public int Level => ScaleBehaviour.CurrentZoomLevel;
+        public int MinLevel => ScaleBehaviour.MinZoomLevels;
+        public int MaxLevel => ScaleBehaviour.MaxZoomLevels;
+
         public event EventHandler? LevelChanged;
 
         public ZoomWidget(ScaleBehaviour scaleBehaviour, Control baseControl)
@@ -35,6 +39,26 @@ namespace Mapper.Gui.Controller
         public void ZoomOut()
         {
             ScaleBehaviour.ZoomOut(GetCenterPoint());
+        }
+
+        /// <summary>
+        /// Split by direction rather than passing a signed delta, because ScaleBehaviour's two
+        /// methods each guard only their own end of the range: ZoomIn bails at the maximum and
+        /// ZoomOut at the minimum, so a negative delta handed to the wrong one is dropped at a
+        /// limit instead of moving back off it. Clamping first also matters - neither method
+        /// re-checks per level, so an unclamped delta would sail straight past the bound.
+        /// </summary>
+        public void SetLevel(int level)
+        {
+            level = Math.Clamp(level, MinLevel, MaxLevel);
+
+            int delta = level - ScaleBehaviour.CurrentZoomLevel;
+            if (delta == 0) return;
+
+            Point center = GetCenterPoint();
+
+            if (delta > 0) ScaleBehaviour.ZoomIn(center, delta);
+            else ScaleBehaviour.ZoomOut(center, -delta);
         }
 
         private Point GetCenterPoint()

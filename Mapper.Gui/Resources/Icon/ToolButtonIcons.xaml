@@ -6,17 +6,25 @@
          are 1.333 wide: a fixed bitmap of one has nothing left to give a scaled monitor.
 
          The grid renders at 18, which is what makes 1.333 come out as exactly one pixel - see
-         ToolbarControl.ICON_SIZE. Nothing here is clipped to the grid: block filter and
-         appearance are drawn from a lattice that runs past it on every side, and the web set
-         marks those `overflow="visible"` rather than trimming them, so they simply occupy more
-         room than the other nine. What every icon does carry is a transparent tile of the full
-         grid, which is what holds the ones that DON'T fill it - the bed, the ruler - on the same
-         centre and the same scale as the ones that do. -->
+         GlyphIcon.GRID and GlyphIcon.SIZE. Nothing here is clipped to the grid: open world is
+         drawn from a cube sized by its width, and a cube is taller than it is wide, so it runs
+         1.856 past the grid at each end and renders 18 x 20.784 where the rest are 18 square.
+         The web set marks it `overflow="visible"` rather than trimming it. What every icon does
+         carry is a transparent tile of the full grid, which is what holds the ones that DON'T
+         fill it - the bed, the ruler - on the same centre and scale as the ones that do. -->
 
     <!-- Every glyph's ink, and the base the tiers ride on - the ruler's 0.5 dither, the cube's
          0.75 and 0.48 faces are all fractions of THIS, so retuning it moves the whole set. -->
     <Color x:Key="ToolButtonIconColor">#FFFFFFFF</Color>
     <SolidColorBrush x:Key="ToolButtonIconBrush" Color="{StaticResource ToolButtonIconColor}"/>
+
+    <!-- The second ink, for the copies of these glyphs that sit in a window's title bar rather
+         than on a rail button. A rail button is white and takes the accent as an overlay tint it
+         fades in and out with its state; a frame icon has no states, so it carries the accent in
+         the ink itself. Same tone the rest of the app calls "selected" - see
+         ToolButtonHook.TurnedOn.DefaultBorder. -->
+    <Color x:Key="ToolButtonIconAccentColor">#FFE3B200</Color>
+    <SolidColorBrush x:Key="ToolButtonIconAccentBrush" Color="{StaticResource ToolButtonIconAccentColor}"/>
 
     <RectangleGeometry x:Key="ToolButtonIconGrid" Rect="0,0,24,24"/>
 
@@ -187,21 +195,41 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <!-- Split out for the same reason as the appearance glyph: the window frame draws it in the
+         accent while the rail keeps it white. The filled shapes - the viewfinder bump and the
+         flash - are one drawing, the stroked body another, so both inks need both. -->
+    <Geometry x:Key="ExportFillGeometry">M4,1.333 H9.333 V4 H4 Z M18.667,5.333 H21.333 V8 H18.667 Z</Geometry>
+
+    <GeometryGroup x:Key="ExportStrokeGeometry">
+        <PathGeometry Figures="M0.667,3.333 H23.333 V20.667 H0.667 Z"/>
+        <EllipseGeometry Center="12,12" RadiusX="4" RadiusY="4"/>
+    </GeometryGroup>
+
     <DrawingImage x:Key="Export">
         <DrawingImage.Drawing>
             <DrawingGroup>
                 <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
                 <GeometryDrawing Brush="{StaticResource ToolButtonIconBrush}"
-                                 Geometry="M4,1.333 H9.333 V4 H4 Z M18.667,5.333 H21.333 V8 H18.667 Z"/>
-                <GeometryDrawing>
-                    <GeometryDrawing.Geometry>
-                        <GeometryGroup>
-                            <PathGeometry Figures="M0.667,3.333 H23.333 V20.667 H0.667 Z"/>
-                            <EllipseGeometry Center="12,12" RadiusX="4" RadiusY="4"/>
-                        </GeometryGroup>
-                    </GeometryDrawing.Geometry>
+                                 Geometry="{StaticResource ExportFillGeometry}"/>
+                <GeometryDrawing Geometry="{StaticResource ExportStrokeGeometry}">
                     <GeometryDrawing.Pen>
                         <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <!-- The export window's frame icon. Same glyph, accent ink. -->
+    <DrawingImage x:Key="ExportAccent">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Brush="{StaticResource ToolButtonIconAccentBrush}"
+                                 Geometry="{StaticResource ExportFillGeometry}"/>
+                <GeometryDrawing Geometry="{StaticResource ExportStrokeGeometry}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconAccentBrush}" Thickness="1.333"/>
                     </GeometryDrawing.Pen>
                 </GeometryDrawing>
             </DrawingGroup>
@@ -244,23 +272,38 @@
          2.667 rather than 3.333, because at 3.333 the top one reaches 0.667 above the grid, and
          a drawing whose bounds start half a pixel high puts all three tracks across a boundary. -->
 
+    <!-- Lifted out of the DrawingImage because two of them draw it now, in two inks. It is the
+         only glyph in this file with a second copy; the rest are still self-contained. -->
+    <GeometryGroup x:Key="AppearanceGeometry">
+        <PathGeometry Figures="M0.667,3.333 H9.333 M18.667,3.333 H23.333
+                               M0.667,11.333 H4.667 M14,11.333 H23.333
+                               M0.667,19.333 H9.333 M18.667,19.333 H23.333"/>
+        <EllipseGeometry Center="14,3.333" RadiusX="2.667" RadiusY="2.667"/>
+        <EllipseGeometry Center="9.333,11.333" RadiusX="2.667" RadiusY="2.667"/>
+        <EllipseGeometry Center="14,19.333" RadiusX="2.667" RadiusY="2.667"/>
+    </GeometryGroup>
+
     <DrawingImage x:Key="Appearance">
         <DrawingImage.Drawing>
             <DrawingGroup>
                 <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
-                <GeometryDrawing>
-                    <GeometryDrawing.Geometry>
-                        <GeometryGroup>
-                            <PathGeometry Figures="M0.667,3.333 H9.333 M18.667,3.333 H23.333
-                                                   M0.667,11.333 H4.667 M14,11.333 H23.333
-                                                   M0.667,19.333 H9.333 M18.667,19.333 H23.333"/>
-                            <EllipseGeometry Center="14,3.333" RadiusX="2.667" RadiusY="2.667"/>
-                            <EllipseGeometry Center="9.333,11.333" RadiusX="2.667" RadiusY="2.667"/>
-                            <EllipseGeometry Center="14,19.333" RadiusX="2.667" RadiusY="2.667"/>
-                        </GeometryGroup>
-                    </GeometryDrawing.Geometry>
+                <GeometryDrawing Geometry="{StaticResource AppearanceGeometry}">
                     <GeometryDrawing.Pen>
                         <Pen Brush="{StaticResource ToolButtonIconBrush}" Thickness="1.333"/>
+                    </GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <!-- The render settings window's frame icon. Same glyph, accent ink. -->
+    <DrawingImage x:Key="AppearanceAccent">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="Transparent" Geometry="{StaticResource ToolButtonIconGrid}"/>
+                <GeometryDrawing Geometry="{StaticResource AppearanceGeometry}">
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="{StaticResource ToolButtonIconAccentBrush}" Thickness="1.333"/>
                     </GeometryDrawing.Pen>
                 </GeometryDrawing>
             </DrawingGroup>

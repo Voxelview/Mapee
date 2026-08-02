@@ -36,9 +36,14 @@ namespace Mapper.Gui
             _mouseDownBorder.Freeze();
         }
 
+        /// <summary>
+        /// 2 to match the dimension picker's ring - see DimensionButtonPanel.Select. It lands on
+        /// the outer two pixels, which covers MainBorder's resting rule and stops short of the
+        /// thumbnail, so a selected tile is a clean band of accent either way.
+        /// </summary>
         public void Select()
         {
-            IconBorder.BorderThickness = new Thickness(1);
+            IconBorder.BorderThickness = new Thickness(2);
         }
         public void Deselect()
         {
