@@ -17,6 +17,7 @@
         ["minecraft:swamp", "#6A7039"],
         ["minecraft:mangrove_swamp", "#8DB127"],
         ["minecraft:cherry_grove", "#B6DB61"],
+        ["minecraft:dappled_forest", "#E68E30"],
 
         {
             "Biomes": [

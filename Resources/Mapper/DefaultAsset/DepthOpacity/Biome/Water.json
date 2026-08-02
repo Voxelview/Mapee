@@ -28,6 +28,12 @@
                 "minecraft:deep_lukewarm_ocean"
             ],
             "OpacityDepth": {"MaxDepth": 1.75, "OpacityMul": 0.875, "Id": "water"}
+        },
+        {
+            "Biomes": [
+                "minecraft:dappled_forest"
+            ],
+            "OpacityDepth": {"MaxDepth": 2, "OpacityMul": 1, "Id": "water"}
         }
     ]
 }

@@ -158,6 +158,7 @@
             "Color": "#3F76E4"
         },
 
-        ["minecraft:pale_garden", "#76889D"]
+        ["minecraft:pale_garden", "#76889D"],
+        ["minecraft:dappled_forest", "#375154"]
     ]
 }
