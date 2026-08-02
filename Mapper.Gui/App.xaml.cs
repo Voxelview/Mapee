@@ -39,11 +39,12 @@ namespace Mapper.Gui
         
         private static void InitializeBackgroundWork()
         {
-            BackgroundWork.Run(TimeSpan.FromSeconds(5), () =>
+            // Keeps the working set in check between renders. This must stay non-blocking: a forced
+            // blocking gen2 collection here suspends every mapping thread, and during a large load
+            // that fires often enough to dominate the run.
+            BackgroundWork.Run(TimeSpan.FromSeconds(30), () =>
             {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
+                GC.Collect(2, GCCollectionMode.Optimized, blocking: false);
             });
         }
     }

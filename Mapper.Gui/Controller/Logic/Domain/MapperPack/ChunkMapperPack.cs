@@ -76,7 +76,7 @@ namespace Mapper.Gui.Logic
         }
         protected IObjectScanner<ConvertedApiChunk, IScannedChunk> CreateChunkScanner()
         {
-            _scannerFactory = new SharedColumnScanArgsFactory(AssetPack.BlockGroupingAsset);
+            _scannerFactory = new SharedColumnScanArgsFactory(AssetPack.BlockGroupingAsset, WorldMapper.SCAN_SLOTS);
 
             _chunkScanner = new ChunkScanner(new ColumnScanner(), _scannerFactory);
             return _chunkScanner;

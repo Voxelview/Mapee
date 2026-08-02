@@ -4,10 +4,11 @@ namespace Mapper
 {
     public readonly struct MapRenderArgs
     {
-        public IList<IScannedChunk> Chunks { get; }
+        /// <summary>Slot-per-chunk array from <c>ScannedRegion</c>; empty slots are null.</summary>
+        public IScannedChunk?[] Chunks { get; }
         public IStepProvider StepProvider { get; }
 
-        public MapRenderArgs(IList<IScannedChunk> chunks, IStepProvider stepProvider)
+        public MapRenderArgs(IScannedChunk?[] chunks, IStepProvider stepProvider)
         {
             Chunks = chunks;
             StepProvider = stepProvider;

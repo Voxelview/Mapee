@@ -15,7 +15,7 @@ namespace NbtEditor
         {
             for (int i = 0; i < tag.Count; i++)
             {
-                KeyValueEntry<string, Tag> pair = tag.ElementAt(i);
+                KeyValueEntry<string, Tag> pair = tag.EntryAt(i);
 
                 writer.WriteSignedByte((sbyte)pair.Value.Id);
                 writer.WriteString(pair.Key);

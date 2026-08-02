@@ -1,11 +1,29 @@
 ﻿using NbtEditor;
 using CommonUtilities.Pool;
 using System.Buffers;
+using System.Collections.Frozen;
 
 namespace WorldEditor
 {
     public class PooledTagDeserializer : ITagDeserializer
     {
+        /// <summary>
+        /// Chunk subtrees no reader in the mapping pipeline ever touches. They are most of a
+        /// modern chunk's tag count (block entities, tick queues, structure data), so skipping
+        /// them cuts most of the deserialization work and pooled-tag churn per chunk.
+        /// </summary>
+        private static readonly FrozenSet<string> ChunkSkipNames = new[]
+        {
+            // 1.18+ chunk root
+            "block_entities", "block_ticks", "fluid_ticks", "PostProcessing", "structures",
+            "blending_data", "below_zero_retrogen", "isLightOn", "InhabitedTime", "LastUpdate",
+            // pre-1.18 "Level" children
+            "Entities", "TileEntities", "TileTicks", "LiquidTicks", "ToBeTicked",
+            "LiquidsToBeTicked", "Structures", "CarvingMasks", "Lights", "UpgradeData",
+            // entity storage inside region chunks of very old versions
+            "entities",
+        }.ToFrozenSet();
+
         public virtual NbtReader[] NbtReaders { get; set; }
 
         public virtual TagDeserializer[] TagDeserializers { get; set; }
@@ -52,14 +70,20 @@ namespace WorldEditor
                 IResettablePool<CompoundTag> compoundTagPool = new ExpandableObjectPool<CompoundTag>(0, () => new CompoundTag());
                 IResettablePool<int, ListTag> listTagPool = new ExpandableObjectPool<int, ListTag>(0, count => new ListTag(TagId.End));
 
+                IdTagDeserializer idTagDeserializer = new(
+                    valueTagAllocation,
+                    arrayTagAllocation,
+                    listTagPool,
+                    compoundTagPool
+                );
+                if (idTagDeserializer.CompoundTagDeserializer is CompoundTagDeserializer compoundTagDeserializer)
+                {
+                    compoundTagDeserializer.SkipNames = ChunkSkipNames;
+                }
+
                 TagDeserializers[i] = new TagDeserializer()
                 {
-                    IdTagDeserializer = new IdTagDeserializer(
-                        valueTagAllocation,
-                        arrayTagAllocation,
-                        listTagPool,
-                        compoundTagPool
-                    )
+                    IdTagDeserializer = idTagDeserializer
                 };
 
                 ValueTagAllocations[i] = valueTagAllocation;
@@ -90,24 +114,49 @@ namespace WorldEditor
         }
     }
 
+    /// <summary>
+    /// Array pool private to one deserialization slot, so no call ever synchronizes.
+    /// <see cref="ArrayPool{T}.Shared"/> here meant every chunk of every worker fought over
+    /// the shared per-core stacks - lock contention plus a tracking set allocation per chunk.
+    /// </summary>
+    /// <remarks>
+    /// Keeps the deferred-reset contract of the pool it replaces: the first
+    /// <see cref="Reset"/> only arms, and arrays are actually reclaimed on the next
+    /// <see cref="Provide(int)"/>, because the tag tree produced by a chunk's deserialization
+    /// is still being consumed when Reset is called and must stay valid until the slot
+    /// starts its next chunk.
+    /// </remarks>
     public class ResettableCachedPool<T> : IResettablePool<int, T[]>
     {
-        public ArrayPool<T> Instance { get; set; }
+        /// <summary>Free arrays kept per power-of-two size class, newest first.</summary>
+        private const int Buckets = 31;
+        private const int MinLength = 16;
+        private const int MaxFreePerBucket = 128;
 
-        private ISet<T[]> _cache = new HashSet<T[]>(0);
+        private readonly T[]?[][] _free = new T[Buckets][][];
+        private readonly int[] _freeCount = new int[Buckets];
+
+        private T[]?[] _lent = new T[64][];
+        private int _lentCount;
+
         private bool _resetPending = false;
-
-        public ResettableCachedPool()
-        {
-            Instance = ArrayPool<T>.Shared;
-        }
 
         public T[] Provide(int length)
         {
             if (_resetPending) Reset();
 
-            T[] output = Instance.Rent(length);
-            _cache.Add(output);
+            int bucket = BucketOf(length);
+            T[]? output = null;
+
+            if (_freeCount[bucket] > 0)
+            {
+                output = _free[bucket][--_freeCount[bucket]];
+                _free[bucket][_freeCount[bucket]] = null;
+            }
+            output ??= new T[Math.Max(length, 1 << bucket)];
+
+            if (_lentCount == _lent.Length) Array.Resize(ref _lent, _lentCount * 2);
+            _lent[_lentCount++] = output;
 
             return output;
         }
@@ -122,12 +171,25 @@ namespace WorldEditor
 
             _resetPending = false;
 
-            foreach (T[] array in _cache)
+            for (int i = 0; i < _lentCount; i++)
             {
-                Instance.Return(array);
+                T[] array = _lent[i]!;
+                _lent[i] = null;
+
+                int bucket = BucketOf(array.Length);
+                if (_freeCount[bucket] >= MaxFreePerBucket) continue;
+
+                _free[bucket] ??= new T[MaxFreePerBucket][];
+                _free[bucket][_freeCount[bucket]++] = array;
             }
 
-            _cache.Clear();
+            _lentCount = 0;
+        }
+
+        private static int BucketOf(int length)
+        {
+            if (length < MinLength) length = MinLength;
+            return 32 - System.Numerics.BitOperations.LeadingZeroCount((uint)(length - 1));
         }
     }
 }

@@ -18,7 +18,10 @@ namespace MapScanner
         {
             Coords = coords;
 
-            UniqueColumns = new SimpleList<ScannedColumn>(256);
+            // Starts well below the 256-column worst case: most chunks deduplicate to far
+            // fewer unique columns, and the list doubles on demand. Pre-sizing to 256 cost
+            // ~8 KB per chunk, which was over 12% of all allocation in a large load.
+            UniqueColumns = new SimpleList<ScannedColumn>(64);
             Indexes = new byte[256];
         }
 

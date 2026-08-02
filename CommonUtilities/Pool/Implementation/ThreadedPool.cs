@@ -1,23 +1,37 @@
 ﻿namespace CommonUtilities.Pool
 {
-    public class ThreadedPool<TInput, TOutput> : IPool<TOutput>
+    /// <summary>
+    /// The slot index the current thread is working on, used to hand out per-worker pool instances.
+    /// </summary>
+    /// <remarks>
+    /// This replaces <c>Thread.GetNamedDataSlot</c>, which resolves the name through a process-wide
+    /// locked table on every access. The scan path sets and reads this once per chunk, so on a large
+    /// load that lock was being taken millions of times across every worker thread.
+    /// </remarks>
+    public static class ThreadSlot
     {
-        public IPool<TInput, TOutput> Pool { get; set; }
-        public string DataSlotName { get; set; }
+        [ThreadStatic]
+        private static int _index;
 
-        public ThreadedPool(string dataSlotName, IPool<TInput, TOutput> pool)
+        public static int Index
+        {
+            get => _index;
+            set => _index = value;
+        }
+    }
+
+    public class ThreadedPool<TOutput> : IPool<TOutput>
+    {
+        public IPool<int, TOutput> Pool { get; set; }
+
+        public ThreadedPool(IPool<int, TOutput> pool)
         {
             Pool = pool;
-            DataSlotName = dataSlotName;
         }
 
         public TOutput Provide()
         {
-            TInput? data = (TInput?)Thread.GetData(Thread.GetNamedDataSlot(DataSlotName));
-            if (data is null) throw new Exception();
-
-            TInput input = data;
-            return Pool.Provide(input);
+            return Pool.Provide(ThreadSlot.Index);
         }
     }
 }

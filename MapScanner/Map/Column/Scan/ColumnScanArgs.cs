@@ -2,8 +2,8 @@
 {
     public class ColumnScanArgs
     {
-        public ISectionCollection SectionCollection { get; init; }
-        public ILevelProvider LevelProvider { get; init; }
+        public ISectionCollection SectionCollection { get; set; }
+        public ILevelProvider LevelProvider { get; set; }
         public IBlockOutput BlockOutput { get; set; }
 
         public int X { get; set; }

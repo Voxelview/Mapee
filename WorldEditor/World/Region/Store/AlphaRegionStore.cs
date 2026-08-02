@@ -51,11 +51,12 @@ namespace WorldEditor
             return _store.ContainsKey(coords);
         }
 
-        public bool GetData(Coords coords, out byte[]? buffer, out StorageFormat format)
+        public bool GetData(Coords coords, out byte[]? buffer, out int length, out StorageFormat format)
         {
             if (!_store.TryGetValue(coords, out List<string>? chunkFiles) || chunkFiles is null)
             {
                 buffer = null;
+                length = 0;
                 format = StorageFormat.Alpha;
                 return false;
             }
@@ -74,8 +75,9 @@ namespace WorldEditor
 
                 using (FileStream fileStream = new(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    chunkData[index] = new byte[fileStream.Length];
-                    fileStream.Read(chunkData[index]);
+                    byte[] data = new byte[fileStream.Length];
+                    fileStream.ReadExactly(data);
+                    chunkData[index] = data;
                 }
 
                 int timestamp = (int)((DateTimeOffset)File.GetLastWriteTimeUtc(file))
@@ -130,8 +132,12 @@ namespace WorldEditor
                 currentSector += sectorCount;
             }
 
-            byte[] sectorData = sectorsStream.ToArray();
-            buffer = new byte[8192 + sectorData.Length];
+            // GetBuffer avoids the extra full copy ToArray would make; Length is the written extent.
+            ReadOnlySpan<byte> sectorData = sectorsStream.GetBuffer().AsSpan(0, (int)sectorsStream.Length);
+
+            length = 8192 + sectorData.Length;
+            buffer = RegionBufferPool.Instance.Rent(length);
+
             locationTable.CopyTo(buffer);
             timestampTable.CopyTo(new Span<byte>(buffer, 4096, 4096));
             sectorData.CopyTo(new Span<byte>(buffer, 8192, sectorData.Length));

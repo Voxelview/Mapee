@@ -46,8 +46,9 @@ namespace WorldEditor
             }
             else
             {
-                foreach (KeyValueEntry<string, Tag> pair in heightmap)
+                for (int i = 0; i < heightmap.Count; i++)
                 {
+                    KeyValueEntry<string, Tag> pair = heightmap.EntryAt(i);
                     output.Heightmaps.Add(pair.Key, CreateHeightmap(pair.Value, input.Version));
                 }
             }
@@ -55,14 +56,21 @@ namespace WorldEditor
             return output;
         }
 
+        /// <summary>
+        /// Lockers are stateless besides their reader, and the readers are cached statics,
+        /// so every heightmap of a version can share one instance instead of allocating a
+        /// locker per heightmap per chunk.
+        /// </summary>
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<Version, HeightmapLocker> SharedLockers = new();
+
         private static HeightmapCollection.Heightmap CreateHeightmap(long[] indexes, Version version)
         {
             return new HeightmapCollection.Heightmap(indexes)
             {
-                Locker = new HeightmapLocker()
+                Locker = SharedLockers.GetOrAdd(version, static v => new HeightmapLocker()
                 {
-                    Reader = ChunkUtilities.GetBlockStateReader(version)
-                }
+                    Reader = ChunkUtilities.GetBlockStateReader(v)
+                })
             };
         }
     }

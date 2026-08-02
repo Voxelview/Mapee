@@ -23,6 +23,22 @@ namespace MapScanner
             Indexes = indexes;
         }
 
+        /// <summary>
+        /// Points a pooled builder at the next chunk's output. Clearing the dictionary keeps
+        /// its buckets, so the per-chunk dictionary allocation this replaces disappears.
+        /// </summary>
+        public void Reset(IList<ScannedColumn> cache, byte[] indexes)
+        {
+            Cache = cache;
+            Indexes = indexes;
+
+            _cache.Clear();
+            _columnType = ColumnType.Empty;
+            _blockSpans.Clear();
+            _bottomBlock = new ScannedBlock();
+            _index = 0;
+        }
+
         public void SetColumnType(ColumnType columnType)
         {
             _columnType = columnType;

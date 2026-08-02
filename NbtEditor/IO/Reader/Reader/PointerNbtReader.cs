@@ -107,6 +107,12 @@ namespace NbtEditor
             return output;
         }
 
+        public void Skip(int byteCount)
+        {
+            if (byteCount <= 0) return;
+            _ptr += byteCount;
+        }
+
         public void Dispose() {
             GC.SuppressFinalize(this);
         }

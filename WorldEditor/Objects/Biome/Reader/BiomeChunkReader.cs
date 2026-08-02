@@ -44,7 +44,7 @@ namespace WorldEditor
         }
         protected virtual PaletteSection<string>? ReadSection(ObjectReadParamter parameter, CompoundTag section)
         {
-            if (!section.TryGetChild(out Tag paletteTag, "biomes", "palette")) return null;
+            if (!section.TryGetChild("biomes", "palette", out Tag paletteTag)) return null;
             if (paletteTag is not ListTag paletteList) return null;
 
             string[] palette = new string[paletteList.Count];
@@ -54,7 +54,7 @@ namespace WorldEditor
             }
 
             long[] data;
-            if (section.TryGetChild(out Tag dataTag, "biomes", "data"))
+            if (section.TryGetChild("biomes", "data", out Tag dataTag))
             {
                 data = dataTag;
             }

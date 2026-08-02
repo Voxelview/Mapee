@@ -125,6 +125,12 @@ namespace NbtEditor
             }
         }
 
+        public void Skip(int byteCount)
+        {
+            if (byteCount <= 0) return;
+            BufferProvider.ProvideBuffer(byteCount, out _, out _);
+        }
+
         public void Dispose()
         {
             BufferProvider.Dispose();

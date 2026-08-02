@@ -25,27 +25,36 @@ namespace Mapper
             canvas = CanvasFactory.Create(new CanvasArgs(topLeft, size, Direction.North));
 
             ICanvas local = canvas;
-            Parallel.For(0, input.Chunks.Count, i =>
-            {
-                try
+            Parallel.For(0, input.Chunks.Length,
+                WorkerPriority.Lower,
+                (i, _, priority) =>
                 {
-                    ChunkRenderer.Render(new ChunkRenderArgs(input.Chunks[i], input.StepProvider), local);
-                }
-                catch (Exception e)
-                {
-                    Logger.Log(new ChunkError(e, new Coords(input.Chunks[i].Coords.X, input.Chunks[i].Coords.Z)));
-                }
-            });
+                    IScannedChunk? chunk = input.Chunks[i];
+                    if (chunk is null) return priority;
+
+                    try
+                    {
+                        ChunkRenderer.Render(new ChunkRenderArgs(chunk, input.StepProvider), local);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log(new ChunkError(e, new Coords(chunk.Coords.X, chunk.Coords.Z)));
+                    }
+
+                    return priority;
+                },
+                WorkerPriority.Restore);
         }
 
-        private static void GetDimensions(IList<IScannedChunk> chunks, out Coords topLeft, out Size size)
+        private static void GetDimensions(IScannedChunk?[] chunks, out Coords topLeft, out Size size)
         {
             int topLeftX = int.MinValue, topLeftZ = int.MaxValue;
             int bottomRightX = int.MaxValue, bottomRightZ = int.MinValue;
 
-            for (int i = 0; i < chunks.Count; i++)
+            for (int i = 0; i < chunks.Length; i++)
             {
-                IScannedChunk chunk = chunks[i];
+                IScannedChunk? chunk = chunks[i];
+                if (chunk is null) continue;
 
                 if (chunk.Coords.X > topLeftX) topLeftX = chunk.Coords.X;
                 if (chunk.Coords.Z < topLeftZ) topLeftZ = chunk.Coords.Z;

@@ -87,36 +87,40 @@ namespace MapScanner
             Section<Block>[] blockSections = new Section<Block>[count];
             Section<string>[] biomeSections = new Section<string>[count];
 
+            // Built once, then one lookup per Y. The previous version rescanned the whole
+            // section list for every Y in the range, and enumerated it through
+            // IEnumerable<ISection>, which allocated an enumerator on each of those scans.
+            Span<short> blockAt = stackalloc short[SectionIndex.Size];
+            Span<short> biomeAt = stackalloc short[SectionIndex.Size];
+
+            IList<PaletteSection<Block>>? blocks = chunk.BlockState?.Sections;
+            IList<PaletteSection<string>>? biomes = chunk.Biome?.Sections;
+
+            SectionIndex.Build(blocks, blockAt);
+            SectionIndex.Build(biomes, biomeAt);
+
             for (int y = 0; y < count; y++)
             {
-                sbyte yIndex = (sbyte)(y + minY);
+                int sectionY = y + minY;
+                if (sectionY < sbyte.MinValue || sectionY > sbyte.MaxValue) continue;
 
-                if (chunk.BlockState is not null && FindSection(yIndex, chunk.BlockState.Sections, out ISection? blockStateSection) && blockStateSection is not null)
+                sbyte yIndex = (sbyte)sectionY;
+
+                int blockIndex = SectionIndex.IndexOf(blockAt, sectionY);
+                if (blockIndex >= 0 && blocks is not null)
                 {
-                    blockSections[y] = new Section<Block>(yIndex, ((PaletteSection<Block>)blockStateSection).Palette);
+                    blockSections[y] = new Section<Block>(yIndex, blocks[blockIndex].Palette);
                 }
 
-                if (chunk.Biome is not null && FindSection(yIndex, chunk.Biome.Sections, out ISection? biomeSection) && biomeSection is not null)
+                int biomeIndex = SectionIndex.IndexOf(biomeAt, sectionY);
+                if (biomeIndex >= 0 && biomes is not null)
                 {
-                    biomeSections[y] = new Section<string>(yIndex, ((PaletteSection<string>)biomeSection).Palette);
+                    biomeSections[y] = new Section<string>(yIndex, biomes[biomeIndex].Palette);
                 }
             }
 
             output.BlockSections = blockSections;
             output.BiomeSections = biomeSections;
-        }
-        private static bool FindSection(sbyte y, IEnumerable<ISection> sections, out ISection? section)
-        {
-            foreach (ISection s in sections)
-            {
-                if (s.Y != y) continue;
-
-                section = s;
-                return true;
-            }
-
-            section = null;
-            return false;
         }
     }
 }

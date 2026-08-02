@@ -23,13 +23,11 @@ namespace WorldEditor
                 set => Indexes = value;
             }
 
+            // Callers assign a shared Locker; allocating one here per heightmap per chunk
+            // just produced garbage that was immediately replaced.
             public Heightmap(long[] indexes) : base()
             {
                 Indexes = indexes;
-                Locker = new HeightmapLocker()
-                {
-                    Reader = new SimpleBlockStateReader()
-                };
             }
 
             public override void Lock(short[] unlockedArray)

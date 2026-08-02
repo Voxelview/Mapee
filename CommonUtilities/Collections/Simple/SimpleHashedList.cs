@@ -1,8 +1,14 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace CommonUtilities.Collections.Simple
 {
+    /// <summary>
+    /// Insertion-ordered key/value list resolved by linear key equality. NBT compounds - the
+    /// only user - hold a handful of short-string entries, so a scan with the reference check
+    /// inside <c>string</c> equality beats hashing every inserted key: Add no longer walks
+    /// the key's characters at all, and lookups match exactly instead of by hash code alone.
+    /// </summary>
     public class SimpleHashedList<T, U> : IEnumerable<KeyValueEntry<T, U>> where T : notnull
     {
         private readonly SimpleList<KeyValueEntry<T, U>> _internalList;
@@ -13,13 +19,13 @@ namespace CommonUtilities.Collections.Simple
         {
             get
             {
-                TryGetValue(key.GetHashCode(), out U? value);
+                TryGetValue(key, out U? value);
                 return value;
             }
-            set 
+            set
             {
                 if(value is null) throw new ArgumentNullException(nameof(value));
-                SetValue(key.GetHashCode(), value);
+                SetValue(key, value);
             }
         }
 
@@ -30,10 +36,7 @@ namespace CommonUtilities.Collections.Simple
 
         public void Add(T key, U value)
         {
-            int hashCode = key.GetHashCode();
-
-            KeyValueEntry<T, U> entry = new (key, value, hashCode);
-            _internalList.Add(entry);
+            _internalList.Add(new KeyValueEntry<T, U>(key, value, 0));
         }
         public void Clear()
         {
@@ -46,25 +49,28 @@ namespace CommonUtilities.Collections.Simple
 
         public void Remove(T key)
         {
-            int hashCode = key.GetHashCode();
-
-            for (int i = 0; i < _internalList.Count; i++) 
+            for (int i = 0; i < _internalList.Count; i++)
             {
-                if (_internalList[i].Hashcode != hashCode) continue;
+                if (!EqualityComparer<T>.Default.Equals(_internalList[i].Key, key)) continue;
 
                 _internalList.RemoveAt(i);
                 return;
             }
         }
 
+        /// <summary>
+        /// Entry at a position in insertion order. Prefer this over LINQ ElementAt in loops:
+        /// ElementAt allocates an enumerator and walks the list every call.
+        /// </summary>
+        public KeyValueEntry<T, U> EntryAt(int index)
+        {
+            return _internalList[index];
+        }
+
         public bool TryGetValue(T key, [MaybeNullWhen(false)] out U value)
         {
-            return TryGetValue(key.GetHashCode(), out value);
-        }
-        private bool TryGetValue(int hashCode, [MaybeNullWhen(false)] out U value)
-        {
             for (int i = 0; i < Count; i++) {
-                if (_internalList[i].Hashcode != hashCode) continue;
+                if (!EqualityComparer<T>.Default.Equals(_internalList[i].Key, key)) continue;
 
                 value = _internalList[i].Value;
                 return true;
@@ -74,16 +80,16 @@ namespace CommonUtilities.Collections.Simple
             return false;
         }
 
-        private void SetValue(int hashCode, U value) 
+        private void SetValue(T key, U value)
         {
             for (int i = 0; i < Count; i++) {
-                if (_internalList[i].Hashcode != hashCode) continue;
+                if (!EqualityComparer<T>.Default.Equals(_internalList[i].Key, key)) continue;
 
-                _internalList[i] = new (_internalList[i].Key, value, hashCode);
+                _internalList[i] = new (_internalList[i].Key, value, 0);
             }
         }
 
-        public IEnumerator<KeyValueEntry<T, U>> GetEnumerator() 
+        public IEnumerator<KeyValueEntry<T, U>> GetEnumerator()
         {
             return _internalList.GetEnumerator();
         }

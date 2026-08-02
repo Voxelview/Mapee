@@ -30,20 +30,22 @@
             return _store.ContainsKey(coords);
         }
 
-        public bool GetData(Coords coords, out byte[]? buffer, out StorageFormat format)
+        public bool GetData(Coords coords, out byte[]? buffer, out int length, out StorageFormat format)
         {
             if (_store.TryGetValue(coords, out string? file))
             {
                 using (FileStream fileStream = new(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    buffer = new byte[fileStream.Length];
-                    fileStream.Read(buffer);
+                    length = (int)fileStream.Length;
+                    buffer = RegionBufferPool.Instance.Rent(length);
+                    fileStream.ReadExactly(buffer, 0, length);
                 }
 
                 format = Parser.ParseStorageFormat(Path.GetFileName(file));
                 return true;
             }
             buffer = null;
+            length = 0;
             format = StorageFormat.Anvil;
             return false;
         }

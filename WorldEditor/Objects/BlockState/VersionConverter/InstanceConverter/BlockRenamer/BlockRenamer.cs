@@ -6,6 +6,24 @@
         private readonly Dictionary<string, int> _timelineIndices;
         private readonly List<BlockTimeline> _timelines;
 
+        /// <summary>
+        /// Same answer as <see cref="_fastBlockNameLookup"/>, memoized per string instance.
+        /// Palette names come from per-reader string pools, so the same few hundred
+        /// instances recur for every section of every chunk; hashing by reference skips
+        /// re-hashing the characters on each of those lookups. New instances fall through
+        /// to the real set, so a pool eviction only costs a re-check.
+        /// </summary>
+        private readonly System.Collections.Concurrent.ConcurrentDictionary<string, bool> _knownNames = new(ReferenceComparer.Instance);
+        private int _knownNamesApprox;
+
+        private sealed class ReferenceComparer : IEqualityComparer<string>
+        {
+            public static readonly ReferenceComparer Instance = new();
+
+            public bool Equals(string? x, string? y) => ReferenceEquals(x, y);
+            public int GetHashCode(string obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+        }
+
         public BlockRenamer()
         {
             _fastBlockNameLookup = new HashSet<string>();
@@ -17,7 +35,19 @@
         {
             output = default;
 
-            if (!_fastBlockNameLookup.Contains(block.Name)) return false;
+            if (!_knownNames.TryGetValue(block.Name, out bool mayRename))
+            {
+                mayRename = _fastBlockNameLookup.Contains(block.Name);
+
+                // String pools overwrite slots on collision, so instances can churn; the cap
+                // just stops pathological growth, at the price of uncached lookups past it.
+                // Approximate count - ConcurrentDictionary.Count takes every bucket lock.
+                if (_knownNamesApprox < 65536 && _knownNames.TryAdd(block.Name, mayRename))
+                {
+                    Interlocked.Increment(ref _knownNamesApprox);
+                }
+            }
+            if (!mayRename) return false;
 
             Block sortedBlock = SortProperties(block);
             string blockKey = GetBlockKey(sortedBlock);

@@ -13,5 +13,8 @@
         sbyte[] ReadSignedByteArray(int length);
         int[] ReadInt32Array(int length);
         long[] ReadInt64Array(int length);
+
+        /// <summary>Advances past <paramref name="byteCount"/> bytes without materializing them.</summary>
+        void Skip(int byteCount);
     }
 }

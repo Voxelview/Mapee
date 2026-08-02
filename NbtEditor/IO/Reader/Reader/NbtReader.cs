@@ -69,12 +69,14 @@ namespace NbtEditor
             if (IsFormatLittleEndian) return BinaryPrimitives.ReadDoubleLittleEndian(buffer);
             return BinaryPrimitives.ReadDoubleBigEndian(buffer);
         }
+        private readonly StringPool _stringPool = new();
+
         public string ReadString()
         {
             int length = ReadUnsignedInt16();
             if (length == 0) return string.Empty;
 
-            return Encoding.UTF8.GetString(ProvideBuffer(length));
+            return _stringPool.GetOrAdd(ProvideBuffer(length));
         }
 
         public sbyte[] ReadSignedByteArray(int length)
@@ -114,7 +116,13 @@ namespace NbtEditor
             return output;
         }
 
-        private ReadOnlySpan<byte> ProvideBuffer(int count) 
+        public void Skip(int byteCount)
+        {
+            if (byteCount <= 0) return;
+            BufferProvider.ProvideBuffer(byteCount, out _, out _);
+        }
+
+        private ReadOnlySpan<byte> ProvideBuffer(int count)
         {
             BufferProvider.ProvideBuffer(count, out byte[] buffer, out int index);
             return new ReadOnlySpan<byte>(buffer, index, count);

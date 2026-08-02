@@ -23,14 +23,19 @@ namespace WorldEditor
 
             return output;
         }
+        // Both readers are stateless, and this is called per heightmap/section of every
+        // chunk - allocating fresh instances added hundreds of MB of garbage per load.
+        private static readonly IBlockStateReader _legacyBlockStateReader = new BlockStateReader();
+        private static readonly IBlockStateReader _simpleBlockStateReader = new SimpleBlockStateReader();
+
         public static IBlockStateReader GetBlockStateReader(Version version)
         {
             if (version < Version.Snapshot_20w17a)
             {
-                return new BlockStateReader();
+                return _legacyBlockStateReader;
             }
 
-            return new SimpleBlockStateReader();
+            return _simpleBlockStateReader;
         }
         public static IBlockStateWriter GetBlockStateWriter(Version version)
         {

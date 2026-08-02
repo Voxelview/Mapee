@@ -1,6 +1,7 @@
 ﻿using AssetSystem;
 using CommonUtilities.Pool;
 using System;
+using System.Threading;
 using WorldEditor;
 
 namespace MapScanner
@@ -11,7 +12,8 @@ namespace MapScanner
 
         public SectionGroup SectionGroup { get; set; }
 
-        private BlockGrouping[] _blockGroupings;
+        private BlockGrouping[] _blockGroupings = Array.Empty<BlockGrouping>();
+        private int _paletteLength;
         private short[] _blockIndexes = Array.Empty<short>();
         private short[] _biomeIndexes = Array.Empty<short>();
         private IPool<short[]> _pool;
@@ -24,7 +26,26 @@ namespace MapScanner
             SectionGroup = sectionGroup;
             _pool = pool;
 
-            _blockGroupings = new BlockGrouping[SectionGroup.BlockSection.Palette.Length];
+            Initialize(asset, sectionGroup, pool);
+        }
+
+        /// <summary>
+        /// Re-points a pooled instance at a new section. The grouping table grows to the
+        /// largest palette the instance has seen and is refilled up to the current palette's
+        /// length on each call.
+        /// </summary>
+        public void Initialize(IAsset<Block, BlockGrouping> asset, SectionGroup sectionGroup, IPool<short[]> pool)
+        {
+            Asset = asset;
+            SectionGroup = sectionGroup;
+            _pool = pool;
+
+            Block[] palette = SectionGroup.BlockSection.Palette;
+            _paletteLength = palette.Length;
+            if (_blockGroupings.Length < _paletteLength)
+            {
+                _blockGroupings = new BlockGrouping[_paletteLength];
+            }
 
             if (SectionGroup.BlockSection.Type == SectionType.Normal)
             {
@@ -32,21 +53,24 @@ namespace MapScanner
                 SectionGroup.BlockSection.Unlock(_blockIndexes);
                 _isBlockUniform = false;
             }
-            else 
+            else
             {
                 _isBlockUniform = true;
             }
 
-            for (int i = 0; i < _blockGroupings.Length; i++)
+            for (int i = 0; i < _paletteLength; i++)
             {
-                _blockGroupings[i] = Asset.Provide(SectionGroup.BlockSection.Palette[i]);
+                _blockGroupings[i] = Asset.Provide(palette[i]);
             }
 
             if (SectionGroup.BiomeSection?.Type == SectionType.Normal)
             {
                 if (SectionGroup.BiomeSection.Locker is null) return;
 
-                _biomeIndexes = new short[SectionGroup.BiomeSection.Locker.UnlockedArrayLength];
+                // Same pool the block indexes come from. This used to allocate a fresh 8 KB
+                // array for every biome section of every chunk. Provide() hands out a distinct
+                // array each call, and the pool is reset once the chunk is done.
+                _biomeIndexes = _pool.Provide();
                 SectionGroup.BiomeSection.Unlock(_biomeIndexes);
                 _isBiomeUniform = false;
             }
@@ -58,7 +82,12 @@ namespace MapScanner
 
         public BlockGrouping ProvideGrouping(int index)
         {
-            return _blockGroupings[GetBlockIndex(index)];
+            int blockIndex = GetBlockIndex(index);
+
+            // A reused table can be longer than the current palette; malformed data whose
+            // packed index escapes the palette reads as empty instead of stale state.
+            if ((uint)blockIndex >= (uint)_paletteLength) return BlockGrouping.Empty;
+            return _blockGroupings[blockIndex];
         }
         public Block ProvideBlock(int index)
         {

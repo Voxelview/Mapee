@@ -8,18 +8,21 @@ namespace Mapper.Gui.Logic
     {
         public ScanType ScanType { get; set; }
 
-        public SharedColumnScanArgsFactory(IAsset<Block, BlockGrouping> asset) : base(asset) { }
+        public SharedColumnScanArgsFactory(IAsset<Block, BlockGrouping> asset, int slotCount)
+            : base(asset, slotCount) { }
 
-        protected override IBlockOutput CreateBlockOutput(ColumnScanArgsFactoryArgs args)
+        protected override IBlockOutput CreateBlockOutput(ColumnScanArgsFactoryArgs args, SlotGraph graph)
         {
-            IColumnObjectBuilder columnObjectBuilder = new ColumnObjectBuilder(args.ScannedChunk.UniqueColumns, args.ScannedChunk.Indexes);
+            ColumnObjectBuilder columnObjectBuilder = ProvideBuilder(args, graph);
 
-            switch (ScanType) 
+            switch (ScanType)
             {
                 case ScanType.Cave:
-                    return new CaveBlockOutput(columnObjectBuilder);
+                    graph.CaveOutput ??= new CaveBlockOutput(columnObjectBuilder);
+                    graph.CaveOutput.Builder = columnObjectBuilder;
+                    return graph.CaveOutput;
                 default:
-                    return new StandardBlockOutput(columnObjectBuilder);
+                    return graph.StandardOutput ??= new StandardBlockOutput(columnObjectBuilder);
             }
         }
     }

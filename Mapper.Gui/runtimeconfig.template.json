@@ -1,0 +1,7 @@
+{
+  "configProperties": {
+    "System.Runtime.TieredCompilation.CallCountThreshold": 8,
+    "System.Runtime.TieredCompilation.BackgroundWorkerTimeoutMs": 10,
+    "System.GC.HeapCount": 8
+  }
+}

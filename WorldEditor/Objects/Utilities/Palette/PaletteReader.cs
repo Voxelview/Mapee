@@ -47,7 +47,7 @@ namespace WorldEditor
 
             for (int i = 0; i < propertiesTag.Count; i++)
             {
-                KeyValueEntry<string, Tag> pair = propertiesTag.ElementAt(i);
+                KeyValueEntry<string, Tag> pair = propertiesTag.EntryAt(i);
                 properties[i] = new Property(pair.Key, pair.Value);
             }
 

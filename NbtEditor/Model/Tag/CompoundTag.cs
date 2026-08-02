@@ -48,6 +48,12 @@ namespace NbtEditor
             _tags.Remove(key);
         }
 
+        /// <summary>Entry at a position in insertion order, without enumerator allocation.</summary>
+        public KeyValueEntry<string, Tag> EntryAt(int index)
+        {
+            return _tags.EntryAt(index);
+        }
+
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out Tag value)
         {
             return _tags.TryGetValue(key, out value);
@@ -59,40 +65,45 @@ namespace NbtEditor
         }
         public Tag GetChild(params string[] path)
         {
-            if (path.Length == 1) return _tags[path[0]];
-
-            string[] childPath = new string[path.Length - 1];
-            for (int i = 1; i < path.Length; i++) 
+            CompoundTag current = this;
+            for (int i = 0; i < path.Length - 1; i++)
             {
-                childPath[i - 1] = path[i];
+                current = (CompoundTag)current._tags[path[i]];
             }
 
-            return (_tags[path[0]] as CompoundTag).GetChild(childPath);
+            return current._tags[path[^1]];
         }
 
-        public bool TryGetChild(string path, out Tag child) 
+        public bool TryGetChild(string path, out Tag child)
         {
             return TryGetChild(out child, path.Split("/"));
         }
-        public bool TryGetChild(out Tag child, params string[] path) 
+        public bool TryGetChild(out Tag child, params string[] path)
         {
-            if (path.Length == 1) return _tags.TryGetValue(path[0], out child);
-
-            string[] childPath = new string[path.Length - 1];
-            for (int i = 1; i < path.Length; i++)
+            CompoundTag current = this;
+            for (int i = 0; i < path.Length - 1; i++)
             {
-                childPath[i - 1] = path[i];
+                if (!current._tags.TryGetValue(path[i], out Tag tag) || tag is not CompoundTag c)
+                {
+                    child = null;
+                    return false;
+                }
+                current = c;
             }
 
-            if (_tags.TryGetValue(path[0], out Tag tag) && tag is CompoundTag c) 
+            return current._tags.TryGetValue(path[^1], out child);
+        }
+
+        /// <summary>Two-level lookup without the params-array allocation of the array overload.</summary>
+        public bool TryGetChild(string first, string second, out Tag child)
+        {
+            if (_tags.TryGetValue(first, out Tag tag) && tag is CompoundTag c)
             {
-                return c.TryGetChild(out child, childPath);
-            } 
-            else
-            {
-                child = null;
-                return false;
+                return c._tags.TryGetValue(second, out child);
             }
+
+            child = null;
+            return false;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

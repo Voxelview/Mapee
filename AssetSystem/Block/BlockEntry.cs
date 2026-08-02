@@ -14,10 +14,12 @@
 
         public bool Provide(WorldEditor.Property[] properties, out TOutput output)
         {
-            if (Evaluators.Count == 0 && (properties is null || properties.Length == 0)) 
+            if (Evaluators.Count == 0)
             {
+                // No matcher can ever run, so skip building the property getter - the
+                // closure + delegate pair was allocated for every block lookup of a load.
                 output = DefaultValue ?? default;
-                return true;
+                return properties is null || properties.Length == 0 || DefaultValue is not null;
             }
 
             PropertyValueProvider propertyValueGetter = PropertyValueProviderUtilities.CreateGetter(properties);
