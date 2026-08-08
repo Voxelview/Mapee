@@ -11,9 +11,7 @@ namespace WorldEditor
 
             for (int i = 0; i < input.Count; i++)
             {
-                if (input[i] is not CompoundTag blockTag) continue;
-
-                Block? block = ReadBlock(blockTag);
+                Block? block = ReadBlock(input[i]);
                 if (block is null) continue;
 
                 output[i] = block.Value;
@@ -22,15 +20,25 @@ namespace WorldEditor
             return output;
         }
 
-        protected virtual Block? ReadBlock(CompoundTag blockTag)
+        protected virtual Block? ReadBlock(Tag tag)
         {
-            Tag? nameTag = blockTag["Name"];
-            if (nameTag is null || nameTag.Id != TagId.String) return null;
+            if (tag is StringTag blockStringTag) return new Block(blockStringTag, []);
+            if (tag is not CompoundTag blockTag) return null;
+
+            Tag? nameTag = blockTag["Name"] ?? blockTag["id"];
+            if (nameTag is null)
+            {
+                Tag? compactTag = blockTag[string.Empty];
+                return compactTag is null ? null : ReadBlock(compactTag);
+            }
+
+            if (nameTag.Id != TagId.String) return null;
 
             string name = nameTag;
             Property[] properties;
 
-            if (blockTag.TryGetValue("Properties", out Tag? propertiesTag) && propertiesTag is CompoundTag propertiesCompound)
+            Tag? propertiesTag = blockTag["Properties"] ?? blockTag["properties"];
+            if (propertiesTag is CompoundTag propertiesCompound)
             {
                 properties = ReadProperties(propertiesCompound);
             }
