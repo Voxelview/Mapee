@@ -20,13 +20,13 @@ namespace Mapper.Gui.Logic
         private bool _inSceneChangingProcess = false;
         private object _lock = new();
 
-        public RegionLoader(Scene scene) 
+        public RegionLoader(Scene scene)
         {
             Scene = scene;
             WorldMapper = new WorldMapper(Scene.Domain.ChunkMapperPack);
             LoadPattern = new SpiralLoadPattern();
             _cachedScenes = new Dictionary<Dimension, SceneCache>();
-            
+
             if (Scene.Domain.CurrentWorld is not null)
             {
                 SetCurrentScene(Scene.Domain.CurrentWorld, Scene.Domain.CurrentWorld.CurrentDimension);
@@ -41,9 +41,9 @@ namespace Mapper.Gui.Logic
             Scene.ProfileReset += Scene_ProfileReset;
         }
 
-        private void Scene_WorldBeginChange(WorldDomain? old, WorldDomain current) 
+        private void Scene_WorldBeginChange(WorldDomain? old, WorldDomain current)
         {
-            if (old is not null) 
+            if (old is not null)
             {
                 _inSceneChangingProcess = true;
                 WorldMapper.Invoke(WorldMapper.Stop);
@@ -51,10 +51,10 @@ namespace Mapper.Gui.Logic
                 _cachedScenes.Clear();
                 _currentScene = null;
             }
-            
+
             SetCurrentScene(current, current.CurrentDimension);
         }
-        private void Scene_DimensionBeginChange(DimensionDomain old, DimensionDomain current) 
+        private void Scene_DimensionBeginChange(DimensionDomain old, DimensionDomain current)
         {
             _inSceneChangingProcess = true;
             WorldMapper.Invoke(WorldMapper.Stop);
@@ -64,7 +64,7 @@ namespace Mapper.Gui.Logic
         }
         private void Scene_WorldChanged(WorldDomain? old, WorldDomain current)
         {
-            WorldMapper.Invoke(() => 
+            WorldMapper.Invoke(() =>
             {
                 WorldMapper.SetScene(current.CurrentDimension.Scene.SceneParameter);
                 _inSceneChangingProcess = false;
@@ -79,22 +79,22 @@ namespace Mapper.Gui.Logic
             });
         }
 
-        private void Scene_StyleReset(Style old, Style current) 
+        private void Scene_StyleReset(Style old, Style current)
         {
             if (Scene.Domain.CurrentWorld is null) return;
 
-            foreach (DimensionDomain domain in Scene.Domain.CurrentWorld.Dimensions) 
+            foreach (DimensionDomain domain in Scene.Domain.CurrentWorld.Dimensions)
             {
                 domain.Scene.RenderedRegions.Clear();
             }
             _cachedScenes.Clear();
         }
-        private void Scene_ProfileReset(DimensionDomain dimension) 
+        private void Scene_ProfileReset(DimensionDomain dimension)
         {
             if (_currentScene is null || Scene.Domain.CurrentWorld is null) return;
 
             _inSceneChangingProcess = true;
-            
+
             SetCurrentScene(Scene.Domain.CurrentWorld, dimension);
             _currentScene.Reset();
 
@@ -106,9 +106,9 @@ namespace Mapper.Gui.Logic
             });
         }
 
-        private void SetCurrentScene(WorldDomain world, DimensionDomain dimension) 
+        private void SetCurrentScene(WorldDomain world, DimensionDomain dimension)
         {
-            if (!_cachedScenes.TryGetValue(dimension.Dimension, out SceneCache? scene) || scene is null) 
+            if (!_cachedScenes.TryGetValue(dimension.Dimension, out SceneCache? scene) || scene is null)
             {
                 scene = new SceneCache();
                 _cachedScenes.Add(dimension.Dimension, scene);
@@ -121,7 +121,7 @@ namespace Mapper.Gui.Logic
             _currentScene = scene;
         }
 
-        private void OnRegionRendered(Coords coords, ICanvas canvas) 
+        private void OnRegionRendered(Coords coords, ICanvas canvas)
         {
             if (_currentScene is null || Scene.Domain.CurrentWorld is null || _inSceneChangingProcess) return;
             if (!IsSafeToAdd(coords.X, coords.Z)) return;
@@ -147,7 +147,7 @@ namespace Mapper.Gui.Logic
                 RenderedRegion output = new(new XzPoint(coords.X, coords.Z), areaInRegion, bitmap);
                 AddSafely(output);
             }
-            else 
+            else
             {
                 AddSafely(new RenderedRegion(new XzPoint(coords.X, coords.Z), null, null));
             }
@@ -157,7 +157,7 @@ namespace Mapper.Gui.Logic
         {
             if(Scene.Domain.CurrentWorld is null) return false;
 
-            lock (_lock) 
+            lock (_lock)
             {
                 return !Scene.Domain.CurrentWorld.CurrentDimension.Scene.RenderedRegions.ContainsKey(new XzPoint(x, z));
             }
@@ -177,7 +177,7 @@ namespace Mapper.Gui.Logic
         {
             if (_currentScene is null || range == _currentScene?.PrevRange || _inSceneChangingProcess) return;
 
-            WorldMapper.Invoke(() => 
+            WorldMapper.Invoke(() =>
             {
                 Coords[] queue = ArrayPool<Coords>.Shared.Rent((int)range.Size.X * (int)range.Size.Z);
                 Memory<Coords> queueMemory = queue;
@@ -189,21 +189,27 @@ namespace Mapper.Gui.Logic
 
             if (_currentScene is not null) _currentScene.PrevRange = range;
         }
-        private void CreateQueue(XzRange range, ref Memory<Coords> queue) 
+        private void CreateQueue(XzRange range, ref Memory<Coords> queue)
         {
             if (Scene.Domain.CurrentWorld is null) return;
             IRenderedScene renderedScene = Scene.Domain.CurrentWorld.CurrentDimension.Scene;
 
             int index = 0;
             Span<Coords> queueSpan = queue.Span;
-            foreach (XzPoint regionPoint in LoadPattern.CreatePattern(range)) 
+            foreach (XzPoint regionPoint in LoadPattern.CreatePattern(range))
             {
-                if (!renderedScene.SceneParameter.RegionStore.Exists(regionPoint.ToCoords())) 
+                Coords regionCoords = regionPoint.ToCoords();
+
+                if (!renderedScene.SceneParameter.RegionStore.Exists(regionCoords))
+                {
+                    continue;
+                }
+                if (renderedScene.RenderedRegions.ContainsKey(new XzPoint(regionCoords.X, regionCoords.Z)))
                 {
                     continue;
                 }
 
-                queueSpan[index++] = regionPoint.ToCoords();
+                queueSpan[index++] = regionCoords;
             }
 
             queue = queue[..index];
