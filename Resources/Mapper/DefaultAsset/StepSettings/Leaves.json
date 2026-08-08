@@ -26,10 +26,10 @@
     ],
     ["minecraft:cherry_leaves",
         {
-            "ZNegCorner.BelowLimit.Min": 2, "ZNegCorner.BelowLimit.MinReturnedValue": 0.5,
-            "XPosCorner.BelowLimit.Min": 2, "XPosCorner.BelowLimit.MinReturnedValue": 0.5,
-            "ZPosCorner.BelowLimit.Min": 2, "ZPosCorner.BelowLimit.MinReturnedValue": 0.5,
-            "XNegCorner.BelowLimit.Min": 2, "XNegCorner.BelowLimit.MinReturnedValue": 0.5,
+            "ZNegCorner.BelowLimit.Min": 1, "ZNegCorner.BelowLimit.MinReturnedValue": 0.75,
+            "XPosCorner.BelowLimit.Min": 1, "XPosCorner.BelowLimit.MinReturnedValue": 0.75,
+            "ZPosCorner.BelowLimit.Min": 1, "ZPosCorner.BelowLimit.MinReturnedValue": 0.75,
+            "XNegCorner.BelowLimit.Min": 1, "XNegCorner.BelowLimit.MinReturnedValue": 0.75,
             "Increment": 0.14
         }
     ]

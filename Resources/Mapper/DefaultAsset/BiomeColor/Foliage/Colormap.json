@@ -24,9 +24,9 @@
                 "minecraft:jagged_peaks",
                 "minecraft:frozen_peaks"
             ],
-            "Pixel": "#60A17B"
+            "Pixel": "#5D9C71"
         },
-        ["minecraft:snowy_beach", "#64A278"],
+        ["minecraft:snowy_beach", "#619D6E"],
         
         {
             "Biomes": [
@@ -35,51 +35,51 @@
                 "minecraft:windswept_forest",
                 "minecraft:stony_shore"
             ],
-            "Pixel": "#6DA36B"
+            "Pixel": "#6E9E68"
         },
         {
             "Biomes": [
                 "minecraft:taiga",
                 "minecraft:old_growth_spruce_taiga"
             ],
-            "Pixel": "#68A464"
+            "Pixel": "#699F61"
         },
-        ["minecraft:old_growth_pine_taiga", "#68A55F"],
+        ["minecraft:old_growth_pine_taiga", "#68A05C"],
 
         {
             "Biomes": [
                 "minecraft:plains",
                 "minecraft:sunflower_plains"
             ],
-            "Pixel": "#77AB2F"
+            "Pixel": "#6CA62E"
         },
         {
             "Biomes": [
                 "minecraft:forest",
                 "minecraft:flower_forest"
             ],
-            "Pixel": "#59AE30"
+            "Pixel": "#57A92F"
         },
         {
             "Biomes": [
                 "minecraft:birch_forest",
                 "minecraft:old_growth_birch_forest"
             ],
-            "Pixel": "#6BA941"
+            "Pixel": "#66A43F"
         },
-        ["minecraft:dark_forest", "#6BA941"],
+        ["minecraft:dark_forest", "#66A43F"],
         {
             "Biomes": [
                 "minecraft:jungle",
                 "minecraft:bamboo_jungle"
             ],
-            "Pixel": "#30BB0B"
+            "Pixel": "#34B50B"
         },
-        ["minecraft:sparse_jungle", "#3EB80F"],
-        ["minecraft:beach", "#77AB2F"],
-        ["minecraft:mushroom_fields", "#2BBB0F"],
-        ["minecraft:meadow", "#63A948"],
-        ["minecraft:stony_peaks", "#82AC1E"],
+        ["minecraft:sparse_jungle", "#3EB20F"],
+        ["minecraft:beach", "#6CA62E"],
+        ["minecraft:mushroom_fields", "#31B50F"],
+        ["minecraft:meadow", "#61A446"],
+        ["minecraft:stony_peaks", "#71A71D"],
 
         {
             "Biomes": [
@@ -88,11 +88,11 @@
                 "minecraft:savanna_plateau",
                 "minecraft:windswept_savanna"
             ],
-            "Pixel": "#AEA42A"
+            "Pixel": "#A6A929"
         },
 
-        ["minecraft:river", "#71A74D"],
-        ["minecraft:frozen_river", "#60A17B"],
+        ["minecraft:river", "#6CA24B"],
+        ["minecraft:frozen_river", "#5D9C71"],
         {
             "Biomes": [
                 "minecraft:warm_ocean",
@@ -103,21 +103,21 @@
                 "minecraft:cold_ocean",
                 "minecraft:deep_cold_ocean"
             ],
-            "Pixel": "#71A74D"
+            "Pixel": "#6CA24B"
         },
-        ["minecraft:frozen_ocean", "#60A17B"],
-        ["minecraft:deep_frozen_ocean", "#71A74D"],
+        ["minecraft:frozen_ocean", "#5D9C71"],
+        ["minecraft:deep_frozen_ocean", "#6CA24B"],
 
         {
             "Biomes": [
                 "minecraft:deep_dark",
                 "minecraft:dripstone_caves"
             ],
-            "Pixel": "#77AB2F"
+            "Pixel": "#6CA62E"
         },
-        ["minecraft:lush_caves", "#71A74D"],
+        ["minecraft:lush_caves", "#6CA24B"],
 
-        ["minecraft:the_void", "#71A74D"],
+        ["minecraft:the_void", "#6CA24B"],
 
         {
             "Biomes": [
@@ -127,7 +127,7 @@
                 "minecraft:warped_forest",
                 "minecraft:basalt_deltas"
             ],
-            "Pixel": "#AEA42A"
+            "Pixel": "#A6A929"
         },
 
         {
@@ -138,7 +138,7 @@
                 "minecraft:end_highlands",
                 "minecraft:end_barrens"
             ],
-            "Pixel": "#71A74D"
+            "Pixel": "#6CA24B"
         }
     ]
 }

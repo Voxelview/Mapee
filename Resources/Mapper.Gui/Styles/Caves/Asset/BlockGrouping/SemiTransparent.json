@@ -20,17 +20,6 @@
   "minecraft:black_stained_glass",
   "minecraft:tinted_glass",
 
-  ["minecraft:oak_leaves", {"GroupBy": "oak_leaves", "ExitOnDepth": 2}],
-  ["minecraft:spruce_leaves", {"GroupBy": "spruce_leaves", "ExitOnDepth": 2}],
-  ["minecraft:birch_leaves", {"GroupBy": "birch_leaves", "ExitOnDepth": 2}],
-  ["minecraft:jungle_leaves", {"GroupBy": "jungle_leaves", "ExitOnDepth": 2}],
-  ["minecraft:acacia_leaves", {"GroupBy": "acacia_leaves", "ExitOnDepth": 2}],
-  ["minecraft:dark_oak_leaves", {"GroupBy": "dark_oak_leaves", "ExitOnDepth": 2}],
-  ["minecraft:mangrove_leaves", {"GroupBy": "mangrove_leaves", "ExitOnDepth": 2}],
-  ["minecraft:azalea_leaves", {"GroupBy": "azalea_leaves", "ExitOnDepth": 2}],
-  ["minecraft:flowering_azalea_leaves", {"GroupBy": "flowering_azalea_leaves", "ExitOnDepth": 2}],
-  ["minecraft:cherry_leaves", {"GroupBy": "cherry_leaves", "ExitOnDepth": 2}],
-
   "minecraft:ice",
 
   "minecraft:small_amethyst_bud",

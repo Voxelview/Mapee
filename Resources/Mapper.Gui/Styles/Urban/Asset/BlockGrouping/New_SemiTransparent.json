@@ -1,7 +1,6 @@
 ﻿[
     {"DefaultPayload": "SemiTransparent"},
     
-    "minecraft:cherry_leaves",
     "minecraft:cherry_sapling",
     "minecraft:potted_cherry_sapling",
     "minecraft:cherry_button",
@@ -56,5 +55,13 @@
     "minecraft:leaf_litter",
     "minecraft:dried_ghast",
     "minecraft:pale_oak_sapling",
-    "minecraft:potted_pale_oak_sapling"
+    "minecraft:potted_pale_oak_sapling",
+    "minecraft:poplar_sign",
+    "minecraft:poplar_wall_sign",
+    "minecraft:poplar_hanging_sign",
+    "minecraft:poplar_wall_hanging_sign",
+    "minecraft:poplar_sapling",
+    "minecraft:potted_poplar_sapling",
+    "minecraft:red_shrub",
+    "minecraft:shelf_mushroom"
 ]
