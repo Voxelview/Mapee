@@ -6,6 +6,10 @@
         <Setter Property="Background" Value="#FF0F1012"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
 
+        <!-- The caret does not follow Foreground - it is black until told otherwise, which on a
+             #FF0F1012 field means an invisible cursor in every text box in the app. -->
+        <Setter Property="CaretBrush" Value="#FFEEEEEE"/>
+
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">

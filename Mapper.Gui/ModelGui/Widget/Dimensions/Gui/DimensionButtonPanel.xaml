@@ -58,12 +58,13 @@
         
         <!-- The accent's "selected" tone, shared with a toggled-on rail button and with the
              style picker's ring - see ToolButtonHook.TurnedOn.DefaultBorder. It was WPF's named
-             Gold, which is a good deal brighter than anything else in the chrome and did not
-             belong to the accent at all.
+             Gold, which did not belong to the accent at all - it only ever passed for it while
+             the accent was amber and a shade darker than Gold was. It would be the wrong hue
+             twice over now that the accent is lemon.
 
              Tracks the panel, so the ring rides the button's outer edge. Both are odd, as is the
              29 artwork between them, which is what keeps every gutter a whole number: 33 - 29
              leaves 2 a side, exactly the ring's own thickness. -->
-        <Border x:Name="DimensionBorder" BorderBrush="#FFE3B200" Width="33" Height="33" Panel.ZIndex="110"/>
+        <Border x:Name="DimensionBorder" BorderBrush="#FFE2DA00" Width="33" Height="33" Panel.ZIndex="110"/>
     </Grid>
 </UserControl>

@@ -30,7 +30,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
                     <Border Background="Transparent">
-                        <Border Height="3" VerticalAlignment="Center" Background="#FFE3B200"/>
+                        <Border Height="3" VerticalAlignment="Center" Background="#FFE2DA00"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -51,10 +51,10 @@
                                SnapsToDevicePixels="True"/>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Knob" Property="Fill" Value="#FFF2BE00"/>
+                            <Setter TargetName="Knob" Property="Fill" Value="#FFF2EA00"/>
                         </Trigger>
                         <Trigger Property="IsDragging" Value="True">
-                            <Setter TargetName="Knob" Property="Fill" Value="#FFFFC700"/>
+                            <Setter TargetName="Knob" Property="Fill" Value="#FFFFF600"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

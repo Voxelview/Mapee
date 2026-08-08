@@ -91,22 +91,22 @@
                                 </Trigger>
                                 <!-- After hover on purpose: both hold when you hover the
                                      selected card, and the later trigger is the one that wins.
-                                     #FFE3B200 is "selected" everywhere in this app - see
+                                     #FFE2DA00 is "selected" everywhere in this app - see
                                      ToolButtonHook.TurnedOn.DefaultBorder, and the rings the
                                      style and dimension pickers draw with it. The fill is the
                                      panel colour carried a fifth of the way toward the accent;
                                      the rail's own TurnedOn fill is sized for a 30px button and
                                      would be a slab of olive across 195px of card. -->
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Card" Property="Background" Value="#FF2E2C1E"/>
-                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FFE3B200"/>
+                                    <Setter TargetName="Card" Property="Background" Value="#FF2F2E1C"/>
+                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FFE2DA00"/>
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="IsChecked" Value="True"/>
                                         <Condition Property="IsMouseOver" Value="True"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter TargetName="Card" Property="Background" Value="#FF34301B"/>
+                                    <Setter TargetName="Card" Property="Background" Value="#FF34331B"/>
                                 </MultiTrigger>
                                 <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Opacity" Value="0.45"/>
@@ -153,7 +153,7 @@
                                     <Setter TargetName="Caption" Property="Foreground" Value="#FFEEEEEE"/>
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FFE3B200"/>
+                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FFE2DA00"/>
                                     <Setter TargetName="Caption" Property="Foreground" Value="#FFEEEEEE"/>
                                 </Trigger>
                                 <Trigger Property="IsKeyboardFocused" Value="True">

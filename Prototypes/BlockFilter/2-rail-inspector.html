@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Block filter — Prototype 2 · List + inspector rail</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI",system-ui,sans-serif;font-size:13px;color:#eee;
+  background:#0e0f10;
+  background-image:conic-gradient(#121315 25%,#0e0f10 0 50%,#121315 0 75%,#0e0f10 0);
+  background-size:24px 24px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#0b0c0d}
+::-webkit-scrollbar-thumb{background:#33363b;border:2px solid #0b0c0d}
+::-webkit-scrollbar-thumb:hover{background:#42454b}
+
+.window{width:950px;height:640px;background:#191b1c;border:1px solid #383b3f;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+
+.titlebar{height:34px;display:flex;align-items:center;gap:8px;padding-left:10px;border-bottom:1px solid #26282b;flex:none;user-select:none}
+.titlebar svg{width:14px;height:14px;color:#9aa5bc;flex:none}
+.titlebar .title{font-size:12px;color:#c2cbdd}
+.titlebar .spacer{flex:1}
+.cap{width:44px;height:33px;display:flex;align-items:center;justify-content:center;color:#969696;font-size:12px;cursor:default}
+.cap:hover{background:#26282b}
+.cap.close:hover{background:#843e3e;color:#fff}
+
+.content{flex:1;display:flex;min-height:0}
+
+/* ---- left pane ---- */
+.left{flex:1;display:flex;flex-direction:column;min-width:0;padding:12px 0 12px 14px}
+.lhead{display:flex;gap:6px;flex:none;margin-bottom:10px;padding-right:14px}
+.search{position:relative;flex:1}
+.search input{width:100%;height:27px;background:#222426;border:1px solid #383b3f;color:#eee;font:inherit;font-size:13px;padding:0 8px 1px 28px;outline:none}
+.search input::placeholder{color:#8a9099}
+.search input:focus{border-color:#565a60}
+.search svg{position:absolute;left:8px;top:7px;width:13px;height:13px;color:#8a9099;pointer-events:none}
+
+.btn{height:27px;padding:0 10px;background:#272a2c;border:1px solid #383b3f;color:#eee;font:inherit;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;justify-content:center}
+.btn:hover{background:#383b3f}
+.btn:active{background:#50545a}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:disabled:hover{background:#272a2c}
+.btn svg{width:12px;height:12px}
+.btn.danger{background:#713535;border-color:#843e3e}
+.btn.danger:hover{background:#843e3e}
+.btn.danger:active{background:#9b4949}
+
+.popwrap{position:relative}
+.pop{position:absolute;top:100%;right:0;margin-top:6px;width:270px;background:#1d1f21;border:1px solid #5f636a;padding:10px;z-index:20;box-shadow:0 12px 32px rgba(0,0,0,.55);display:none}
+.pop.open{display:block}
+.pop input{width:100%;height:27px;background:#222426;border:1px solid #383b3f;color:#eee;font:inherit;font-size:13px;padding:0 8px;outline:none;margin-bottom:8px}
+.pop .row{display:flex;gap:6px}
+.pop .row .btn{flex:1}
+
+/* ---- list ---- */
+.list{flex:1;overflow-y:auto;border:1px solid #313438;background:#0b0c0d;margin-right:14px}
+.lrow{display:flex;align-items:center;height:31px;padding:0 10px 0 8px;border-bottom:1px solid #131518;background:#0f1012;cursor:default;user-select:none}
+.lrow:hover{background:#1c1e21}
+.lrow.selected{background:#23262a}
+.lrow.selected:hover{background:#282b30}
+.lrow .cb{width:15px;height:15px;border:1px solid #42464c;background:#16181a;display:inline-flex;align-items:center;justify-content:center;margin-right:9px;flex:none;opacity:0;transition:opacity .1s}
+.lrow:hover .cb,.lrow.selected .cb{opacity:1}
+.lrow .cb svg{width:9px;height:9px;display:none;color:#c2cbdd}
+.lrow.selected .cb{background:#33363b;border-color:#6b7689}
+.lrow.selected .cb svg{display:block}
+.swatch{width:12px;height:12px;border:1px solid rgba(255,255,255,.14);margin-right:9px;flex:none}
+.lrow .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .name .ns{color:#6b7689}
+.lrow.off .name{opacity:.42}
+.lrow.off .swatch{filter:saturate(.15);opacity:.45}
+
+.pill{width:96px;height:20px;border:1px solid #33363b;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.03em;cursor:pointer;gap:6px;flex:none;background:transparent;color:#6f767f;font-family:inherit}
+.pill .dot{width:6px;height:6px;border-radius:50%;background:#4a4e54}
+.pill.solid{color:#ffb43c;border-color:#7a5a22;background:rgba(255,180,60,.08)}
+.pill.solid .dot{background:#ffb43c}
+.pill.transp{color:#3fd5f5;border-color:#265d69;background:rgba(63,213,245,.07)}
+.pill.transp .dot{background:#3fd5f5}
+.pill:hover{filter:brightness(1.25)}
+
+.emptymsg{padding:30px;text-align:center;color:#6b7689}
+
+/* ---- right rail ---- */
+.rail{width:272px;flex:none;display:flex;flex-direction:column;gap:10px;padding:12px 14px;overflow-y:auto;border-left:1px solid #26282b}
+.card{border:1px solid #313438;background:#1d1f21;padding:11px 12px;flex:none}
+.card h3{font-size:10.5px;letter-spacing:.09em;color:#6b7689;text-transform:uppercase;margin-bottom:9px;font-weight:600}
+
+.bar{height:10px;display:flex;border:1px solid #26282b;background:#0b0c0d;margin-bottom:9px}
+.bar div{transition:width .2s}
+.bar .b-solid{background:#b5832f}
+.bar .b-transp{background:#2f97ad}
+.bar .b-off{background:#33363b}
+
+.legend{display:flex;flex-direction:column;gap:3px}
+.leg{display:flex;align-items:center;gap:8px;padding:4px 6px;margin:0 -6px;cursor:pointer;border:1px solid transparent}
+.leg:hover{background:#26282b}
+.leg.active{border-color:#565a60;background:#26282b}
+.leg .dot{width:7px;height:7px;border-radius:50%;flex:none}
+.leg .lname{flex:1;color:#c2cbdd;font-size:12.5px}
+.leg .lcount{color:#8a9099;font-size:12px}
+.leg[data-f=solid] .dot{background:#ffb43c}
+.leg[data-f=transp] .dot{background:#3fd5f5}
+.leg[data-f=off] .dot{background:#5b6167}
+.leg .hint{font-size:10.5px;color:#565c63}
+
+.selinfo{color:#8a9099;font-size:12px;margin-bottom:8px}
+.selinfo b{color:#eee;font-weight:600}
+.selgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sellinks{margin-top:8px;font-size:11.5px;color:#6b7689}
+.sellinks a{color:#9aa5bc;cursor:pointer;text-decoration:none}
+.sellinks a:hover{text-decoration:underline}
+
+.yrow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.yrow:last-child{margin-bottom:0}
+.yrow .olabel{color:#c2cbdd;font-size:12.5px;cursor:pointer;width:76px;flex:none}
+.yrow.disabled .olabel{color:#6f767f}
+.radio{width:14px;height:14px;border-radius:50%;border:1px solid #565a60;background:#16181a;display:inline-block;position:relative;cursor:pointer;flex:none}
+.radio.on{border-color:#9aa5bc}
+.radio.on::after{content:"";position:absolute;inset:3px;border-radius:50%;background:#c2cbdd}
+select{height:26px;background:#222426;border:1px solid #565a60;color:#eee;font:inherit;font-size:12px;padding:0 4px;outline:none;flex:1;min-width:0}
+select:disabled{opacity:.4}
+input.ynum{width:64px;height:26px;background:#222426;border:1px solid #565a60;color:#eee;font:inherit;font-size:12.5px;padding:0 8px;outline:none;text-align:center}
+input.ynum:disabled{opacity:.4}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+
+.railfoot{margin-top:auto;flex:none;display:flex;flex-direction:column;gap:9px}
+.autoclose{display:flex;align-items:center;gap:7px;color:#c2cbdd;font-size:12.5px;cursor:pointer;user-select:none}
+.autoclose .cb{width:15px;height:15px;border:1px solid #42464c;background:#16181a;display:inline-flex;align-items:center;justify-content:center}
+.autoclose .cb svg{width:9px;height:9px;display:none;color:#c2cbdd}
+.autoclose .cb.on{background:#33363b;border-color:#6b7689}
+.autoclose .cb.on svg{display:block}
+.render{height:31px;border:1px solid #528753;background:#222426;color:#eee;display:flex;gap:8px;align-items:center;justify-content:center;cursor:pointer;font:inherit;font-size:13px;width:100%}
+.render:hover{background:#2c352d}
+.render:active{background:#37453a}
+.render svg{width:11px;height:11px;color:#4be06b}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,6px);background:#1d1f21;border:1px solid #528753;color:#eee;padding:8px 16px;opacity:0;transition:.25s;pointer-events:none;font-size:12.5px;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast b{color:#4be06b;font-weight:600}
+
+.caption{max-width:950px;color:#8a9099;font-size:12px;line-height:1.55;text-align:center}
+.caption b{color:#c2cbdd}
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h12L9.5 8.6V13l-3-1.6V8.6L2 3z"/></svg>
+    <span class="title">Block filter</span>
+    <span class="spacer"></span>
+    <div class="cap">–</div><div class="cap">▢</div><div class="cap close">✕</div>
+  </div>
+
+  <div class="content">
+    <div class="left">
+      <div class="lhead">
+        <div class="search">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+          <input id="q" type="text" placeholder="Search blocks…  (click a row to select, click its pill to change role)" autocomplete="off">
+        </div>
+        <div class="popwrap">
+          <button class="btn" id="addBtn">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 1.5v9M1.5 6h9"/></svg>Add
+          </button>
+          <div class="pop" id="addPop">
+            <input id="addName" type="text" value="minecraft:" spellcheck="false">
+            <div class="row">
+              <button class="btn" id="addSolid">Add as solid</button>
+              <button class="btn" id="addTransp">Add as transparent</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div class="rail">
+      <div class="card">
+        <h3>Profile</h3>
+        <div class="bar" id="bar"><div class="b-solid"></div><div class="b-transp"></div><div class="b-off"></div></div>
+        <div class="legend" id="legend">
+          <div class="leg" data-f="solid"><span class="dot"></span><span class="lname">Solid</span><span class="hint">filter</span><span class="lcount" id="cSolid"></span></div>
+          <div class="leg" data-f="transp"><span class="dot"></span><span class="lname">Transparent</span><span class="hint">filter</span><span class="lcount" id="cTransp"></span></div>
+          <div class="leg" data-f="off"><span class="dot"></span><span class="lname">Off</span><span class="hint">filter</span><span class="lcount" id="cOff"></span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Selection</h3>
+        <div class="selinfo"><b id="selCount">0</b> of <span id="selTotal">0</span> blocks selected</div>
+        <div class="selgrid">
+          <button class="btn" id="bSolid" disabled>Set solid</button>
+          <button class="btn" id="bTransp" disabled>Set transparent</button>
+          <button class="btn" id="bOff" disabled>Turn off</button>
+          <button class="btn danger" id="bRemove" disabled>Remove</button>
+        </div>
+        <div class="sellinks"><a id="selAll">Select all shown</a> · <a id="selNone">Clear selection</a> · <a id="resetBtn">Reset to default</a></div>
+      </div>
+
+      <div class="card">
+        <h3>Y level</h3>
+        <div class="yrow" id="optHeightmap">
+          <span class="radio on" id="rHeightmap"></span>
+          <span class="olabel">Heightmap</span>
+          <select id="heightmapSel">
+            <option>MOTION_BLOCKING</option>
+            <option>MOTION_BLOCKING_NO_LEAVES</option>
+            <option>WORLD_SURFACE</option>
+            <option>OCEAN_FLOOR</option>
+          </select>
+        </div>
+        <div class="yrow disabled" id="optFixed">
+          <span class="radio" id="rFixed"></span>
+          <span class="olabel">Fixed Y</span>
+          <input class="ynum" id="yNum" type="number" value="319" disabled>
+        </div>
+      </div>
+
+      <div class="railfoot">
+        <label class="autoclose"><span class="cb on" id="autoClose"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5.5 4 8l4.5-6"/></svg></span>Close after render</label>
+        <button class="render" id="renderBtn">
+          <svg viewBox="0 0 10 12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Render
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="caption">
+  <b>Prototype 2 · List + inspector rail.</b>
+  One flat list; each block carries a role pill that cycles <span style="color:#ffb43c">Solid</span> →
+  <span style="color:#3fd5f5">Transparent</span> → Off on click. Rows select on click, and the rail applies bulk
+  changes to the selection. The Profile card doubles as a filter — click a legend row to show only that role.
+</div>
+
+<div class="toast" id="toast"><b>✓</b>&nbsp;<span id="toastMsg"></span></div>
+
+<script>
+const DEFAULTS = [
+ ["stone","#7d7d7d","solid"],["deepslate","#50505a","solid"],["cobblestone","#797979","solid"],["stone_bricks","#8a8a8a","solid"],
+ ["granite","#956656","solid"],["diorite","#bdbdbd","solid"],["andesite","#888a8a","solid"],["calcite","#dfe0dc","solid"],
+ ["tuff","#6c6e67","solid"],["dirt","#866043","solid"],["grass_block","#7cbd6b","solid"],["coarse_dirt","#77553b","solid"],
+ ["rooted_dirt","#90674c","solid"],["podzol","#59381e","solid"],["mycelium","#6f6367","solid"],["mud","#3c3a3d","solid"],
+ ["clay","#a1a7b3","solid"],["sand","#dbd3a0","solid"],["red_sand","#a95821","solid"],["gravel","#837b7b","solid"],
+ ["sandstone","#d8cb9a","solid"],["terracotta","#985e43","solid"],["snow_block","#f0fbfb","solid"],["packed_ice","#8db4fa","solid"],
+ ["blue_ice","#74a8fd","solid"],["obsidian","#15121f","solid"],["bedrock","#565656","solid"],["netherrack","#6f3634","solid"],
+ ["basalt","#4e4e56","solid"],["blackstone","#2a252c","solid"],["soul_sand","#513e33","solid"],["magma_block","#8e3f20","solid"],
+ ["end_stone","#dbde9e","solid"],["moss_block","#59762c","solid"],["amethyst_block","#8562c1","solid"],["dripstone_block","#86675c","solid"],
+ ["water","#3f76e4","transp"],["ice","#91b8fe","transp"],["glass","#e6f2f2","transp"],["tinted_glass","#2a2536","transp"],
+ ["oak_leaves","#48b518","transp"],["spruce_leaves","#619961","transp"],["birch_leaves","#80a755","transp"],["jungle_leaves","#30bb0b","transp"],
+ ["acacia_leaves","#aea42a","transp"],["dark_oak_leaves","#486117","transp"],["mangrove_leaves","#59a52c","transp"],["cherry_leaves","#e8b0e0","transp"],
+ ["azalea_leaves","#486d1e","transp"],["seagrass","#327d38","transp"],["kelp","#578a2e","transp"],["slime_block","#6fc05b","transp"],
+ ["honey_block","#fabe32","transp"],
+];
+
+let uid = 0;
+function makeDefaults(){
+  return DEFAULTS.map(([name,color,state]) => ({id:++uid,name,color,state}))
+                 .sort((a,b)=>a.name.localeCompare(b.name));
+}
+
+let blocks = makeDefaults();
+let query = "";
+let filter = null;              // null | 'solid' | 'transp' | 'off'
+let selected = new Set();
+
+const $ = id => document.getElementById(id);
+const listEl = $("list");
+const STATE_LABEL = {solid:"Solid", transp:"Transparent", off:"Off"};
+const NEXT = {solid:"transp", transp:"off", off:"solid"};
+
+function norm(s){ return s.trim().toLowerCase().replace(/^minecraft:/,""); }
+
+function visible(){
+  const q = norm(query);
+  return blocks.filter(b =>
+    (!q || b.name.includes(q)) && (!filter || b.state === filter));
+}
+
+function render(){
+  const vis = visible();
+
+  listEl.innerHTML = vis.map(b => `
+    <div class="lrow ${b.state==="off"?"off":""} ${selected.has(b.id)?"selected":""}" data-id="${b.id}">
+      <span class="cb"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5.5 4 8l4.5-6"/></svg></span>
+      <span class="swatch" style="background:${b.color}"></span>
+      <span class="name"><span class="ns">minecraft:</span>${b.name}</span>
+      <button class="pill ${b.state}" data-pill><span class="dot"></span>${STATE_LABEL[b.state]}</button>
+    </div>`).join("")
+    || `<div class="emptymsg">No blocks match this view.</div>`;
+
+  const n = s => blocks.filter(b=>b.state===s).length;
+  $("cSolid").textContent = n("solid");
+  $("cTransp").textContent = n("transp");
+  $("cOff").textContent = n("off");
+  const total = Math.max(blocks.length,1);
+  document.querySelector(".b-solid").style.width  = (n("solid")/total*100)+"%";
+  document.querySelector(".b-transp").style.width = (n("transp")/total*100)+"%";
+  document.querySelector(".b-off").style.width    = (n("off")/total*100)+"%";
+
+  document.querySelectorAll(".leg").forEach(l => l.classList.toggle("active", l.dataset.f===filter));
+
+  selected = new Set([...selected].filter(id => blocks.some(b=>b.id===id)));
+  $("selCount").textContent = selected.size;
+  $("selTotal").textContent = blocks.length;
+  ["bSolid","bTransp","bOff","bRemove"].forEach(id => $(id).disabled = selected.size===0);
+}
+
+listEl.addEventListener("click", e => {
+  const row = e.target.closest(".lrow"); if (!row) return;
+  const id = +row.dataset.id;
+  const b = blocks.find(x=>x.id===id);
+  if (e.target.closest("[data-pill]")) { b.state = NEXT[b.state]; }
+  else { selected.has(id) ? selected.delete(id) : selected.add(id); }
+  render();
+});
+
+$("q").addEventListener("input", e => { query = e.target.value; render(); });
+
+$("legend").addEventListener("click", e => {
+  const leg = e.target.closest(".leg"); if (!leg) return;
+  filter = (filter === leg.dataset.f) ? null : leg.dataset.f;
+  render();
+});
+
+function bulk(state){ blocks.forEach(b => { if (selected.has(b.id)) b.state = state; }); render(); }
+$("bSolid").addEventListener("click", ()=>bulk("solid"));
+$("bTransp").addEventListener("click", ()=>bulk("transp"));
+$("bOff").addEventListener("click", ()=>bulk("off"));
+$("bRemove").addEventListener("click", ()=>{ blocks = blocks.filter(b=>!selected.has(b.id)); selected.clear(); render(); });
+
+$("selAll").addEventListener("click", ()=>{ visible().forEach(b=>selected.add(b.id)); render(); });
+$("selNone").addEventListener("click", ()=>{ selected.clear(); render(); });
+$("resetBtn").addEventListener("click", ()=>{ blocks = makeDefaults(); selected.clear(); filter=null; render(); });
+
+function addBlock(name, state){
+  if (!name) return;
+  let b = blocks.find(x=>x.name===name);
+  if (!b) { b = {id:++uid,name,color:"#4a4e54",state}; blocks.push(b); blocks.sort((a,c)=>a.name.localeCompare(c.name)); }
+  else b.state = state;
+  query=""; $("q").value="";
+  render();
+}
+const addPop = $("addPop");
+$("addBtn").addEventListener("click", e => { e.stopPropagation(); addPop.classList.toggle("open"); $("addName").focus(); });
+$("addSolid").addEventListener("click", ()=>{ addBlock(norm($("addName").value),"solid"); addPop.classList.remove("open"); $("addName").value="minecraft:"; });
+$("addTransp").addEventListener("click", ()=>{ addBlock(norm($("addName").value),"transp"); addPop.classList.remove("open"); $("addName").value="minecraft:"; });
+document.addEventListener("click", ()=>addPop.classList.remove("open"));
+addPop.addEventListener("click", e=>e.stopPropagation());
+
+function setY(mode){
+  const hm = mode==="heightmap";
+  $("rHeightmap").classList.toggle("on", hm);
+  $("rFixed").classList.toggle("on", !hm);
+  $("optHeightmap").classList.toggle("disabled", !hm);
+  $("optFixed").classList.toggle("disabled", hm);
+  $("heightmapSel").disabled = !hm;
+  $("yNum").disabled = hm;
+}
+$("optHeightmap").addEventListener("click", ()=>setY("heightmap"));
+$("optFixed").addEventListener("click", ()=>setY("fixed"));
+
+$("autoClose").addEventListener("click", e => e.currentTarget.classList.toggle("on"));
+
+$("renderBtn").addEventListener("click", () => {
+  const t = $("toast");
+  const n = s => blocks.filter(b=>b.state===s).length;
+  $("toastMsg").textContent = `Filter applied — rendering ${n("solid")} solid / ${n("transp")} transparent`;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+});
+
+render();
+</script>
+</body>
+</html>

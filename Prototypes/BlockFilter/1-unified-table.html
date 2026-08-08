@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Block filter — Prototype 1 · Unified table</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Segoe UI",system-ui,sans-serif;font-size:13px;color:#eee;
+  background:#0e0f10;
+  background-image:conic-gradient(#121315 25%,#0e0f10 0 50%,#121315 0 75%,#0e0f10 0);
+  background-size:24px 24px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:#0b0c0d}
+::-webkit-scrollbar-thumb{background:#33363b;border:2px solid #0b0c0d}
+::-webkit-scrollbar-thumb:hover{background:#42454b}
+
+.window{width:880px;height:640px;background:#191b1c;border:1px solid #383b3f;display:flex;flex-direction:column;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+
+/* ---- title bar ---- */
+.titlebar{height:34px;display:flex;align-items:center;gap:8px;padding-left:10px;border-bottom:1px solid #26282b;flex:none;user-select:none}
+.titlebar svg{width:14px;height:14px;color:#9aa5bc;flex:none}
+.titlebar .title{font-size:12px;color:#c2cbdd}
+.titlebar .spacer{flex:1}
+.cap{width:44px;height:33px;display:flex;align-items:center;justify-content:center;color:#969696;font-size:12px;cursor:default}
+.cap:hover{background:#26282b}
+.cap.close:hover{background:#843e3e;color:#fff}
+
+/* ---- toolbar ---- */
+.toolbar{display:flex;align-items:center;gap:6px;padding:12px 14px 0;flex:none}
+.search{position:relative;flex:1;min-width:200px}
+.search input{width:100%;height:27px;background:#222426;border:1px solid #383b3f;color:#eee;font:inherit;font-size:13px;padding:0 8px 1px 28px;outline:none}
+.search input::placeholder{color:#8a9099}
+.search input:focus{border-color:#565a60}
+.search svg{position:absolute;left:8px;top:7px;width:13px;height:13px;color:#8a9099;pointer-events:none}
+
+.btn{height:27px;padding:0 10px;background:#272a2c;border:1px solid #383b3f;color:#eee;font:inherit;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{background:#383b3f}
+.btn:active{background:#50545a}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:disabled:hover{background:#272a2c}
+.btn svg{width:12px;height:12px}
+.btn.danger{background:#713535;border-color:#843e3e}
+.btn.danger:hover{background:#843e3e}
+.btn.danger:active{background:#9b4949}
+
+.popwrap{position:relative}
+.pop{position:absolute;top:100%;right:0;margin-top:6px;width:270px;background:#1d1f21;border:1px solid #5f636a;padding:10px;z-index:20;box-shadow:0 12px 32px rgba(0,0,0,.55);display:none}
+.pop.open{display:block}
+.pop input{width:100%;height:27px;background:#222426;border:1px solid #383b3f;color:#eee;font:inherit;font-size:13px;padding:0 8px;outline:none;margin-bottom:8px}
+.pop input:focus{border-color:#565a60}
+.pop .row{display:flex;gap:6px}
+.pop .row .btn{flex:1;justify-content:center}
+
+.menu{position:absolute;top:100%;right:0;margin-top:6px;width:230px;background:#1d1f21;border:1px solid #5f636a;z-index:20;box-shadow:0 12px 32px rgba(0,0,0,.55);display:none}
+.menu.open{display:block}
+.menu button{display:block;width:100%;text-align:left;background:none;border:none;color:#eee;font:inherit;font-size:12.5px;padding:7px 12px;cursor:pointer}
+.menu button:hover{background:#33363b}
+.menu button.danger{color:#ff9c9c}
+.menu button.danger:hover{background:#713535;color:#fff}
+.menu .msep{height:1px;background:#33363b;margin:4px 0}
+
+/* ---- tabs ---- */
+.tabs{display:flex;gap:2px;padding:8px 14px 0;flex:none;border-bottom:1px solid #26282b}
+.tab{background:none;border:none;border-bottom:2px solid transparent;color:#969696;padding:6px 10px 7px;font:inherit;font-size:12.5px;cursor:pointer}
+.tab:hover{color:#c2cbdd}
+.tab .n{color:#6b7689;font-size:11px;margin-left:4px}
+.tab.active{color:#eee}
+.tab.active[data-tab=all]{border-bottom-color:#9aa5bc}
+.tab.active[data-tab=solid]{border-bottom-color:#ffb43c}
+.tab.active[data-tab=transp]{border-bottom-color:#3fd5f5}
+.tab.active[data-tab=off]{border-bottom-color:#6b7689}
+
+/* ---- table ---- */
+.tablewrap{flex:1;overflow:auto;margin:10px 14px;border:1px solid #313438;background:#0b0c0d}
+table{width:100%;border-collapse:collapse}
+thead th{position:sticky;top:0;background:#141618;color:#9aa5bc;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:600;text-align:left;padding:7px 10px;border-bottom:1px solid #26282b;z-index:2}
+thead th.c-solid{color:#ffb43c;text-align:center;width:104px}
+thead th.c-transp{color:#3fd5f5;text-align:center;width:104px}
+thead th.c-chk{width:36px}
+tbody td{border-bottom:1px solid #131518;padding:0 10px;height:31px;background:#0f1012}
+tbody tr:hover td{background:#1c1e21}
+tbody tr.selected td{background:#23262a}
+tbody tr.selected:hover td{background:#282b30}
+.td-role{text-align:center}
+.td-chk{text-align:center}
+
+.swatch{display:inline-block;width:12px;height:12px;border:1px solid rgba(255,255,255,.14);vertical-align:-1px;margin-right:9px;flex:none}
+.name .ns{color:#6b7689}
+tr.off .name{opacity:.42}
+tr.off .swatch{filter:saturate(.15);opacity:.45}
+
+.cb,.role{width:16px;height:16px;border:1px solid #42464c;background:#16181a;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle}
+.cb svg,.role svg{width:10px;height:10px;display:none}
+.cb.on{background:#33363b;border-color:#6b7689}
+.cb.on svg{display:block;color:#c2cbdd}
+.role:hover{border-color:#6b7689}
+.role.solid.on{background:rgba(255,180,60,.15);border-color:#a97c2e}
+.role.solid.on svg{display:block;color:#ffb43c}
+.role.transp.on{background:rgba(63,213,245,.13);border-color:#2f8ba0}
+.role.transp.on svg{display:block;color:#3fd5f5}
+
+tr.ghost td{background:#131518;height:34px}
+tr.ghost .ghostline{display:flex;align-items:center;gap:10px;color:#8a9099}
+tr.ghost .gname{color:#c2cbdd}
+tr.ghost .btn{height:22px;font-size:11.5px;padding:0 8px}
+
+.emptymsg{padding:30px;text-align:center;color:#6b7689}
+
+/* ---- footer ---- */
+.footer{flex:none;display:flex;align-items:center;gap:16px;padding:11px 14px;border-top:1px solid #313438}
+.ylab{font-size:10.5px;letter-spacing:.09em;color:#6b7689;font-weight:600}
+.yopt{display:flex;align-items:center;gap:7px}
+.yopt .olabel{color:#c2cbdd;font-size:12.5px;cursor:pointer}
+.yopt.disabled .olabel{color:#6f767f}
+.radio{width:14px;height:14px;border-radius:50%;border:1px solid #565a60;background:#16181a;display:inline-block;position:relative;cursor:pointer;flex:none}
+.radio.on{border-color:#9aa5bc}
+.radio.on::after{content:"";position:absolute;inset:3px;border-radius:50%;background:#c2cbdd}
+select{height:26px;background:#222426;border:1px solid #565a60;color:#eee;font:inherit;font-size:12.5px;padding:0 4px;outline:none}
+select:disabled{opacity:.4}
+input.ynum{width:60px;height:26px;background:#222426;border:1px solid #565a60;color:#eee;font:inherit;font-size:12.5px;padding:0 8px;outline:none;text-align:center}
+input.ynum:disabled{opacity:.4}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.fspacer{flex:1}
+.autoclose{display:flex;align-items:center;gap:7px;color:#c2cbdd;font-size:12.5px;cursor:pointer;user-select:none}
+.render{height:29px;padding:0 16px;border:1px solid #528753;background:#222426;color:#eee;display:inline-flex;gap:8px;align-items:center;cursor:pointer;font:inherit;font-size:13px}
+.render:hover{background:#2c352d}
+.render:active{background:#37453a}
+.render svg{width:11px;height:11px;color:#4be06b}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,6px);background:#1d1f21;border:1px solid #528753;color:#eee;padding:8px 16px;opacity:0;transition:.25s;pointer-events:none;font-size:12.5px;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast b{color:#4be06b;font-weight:600}
+
+.caption{max-width:880px;color:#8a9099;font-size:12px;line-height:1.55;text-align:center}
+.caption b{color:#c2cbdd}
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 3h12L9.5 8.6V13l-3-1.6V8.6L2 3z"/></svg>
+    <span class="title">Block filter</span>
+    <span class="spacer"></span>
+    <div class="cap">–</div><div class="cap">▢</div><div class="cap close">✕</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5 14 14"/></svg>
+      <input id="q" type="text" placeholder="Search blocks…" autocomplete="off">
+    </div>
+    <div class="popwrap">
+      <button class="btn" id="addBtn">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 1.5v9M1.5 6h9"/></svg>Add block
+      </button>
+      <div class="pop" id="addPop">
+        <input id="addName" type="text" value="minecraft:" spellcheck="false">
+        <div class="row">
+          <button class="btn" id="addSolid">Add as solid</button>
+          <button class="btn" id="addTransp">Add as transparent</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn" id="removeBtn" disabled>
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 3h9M4 3V1.8h4V3M2.7 3l.6 7.3h5.4L9.3 3M5 5v3.5M7 5v3.5"/></svg>Remove
+    </button>
+    <div class="popwrap">
+      <button class="btn danger" id="clearBtn">Clear ▾</button>
+      <div class="menu" id="clearMenu">
+        <button data-clear="solid">Turn off <b style="color:#ffb43c">Solid</b> for all</button>
+        <button data-clear="transp">Turn off <b style="color:#3fd5f5">Transparent</b> for all</button>
+        <div class="msep"></div>
+        <button data-clear="all" class="danger">Remove all blocks</button>
+      </div>
+    </div>
+    <button class="btn" id="resetBtn">Reset to default</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="all">All<span class="n" id="nAll"></span></button>
+    <button class="tab" data-tab="solid">Solid<span class="n" id="nSolid"></span></button>
+    <button class="tab" data-tab="transp">Transparent<span class="n" id="nTransp"></span></button>
+    <button class="tab" data-tab="off">Off<span class="n" id="nOff"></span></button>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th class="c-chk"><span class="cb" id="selAll"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5.5 4 8l4.5-6"/></svg></span></th>
+        <th>Block</th>
+        <th class="c-solid">Solid</th>
+        <th class="c-transp">Transparent</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span class="ylab">Y&nbsp;LEVEL</span>
+    <div class="yopt" id="optHeightmap">
+      <span class="radio on" id="rHeightmap"></span>
+      <span class="olabel">Heightmap</span>
+      <select id="heightmapSel">
+        <option>MOTION_BLOCKING</option>
+        <option>MOTION_BLOCKING_NO_LEAVES</option>
+        <option>WORLD_SURFACE</option>
+        <option>OCEAN_FLOOR</option>
+      </select>
+    </div>
+    <div class="yopt disabled" id="optFixed">
+      <span class="radio" id="rFixed"></span>
+      <span class="olabel">Fixed&nbsp;Y</span>
+      <input class="ynum" id="yNum" type="number" value="319" disabled>
+    </div>
+    <span class="fspacer"></span>
+    <label class="autoclose"><span class="cb on" id="autoClose"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5.5 4 8l4.5-6"/></svg></span>Close after render</label>
+    <button class="render" id="renderBtn">
+      <svg viewBox="0 0 10 12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>Render
+    </button>
+  </div>
+</div>
+
+<div class="caption">
+  <b>Prototype 1 · One grid, two role columns.</b>
+  The two old lists become two toggle columns on a single searchable table — a block can be solid, transparent,
+  both, or off (dimmed). Tabs filter by role, the checkbox column drives bulk remove, and “Clear ▾” replaces the
+  two red buttons. Try: search <i>leaves</i>, toggle roles, type an unknown name to get an inline “Add” row.
+</div>
+
+<div class="toast" id="toast"><b>✓</b>&nbsp;<span id="toastMsg">Filter applied — rendering</span></div>
+
+<script>
+const CHECK = '<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5.5 4 8l4.5-6"/></svg>';
+
+const DEFAULTS = [
+ ["stone","#7d7d7d","s"],["deepslate","#50505a","s"],["cobblestone","#797979","s"],["stone_bricks","#8a8a8a","s"],
+ ["granite","#956656","s"],["diorite","#bdbdbd","s"],["andesite","#888a8a","s"],["calcite","#dfe0dc","s"],
+ ["tuff","#6c6e67","s"],["dirt","#866043","s"],["grass_block","#7cbd6b","s"],["coarse_dirt","#77553b","s"],
+ ["rooted_dirt","#90674c","s"],["podzol","#59381e","s"],["mycelium","#6f6367","s"],["mud","#3c3a3d","s"],
+ ["clay","#a1a7b3","s"],["sand","#dbd3a0","s"],["red_sand","#a95821","s"],["gravel","#837b7b","s"],
+ ["sandstone","#d8cb9a","s"],["terracotta","#985e43","s"],["snow_block","#f0fbfb","s"],["packed_ice","#8db4fa","s"],
+ ["blue_ice","#74a8fd","s"],["obsidian","#15121f","s"],["bedrock","#565656","s"],["netherrack","#6f3634","s"],
+ ["basalt","#4e4e56","s"],["blackstone","#2a252c","s"],["soul_sand","#513e33","s"],["magma_block","#8e3f20","s"],
+ ["end_stone","#dbde9e","s"],["moss_block","#59762c","s"],["amethyst_block","#8562c1","s"],["dripstone_block","#86675c","s"],
+ ["water","#3f76e4","t"],["ice","#91b8fe","t"],["glass","#e6f2f2","t"],["tinted_glass","#2a2536","t"],
+ ["oak_leaves","#48b518","t"],["spruce_leaves","#619961","t"],["birch_leaves","#80a755","t"],["jungle_leaves","#30bb0b","t"],
+ ["acacia_leaves","#aea42a","t"],["dark_oak_leaves","#486117","t"],["mangrove_leaves","#59a52c","t"],["cherry_leaves","#e8b0e0","t"],
+ ["azalea_leaves","#486d1e","t"],["seagrass","#327d38","t"],["kelp","#578a2e","t"],["slime_block","#6fc05b","t"],
+ ["honey_block","#fabe32","t"],
+];
+
+let uid = 0;
+function makeDefaults(){
+  return DEFAULTS.map(([name,color,role]) => ({
+    id: ++uid, name, color, solid: role==="s", transp: role==="t"
+  })).sort((a,b)=>a.name.localeCompare(b.name));
+}
+
+let blocks = makeDefaults();
+let query = "";
+let tab = "all";
+let selected = new Set();
+
+const $ = id => document.getElementById(id);
+const rowsEl = $("rows");
+
+function norm(s){ return s.trim().toLowerCase().replace(/^minecraft:/,""); }
+
+function visible(){
+  const q = norm(query);
+  return blocks.filter(b => {
+    if (q && !b.name.includes(q)) return false;
+    if (tab==="solid") return b.solid;
+    if (tab==="transp") return b.transp;
+    if (tab==="off") return !b.solid && !b.transp;
+    return true;
+  });
+}
+
+function render(){
+  const vis = visible();
+  const q = norm(query);
+  let html = "";
+
+  if (q.length > 0 && !blocks.some(b => b.name === q)) {
+    html += `<tr class="ghost"><td colspan="4"><div class="ghostline">
+      <span>Not in the list:</span><span class="gname">minecraft:${q}</span>
+      <button class="btn" data-ghost="solid">+ Solid</button>
+      <button class="btn" data-ghost="transp">+ Transparent</button>
+    </div></td></tr>`;
+  }
+
+  html += vis.map(b => `
+    <tr class="${(!b.solid&&!b.transp)?"off":""} ${selected.has(b.id)?"selected":""}" data-id="${b.id}">
+      <td class="td-chk"><span class="cb ${selected.has(b.id)?"on":""}" data-act="sel">${CHECK}</span></td>
+      <td class="td-name"><span class="swatch" style="background:${b.color}"></span><span class="name"><span class="ns">minecraft:</span>${b.name}</span></td>
+      <td class="td-role"><span class="role solid ${b.solid?"on":""}" data-act="solid">${CHECK}</span></td>
+      <td class="td-role"><span class="role transp ${b.transp?"on":""}" data-act="transp">${CHECK}</span></td>
+    </tr>`).join("");
+
+  if (!html) html = `<tr><td colspan="4"><div class="emptymsg">No blocks match this view.</div></td></tr>`;
+  rowsEl.innerHTML = html;
+
+  $("nAll").textContent = blocks.length;
+  $("nSolid").textContent = blocks.filter(b=>b.solid).length;
+  $("nTransp").textContent = blocks.filter(b=>b.transp).length;
+  $("nOff").textContent = blocks.filter(b=>!b.solid&&!b.transp).length;
+
+  selected = new Set([...selected].filter(id => blocks.some(b=>b.id===id)));
+  $("removeBtn").disabled = selected.size === 0;
+  $("selAll").classList.toggle("on", vis.length>0 && vis.every(b=>selected.has(b.id)));
+}
+
+rowsEl.addEventListener("click", e => {
+  const ghost = e.target.closest("[data-ghost]");
+  if (ghost) { addBlock(norm(query), ghost.dataset.ghost); return; }
+  const tr = e.target.closest("tr[data-id]");
+  if (!tr) return;
+  const id = +tr.dataset.id;
+  const b = blocks.find(x=>x.id===id);
+  const act = e.target.closest("[data-act]")?.dataset.act;
+  if (act === "solid") b.solid = !b.solid;
+  else if (act === "transp") b.transp = !b.transp;
+  else { selected.has(id) ? selected.delete(id) : selected.add(id); }
+  render();
+});
+
+$("selAll").addEventListener("click", () => {
+  const vis = visible();
+  const all = vis.length>0 && vis.every(b=>selected.has(b.id));
+  vis.forEach(b => all ? selected.delete(b.id) : selected.add(b.id));
+  render();
+});
+
+$("q").addEventListener("input", e => { query = e.target.value; render(); });
+
+$("tabs").addEventListener("click", e => {
+  const t = e.target.closest(".tab"); if (!t) return;
+  tab = t.dataset.tab;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active", x===t));
+  render();
+});
+
+function addBlock(name, role){
+  if (!name) return;
+  let b = blocks.find(x=>x.name===name);
+  if (!b) { b = {id:++uid, name, color:"#4a4e54", solid:false, transp:false}; blocks.push(b); blocks.sort((a,c)=>a.name.localeCompare(c.name)); }
+  if (role==="solid") b.solid = true; else b.transp = true;
+  query = ""; $("q").value = "";
+  render();
+}
+
+const addPop = $("addPop");
+$("addBtn").addEventListener("click", e => { e.stopPropagation(); addPop.classList.toggle("open"); $("clearMenu").classList.remove("open"); $("addName").focus(); });
+$("addSolid").addEventListener("click", () => { addBlock(norm($("addName").value), "solid"); addPop.classList.remove("open"); $("addName").value="minecraft:"; });
+$("addTransp").addEventListener("click", () => { addBlock(norm($("addName").value), "transp"); addPop.classList.remove("open"); $("addName").value="minecraft:"; });
+
+$("removeBtn").addEventListener("click", () => { blocks = blocks.filter(b=>!selected.has(b.id)); selected.clear(); render(); });
+
+const clearMenu = $("clearMenu");
+$("clearBtn").addEventListener("click", e => { e.stopPropagation(); clearMenu.classList.toggle("open"); addPop.classList.remove("open"); });
+clearMenu.addEventListener("click", e => {
+  const act = e.target.closest("[data-clear]")?.dataset.clear; if (!act) return;
+  if (act==="solid") blocks.forEach(b=>b.solid=false);
+  else if (act==="transp") blocks.forEach(b=>b.transp=false);
+  else blocks = [];
+  clearMenu.classList.remove("open");
+  render();
+});
+document.addEventListener("click", () => { addPop.classList.remove("open"); clearMenu.classList.remove("open"); });
+addPop.addEventListener("click", e=>e.stopPropagation());
+
+$("resetBtn").addEventListener("click", () => { blocks = makeDefaults(); selected.clear(); render(); });
+
+function setY(mode){
+  const hm = mode==="heightmap";
+  $("rHeightmap").classList.toggle("on", hm);
+  $("rFixed").classList.toggle("on", !hm);
+  $("optHeightmap").classList.toggle("disabled", !hm);
+  $("optFixed").classList.toggle("disabled", hm);
+  $("heightmapSel").disabled = !hm;
+  $("yNum").disabled = hm;
+}
+$("optHeightmap").addEventListener("click", ()=>setY("heightmap"));
+$("optFixed").addEventListener("click", ()=>setY("fixed"));
+
+$("autoClose").addEventListener("click", e => e.currentTarget.classList.toggle("on"));
+
+$("renderBtn").addEventListener("click", () => {
+  const t = $("toast");
+  $("toastMsg").textContent = `Filter applied — rendering ${blocks.filter(b=>b.solid).length} solid / ${blocks.filter(b=>b.transp).length} transparent`;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2200);
+});
+
+render();
+</script>
+</body>
+</html>

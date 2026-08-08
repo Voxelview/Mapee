@@ -65,15 +65,15 @@
                                     <Setter TargetName="Card" Property="BorderBrush" Value="#FF6B7280"/>
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Card" Property="Background" Value="#FF2E2C1E"/>
-                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FFE3B200"/>
+                                    <Setter TargetName="Card" Property="Background" Value="#FF2F2E1C"/>
+                                    <Setter TargetName="Card" Property="BorderBrush" Value="#FFE2DA00"/>
                                 </Trigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
                                         <Condition Property="IsChecked" Value="True"/>
                                         <Condition Property="IsMouseOver" Value="True"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter TargetName="Card" Property="Background" Value="#FF34301B"/>
+                                    <Setter TargetName="Card" Property="Background" Value="#FF34331B"/>
                                 </MultiTrigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -110,7 +110,7 @@
                                     <Setter TargetName="Caption" Property="Foreground" Value="#FFEEEEEE"/>
                                 </Trigger>
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FFE3B200"/>
+                                    <Setter TargetName="Ring" Property="BorderBrush" Value="#FFE2DA00"/>
                                     <Setter TargetName="Caption" Property="Foreground" Value="#FFEEEEEE"/>
                                 </Trigger>
                                 <Trigger Property="IsKeyboardFocused" Value="True">
@@ -145,7 +145,7 @@
                                          is not one - so the checked state swaps the whole
                                          RenderTransform rather than animating an Angle. -->
                                     <Path x:Name="Chevron" Grid.Column="0" Width="8" Height="9"
-                                          VerticalAlignment="Center" Fill="#FFE3B200"
+                                          VerticalAlignment="Center" Fill="#FFE2DA00"
                                           Data="M 0,0 L 5,4.5 L 0,9 Z"
                                           RenderTransformOrigin="0.5, 0.5"/>
 
@@ -220,8 +220,8 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Default" FontSize="13" FontWeight="Bold" Foreground="#FFEEEEEE"/>
                             <Border x:Name="DimensionTag" Margin="7, 1, 0, 0" Padding="4, 0, 4, 1"
-                                    BorderBrush="#FFE3B200" BorderThickness="1" VerticalAlignment="Center">
-                                <TextBlock x:Name="DimensionTagLabel" FontSize="10" Foreground="#FFE3B200"/>
+                                    BorderBrush="#FFE2DA00" BorderThickness="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="DimensionTagLabel" FontSize="10" Foreground="#FFE2DA00"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="What this dimension ships with." FontSize="11" TextWrapping="Wrap"
@@ -414,7 +414,7 @@
                  the background, so a second control for the same thing would only be a second
                  place to look. -->
             <TextBlock x:Name="CustomLabel" Grid.Column="0" Text="Custom" FontSize="11"
-                       VerticalAlignment="Center" Visibility="Hidden" Foreground="#FFE3B200"/>
+                       VerticalAlignment="Center" Visibility="Hidden" Foreground="#FFE2DA00"/>
 
             <CheckBox x:Name="CloseWindowCheckBox" Grid.Column="2" IsChecked="True"
                       VerticalAlignment="Center" Margin="10, 1, 12, 0"

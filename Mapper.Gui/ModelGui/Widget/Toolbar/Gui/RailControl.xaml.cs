@@ -47,7 +47,7 @@ namespace Mapper.Gui
 
         private static SolidColorBrush CreateAccentBrush()
         {
-            SolidColorBrush output = new(Color.FromRgb(227, 178, 0));
+            SolidColorBrush output = new(Color.FromRgb(226, 218, 0));
             output.Freeze();
 
             return output;

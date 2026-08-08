@@ -59,8 +59,8 @@
                              TurnedOn DefaultBorder and MouseOverBorder - so a ticked box agrees
                              with a lit rail tool and with the style picker's ring. -->
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Box" Property="Background" Value="#FFE3B200"/>
-                            <Setter TargetName="Box" Property="BorderBrush" Value="#FFE3B200"/>
+                            <Setter TargetName="Box" Property="Background" Value="#FFE2DA00"/>
+                            <Setter TargetName="Box" Property="BorderBrush" Value="#FFE2DA00"/>
                             <Setter TargetName="Tick" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <MultiTrigger>
@@ -68,8 +68,8 @@
                                 <Condition Property="IsChecked" Value="True"/>
                                 <Condition Property="IsMouseOver" Value="True"/>
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Box" Property="Background" Value="#FFF2BE00"/>
-                            <Setter TargetName="Box" Property="BorderBrush" Value="#FFF2BE00"/>
+                            <Setter TargetName="Box" Property="Background" Value="#FFF2EA00"/>
+                            <Setter TargetName="Box" Property="BorderBrush" Value="#FFF2EA00"/>
                         </MultiTrigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Box" Property="BorderBrush" Value="#FFEEEEEE"/>

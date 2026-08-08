@@ -14,10 +14,12 @@ namespace Mapper.Gui.Controller
         public Renderer Renderer { get; }
         public ToolScene ToolScene { get; }
         public IRenderInvoker RenderInvoker { get; }
+        public IAtlasWidget Atlas { get; }
 
-        public ToolbarWidget(MapViewer mainWindow, Renderer renderer) 
+        public ToolbarWidget(MapViewer mainWindow, Renderer renderer, IAtlasWidget atlas) 
         {
             MainWindow = mainWindow;
+            Atlas = atlas;
             Renderer = renderer;
             ToolScene = new ToolScene(Renderer.Scene);
             RenderInvoker = new RenderInvoker(Renderer);
@@ -136,7 +138,7 @@ namespace Mapper.Gui.Controller
         }
         private ToolButton CreateBrowseButton()
         {
-            BrowseTool tool = new(Renderer.Scene, MainWindow);
+            BrowseTool tool = new(Atlas, MainWindow);
             ToolButton output = new(tool)
             {
                 Icon = ToolButtonIcons.Get("OpenWorld"),

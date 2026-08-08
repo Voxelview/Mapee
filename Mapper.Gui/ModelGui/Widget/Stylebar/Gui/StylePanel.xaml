@@ -51,6 +51,6 @@
 
         <!-- The accent's "selected" tone, shared with a toggled-on rail button and with the
              dimension picker's ring - see ToolButtonHook.TurnedOn.DefaultBorder. -->
-        <Border x:Name="IconBorder" Margin="0, 0, 0, 0" BorderBrush="#FFE3B200" Width="70" Height="76" Panel.ZIndex="100"/>
+        <Border x:Name="IconBorder" Margin="0, 0, 0, 0" BorderBrush="#FFE2DA00" Width="70" Height="76" Panel.ZIndex="100"/>
     </Grid>
 </UserControl>

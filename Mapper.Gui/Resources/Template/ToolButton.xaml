@@ -27,12 +27,12 @@
              went from green to yellow and left these buttons hovering green on their own. -->
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF554200"/>
-                <Setter Property="BorderBrush" Value="#FFAC8700"/>
+                <Setter Property="Background" Value="#FF4B4800"/>
+                <Setter Property="BorderBrush" Value="#FFA7A100"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="#FF725900"/>
-                <Setter Property="BorderBrush" Value="#FFD2A500"/>
+                <Setter Property="Background" Value="#FF6A6600"/>
+                <Setter Property="BorderBrush" Value="#FFD0C900"/>
             </Trigger>
         </Style.Triggers>
     </Style>

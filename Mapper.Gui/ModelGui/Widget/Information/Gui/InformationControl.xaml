@@ -63,7 +63,7 @@
 
     <DockPanel LastChildFill="False" Margin="8, 0, 8, 0">
 
-        <Border Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
+        <Border x:Name="RegionsCell" Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="REGIONS" Style="{StaticResource StatusKey}"/>
                 <TextBlock x:Name="LoadedRegionsLabel" Text="0" Width="34" Style="{StaticResource StatusValue}"
@@ -74,7 +74,7 @@
             </StackPanel>
         </Border>
 
-        <Border Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
+        <Border x:Name="ViewCell" Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="VIEW" Style="{StaticResource StatusKey}"/>
                 <TextBlock x:Name="VisibleAreaTopLeftLabel" Text="0; 0" Width="82" Style="{StaticResource StatusValue}"
@@ -88,7 +88,7 @@
             </StackPanel>
         </Border>
 
-        <Border Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
+        <Border x:Name="CursorCell" Style="{StaticResource StatusCell}" DockPanel.Dock="Left">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="CURSOR" Style="{StaticResource StatusKey}"/>
                 <!-- Same width on both: they swap as the pointer enters and leaves the map, and
@@ -113,7 +113,10 @@
         <Border x:Name="WorldTextBlock" Style="{StaticResource StatusCell}" DockPanel.Dock="Right" Margin="4, 0, 0, 0">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="WORLD" Style="{StaticResource StatusKey}"/>
+                <!-- Trimmed, because unlike every other value here this one is prose and a world
+                     can be named anything. Everything else in the bar has a bounded width. -->
                 <TextBlock x:Name="WorldNameLabel" Style="{StaticResource StatusValue}"
+                           MaxWidth="260" TextTrimming="CharacterEllipsis"
                            Foreground="{DynamicResource LabelInformationColor}"/>
                 <TextBlock Text="&#x00B7;" Style="{StaticResource StatusArrow}"/>
                 <TextBlock x:Name="WorldVersionLabel" Style="{StaticResource StatusValue}"

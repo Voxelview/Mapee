@@ -13,34 +13,43 @@ namespace Mapper.Gui
 
         // Rest is the rail's own panel colour, so an untouched button is invisible chrome.
         // Everything off rest is the accent, and the accent is the only hue in the chrome now
-        // that the panels are near-neutral - so it may as well come out of the map's own art.
-        // It is the sun from the overworld dimension tile, #FFDC5A, where the ramp used to take
-        // the grass from the same tile.
+        // that the panels are near-neutral.
+        //
+        // The hue is 58 - lemon. It used to be 47, taken off the sun in the overworld dimension
+        // tile (#FFDC5A), the way the ramp before it took the grass from the same tile; but 47
+        // with no blue in it is gold, and gold at the sizes this is used at reads as dark yellow
+        // rather than as an accent. The map's art is no longer where this comes from.
         //
         // Every tone is fully saturated - blue is 0 all the way down the ramp - and the ladder is
         // set in L* so the states stay evenly spaced apart. Zero blue is what does the work at
         // the dark end: these fills used to carry 40-60% saturation, which at low value is not a
         // dim yellow but an olive, and no amount of brightening fixes that. Draining the blue
-        // turns the same tones amber.
+        // holds the same tones lemon.
         //
-        // 83 is the ceiling here, not a choice - it is the brightest L* hue 47 reaches with no
+        // 95 is the ceiling here, not a choice - it is the brightest L* hue 58 reaches with no
         // blue in it. Anything above means letting blue back in, which trades vividness for
-        // lightness, so the top of the ramp is spaced tighter than the bottom on purpose.
+        // lightness, so the top of the ramp is spaced tighter than the bottom on purpose. Note
+        // that the ceiling is a property of the hue: at 47 it was 83, and moving to 58 bought
+        // the whole ramp its lift without costing a point of saturation. The fills climbed with
+        // it, which sounds like it should have cost the glyphs their contrast and does not - the
+        // overlay tints them with this same accent, so a brighter accent lightens the ink by
+        // very near what it lightens the fill under it.
         //
-        // The one to know is TurnedOn's DefaultBorder, (227, 178, 0): that is "selected" in this
-        // UI, and the dimension and style pickers ring their selection in the very same colour
-        // (DimensionButtonPanel.xaml, StylePanel.xaml). ToolButton.xaml carries the TurnedOff
-        // hover and press pair for the buttons no hook owns - zoom, position, dimension. All
-        // three files move together or the accent stops agreeing with itself.
+        // The one to know is TurnedOn's DefaultBorder, (226, 218, 0): that is "selected" in this
+        // UI, and the pickers ring their selection in the very same colour. It is written out as
+        // #FFE2DA00 in a dozen XAML files - grep the hex before retuning it, this class is the
+        // source but not the only copy. ToolButton.xaml is the one that is easy to miss: it
+        // carries the TurnedOff hover and press pair for the buttons no hook owns - zoom,
+        // position, dimension - and those stop agreeing with the rail the moment it is skipped.
         public MouseColorProperties TurnedOff { get; } = new MouseColorProperties()
         {
             Default = new SolidColorBrush(Color.FromRgb(15, 16, 18)),
-            MouseOver = new SolidColorBrush(Color.FromRgb(85, 66, 0)),
-            MouseDown = new SolidColorBrush(Color.FromRgb(114, 89, 0)),
+            MouseOver = new SolidColorBrush(Color.FromRgb(75, 72, 0)),
+            MouseDown = new SolidColorBrush(Color.FromRgb(106, 102, 0)),
 
             DefaultBorder = new SolidColorBrush(Colors.Transparent),
-            MouseOverBorder = new SolidColorBrush(Color.FromRgb(172, 135, 0)),
-            MouseDownBorder = new SolidColorBrush(Color.FromRgb(210, 165, 0)),
+            MouseOverBorder = new SolidColorBrush(Color.FromRgb(167, 161, 0)),
+            MouseDownBorder = new SolidColorBrush(Color.FromRgb(208, 201, 0)),
 
             // Nothing at rest - an unlit tool is meant to disappear into the rail.
             DefaultTint = 0,
@@ -49,13 +58,13 @@ namespace Mapper.Gui
         };
         public MouseColorProperties TurnedOn { get; } = new MouseColorProperties()
         {
-            Default = new SolidColorBrush(Color.FromRgb(104, 82, 0)),
-            MouseOver = new SolidColorBrush(Color.FromRgb(128, 101, 0)),
-            MouseDown = new SolidColorBrush(Color.FromRgb(153, 119, 0)),
+            Default = new SolidColorBrush(Color.FromRgb(96, 93, 0)),
+            MouseOver = new SolidColorBrush(Color.FromRgb(121, 117, 0)),
+            MouseDown = new SolidColorBrush(Color.FromRgb(146, 141, 0)),
 
-            DefaultBorder = new SolidColorBrush(Color.FromRgb(227, 178, 0)),
-            MouseOverBorder = new SolidColorBrush(Color.FromRgb(242, 190, 0)),
-            MouseDownBorder = new SolidColorBrush(Color.FromRgb(255, 199, 0)),
+            DefaultBorder = new SolidColorBrush(Color.FromRgb(226, 218, 0)),
+            MouseOverBorder = new SolidColorBrush(Color.FromRgb(242, 234, 0)),
+            MouseDownBorder = new SolidColorBrush(Color.FromRgb(255, 246, 0)),
 
             // Starts where the unlit ramp ends and carries on from there, so hovering a lit tool
             // still reads as a step up rather than landing back where an unlit one already was.
@@ -68,13 +77,13 @@ namespace Mapper.Gui
         // competing with a tool you can actually press.
         public MouseColorProperties DisabledTurnedOn { get; } = new MouseColorProperties()
         {
-            Default = new SolidColorBrush(Color.FromRgb(71, 56, 0)),
-            MouseOver = new SolidColorBrush(Color.FromRgb(128, 101, 0)),
-            MouseDown = new SolidColorBrush(Color.FromRgb(153, 119, 0)),
+            Default = new SolidColorBrush(Color.FromRgb(61, 59, 0)),
+            MouseOver = new SolidColorBrush(Color.FromRgb(121, 117, 0)),
+            MouseDown = new SolidColorBrush(Color.FromRgb(146, 141, 0)),
 
-            DefaultBorder = new SolidColorBrush(Color.FromRgb(135, 105, 0)),
-            MouseOverBorder = new SolidColorBrush(Color.FromRgb(242, 190, 0)),
-            MouseDownBorder = new SolidColorBrush(Color.FromRgb(255, 199, 0)),
+            DefaultBorder = new SolidColorBrush(Color.FromRgb(127, 123, 0)),
+            MouseOverBorder = new SolidColorBrush(Color.FromRgb(242, 234, 0)),
+            MouseDownBorder = new SolidColorBrush(Color.FromRgb(255, 246, 0)),
 
             // A third of what a usable tool gets, which is what ToolButtonImage dims the glyph
             // to. Left at full strength the overlay would come out brighter than the icon it is

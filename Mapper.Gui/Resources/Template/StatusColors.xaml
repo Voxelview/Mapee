@@ -13,4 +13,9 @@
     <SolidColorBrush x:Key="LabelCoordsColor">#FF4BE06B</SolidColorBrush>
     <SolidColorBrush x:Key="LabelSizeColor">#FFFFB43C</SolidColorBrush>
     <SolidColorBrush x:Key="LabelVersionColor">#FFFF6FB0</SolidColorBrush>
+
+    <!-- Hardcore, and nothing else so far. The world list has been mixing this red for itself
+         since before this dictionary existed; the Atlas preview is the second caller, which is
+         exactly the "two places needed the same colour" that put the rest of these here. -->
+    <SolidColorBrush x:Key="LabelWarningColor">#FFE90000</SolidColorBrush>
 </ResourceDictionary>

@@ -1,0 +1,95 @@
+<UserControl x:Class="Mapper.Gui.AtlasPlate"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Mapper.Gui"
+             mc:Ignorable="d"
+             UseLayoutRounding="True"
+             Width="168" Height="232" Margin="7">
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Resources/Template/StatusColors.xaml"/>
+    </UserControl.Resources>
+
+    <!-- Every colour a trigger touches is a Setter here rather than an attribute on the Border.
+         A local value outranks a style trigger in WPF, so setting Background on the element itself
+         is what stops the hover from ever showing - which is exactly what it did. -->
+    <Border x:Name="PlateBorder" SnapsToDevicePixels="True">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="#FF0F1012"/>
+                <Setter Property="BorderBrush" Value="#FF303337"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#FF1D1F21"/>
+                        <Setter Property="BorderBrush" Value="#FFE2DA00"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <StackPanel>
+            <!-- Square, so a wide world and a tall one are drawn to the same scale and the plates
+                 stay comparable. Stretch=Uniform does the fitting; FootprintImageFactory pins the
+                 drawing's bounds to a square so it has something square to fit. -->
+            <!-- Background is assigned per dimension in code - see DimensionCheckerBrush. A
+                 flat black read as a hole in the plate; the map's own checker reads as ground
+                 nobody has been to yet, which is what the empty part of a plate actually is. -->
+            <Border x:Name="ArtBorder" Height="150"
+                    BorderBrush="#FF23262A" BorderThickness="0, 0, 0, 1">
+                <Grid>
+                    <!-- Stretch=None, and this is the point of the whole rasteriser above: the
+                         bitmap is built to fit this box, so showing it at its own size means one
+                         painted pixel is one screen pixel and every gridline survives. Scale it in
+                         either direction and they start dropping out again.
+                         DownOnly is the safety net for the icon.png fallback, which is 128 square
+                         and would otherwise overflow. -->
+                    <Image x:Name="PlateImage" Stretch="None" StretchDirection="DownOnly" Margin="10"
+                           RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+
+                    <Border x:Name="OpenTag" Margin="0, 6, 6, 0" Padding="4, 0, 4, 1"
+                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                            Background="#CC0B0C0D" BorderBrush="#FF4BE06B" BorderThickness="1"
+                            Visibility="Collapsed">
+                        <TextBlock Text="OPEN" FontSize="9" Foreground="#FF4BE06B"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Grid Margin="9, 7, 9, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Beside the name rather than in the corner of the art: the footprint is the
+                     portrait and the icon is the world's own label, so it belongs with the label. -->
+                <Border x:Name="IconFrame" Grid.Column="0" Width="20" Height="20" Margin="0, 0, 7, 0"
+                        BorderBrush="#FF2A2D31" BorderThickness="1" Background="#FF0B0C0D"
+                        VerticalAlignment="Center" Visibility="Collapsed">
+                    <Image x:Name="IconImage" Stretch="UniformToFill"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                </Border>
+
+                <TextBlock x:Name="NameLabel" Grid.Column="1" FontSize="12.5" FontWeight="SemiBold"
+                           VerticalAlignment="Center" Foreground="#FFEAEAEA"
+                           TextTrimming="CharacterEllipsis"/>
+            </Grid>
+
+            <TextBlock x:Name="SubLabel" Margin="9, 4, 9, 0" FontSize="10.5"
+                       Foreground="#FF8A9099" TextTrimming="CharacterEllipsis"/>
+
+            <!-- Mode, cheats and version, coded by kind the way the status bar codes its own
+                 values - so the same fact is the same colour wherever it is read. -->
+            <TextBlock x:Name="FactsLabel" Margin="9, 3, 9, 0" FontSize="10.5"
+                       TextTrimming="CharacterEllipsis">
+                <Run x:Name="ModeRun" Foreground="{DynamicResource LabelInformationDarkColor}"/><Run
+                     x:Name="CheatsRun" Foreground="#FF8A9099"/><Run
+                     x:Name="SeparatorRun" Text="  ·  " Foreground="#FF565C63"/><Run
+                     x:Name="VersionRun" Foreground="{DynamicResource LabelVersionColor}"/>
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

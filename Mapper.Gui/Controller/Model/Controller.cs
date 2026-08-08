@@ -21,6 +21,7 @@ namespace Mapper.Gui.Controller
         public PositionWidget PositionWidget { get; private set; }
         public DimensionWidget DimensionWidget { get; private set; }
         public StylebarWidget StylebarWidget { get; private set; }
+        public AtlasWidget AtlasWidget { get; }
 
         public TextPainter TextPainter { get; }
 
@@ -39,6 +40,15 @@ namespace Mapper.Gui.Controller
             VerticalScrollbarWidget = new ScrollbarWidget(ImplementedScene, ImplementedRenderer, Orientation.Vertical);
 
             MouseHook.Start();
+
+            // Before CreateMainWindowArgs, which builds the rail, which builds BrowseTool - and
+            // that tool is now nothing but a switch on this.
+            AtlasWidget = new AtlasWidget(ImplementedScene, new LevelReader());
+
+            // Started before the window is even built, so plates are already landing by the time
+            // the picker opens. Nothing here blocks: the directory listing is inside the scan task
+            // too, because a saves folder on a network drive would otherwise hold the window up.
+            AtlasWidget.Refresh();
 
             MainWindow = new MapViewer();
             MainWindow.Initialize(CreateMainWindowArgs());
@@ -63,6 +73,11 @@ namespace Mapper.Gui.Controller
 
             args.TitleBarContent = CreateTitleBarContent();
             args.Widgets.Add(CreateStylebarControl());
+
+            // Last, and it has to stay last. MapViewer.Initialize gives every widget the same
+            // ZIndex of 100, so within the canvas cell they are ordered by their position in this
+            // list alone - and the picker has to come out over the style chip, not under it.
+            args.Widgets.Add(new AtlasControl(AtlasWidget));
 
             return args;
         }
@@ -118,7 +133,7 @@ namespace Mapper.Gui.Controller
         /// </summary>
         private Control CreateRailControl()
         {
-            ToolbarWidget = new ToolbarWidget(MainWindow, ImplementedRenderer);
+            ToolbarWidget = new ToolbarWidget(MainWindow, ImplementedRenderer, AtlasWidget);
             DimensionWidget = new DimensionWidget(ImplementedScene);
 
             RailControl output = new(ToolbarWidget);

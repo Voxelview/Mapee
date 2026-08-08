@@ -23,7 +23,7 @@
          fades in and out with its state; a frame icon has no states, so it carries the accent in
          the ink itself. Same tone the rest of the app calls "selected" - see
          ToolButtonHook.TurnedOn.DefaultBorder. -->
-    <Color x:Key="ToolButtonIconAccentColor">#FFE3B200</Color>
+    <Color x:Key="ToolButtonIconAccentColor">#FFE2DA00</Color>
     <SolidColorBrush x:Key="ToolButtonIconAccentBrush" Color="{StaticResource ToolButtonIconAccentColor}"/>
 
     <RectangleGeometry x:Key="ToolButtonIconGrid" Rect="0,0,24,24"/>
