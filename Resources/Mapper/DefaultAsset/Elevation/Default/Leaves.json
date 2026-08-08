@@ -4,7 +4,7 @@
     ["minecraft:birch_leaves", {"Y": 70, "Min": -10, "MinIncr": 0.02, "Max": 20, "MaxIncr": 0.05}],
     ["minecraft:jungle_leaves", {"Y": 75, "Min": -10, "MinIncr": 0.02, "Max": 35, "MaxIncr": 0.0125}],
     ["minecraft:acacia_leaves", {"Y": 72, "Min": -10, "MinIncr": 0.015, "Max": 35, "MaxIncr": 0.015}],
-    ["minecraft:dark_oak_leaves", {"Y": 76, "Min": -10, "MinIncr": 0.02, "Max": 50, "MaxIncr": 0.015}],
+    ["minecraft:dark_oak_leaves", {"Y": 76, "Min": -10, "MinIncr": 0.01, "Max": 50, "MaxIncr": 0.015}],
     ["minecraft:mangrove_leaves", {"Y": 72, "Min": -10, "MinIncr": 0.02, "Max": 30, "MaxIncr": 0.03}],
     ["minecraft:azalea_leaves", {"Y": 70, "Min": -10, "MinIncr": 0.02, "Max": 15, "MaxIncr": 0.01}],
     ["minecraft:flowering_azalea_leaves", {"Y": 70, "Min": -10, "MinIncr": 0.02, "Max": 15, "MaxIncr": 0.01}],
