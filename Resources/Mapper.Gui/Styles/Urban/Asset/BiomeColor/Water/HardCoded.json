@@ -29,6 +29,7 @@
         ["minecraft:swamp", "#2A4C2B"],
         ["minecraft:mangrove_swamp", "#3E4C2B"],
 
-        ["minecraft:pale_garden", "#878D76"]
+        ["minecraft:pale_garden", "#878D76"],
+        ["minecraft:dappled_forest", "#375154"]
     ]
 }

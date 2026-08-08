@@ -1,18 +1,18 @@
 [
-    ["minecraft:oak_leaves", {"Increment": 0.14}],
-    ["minecraft:birch_leaves", {"Increment": 0.14}],
-    ["minecraft:dark_oak_leaves", {"Increment": 0.14}],
-    ["minecraft:spruce_leaves", {"Increment": 0.14}],
-    ["minecraft:acacia_leaves", {"Increment": 0.14}],
-    ["minecraft:azaluea_leaves", {"Increment": 0.14}],
-    ["minecraft:flowering_azalea_leaves", {"Increment": 0.14}],
+    ["minecraft:oak_leaves", {"Increment": 0.22}],
+    ["minecraft:birch_leaves", {"Increment": 0.22}],
+    ["minecraft:dark_oak_leaves", {"Increment": 0.22}],
+    ["minecraft:spruce_leaves", {"Increment": 0.22}],
+    ["minecraft:acacia_leaves", {"Increment": 0.22}],
+    ["minecraft:azaluea_leaves", {"Increment": 0.22}],
+    ["minecraft:flowering_azalea_leaves", {"Increment": 0.22}],
     ["minecraft:mangrove_leaves",
         {
             "ZNegCorner.BelowLimit.Min": 2, "ZNegCorner.BelowLimit.MinReturnedValue": 0.5,
             "XPosCorner.BelowLimit.Min": 2, "XPosCorner.BelowLimit.MinReturnedValue": 0.5,
             "ZPosCorner.BelowLimit.Min": 2, "ZPosCorner.BelowLimit.MinReturnedValue": 0.5,
             "XNegCorner.BelowLimit.Min": 2, "XNegCorner.BelowLimit.MinReturnedValue": 0.5,
-            "Increment": 0.14
+            "Increment": 0.22
         }
     ],
     ["minecraft:jungle_leaves",
@@ -21,16 +21,16 @@
             "XPosCorner.BelowLimit.Min": 2, "XPosCorner.BelowLimit.MinReturnedValue": 0.5,
             "ZPosCorner.BelowLimit.Min": 2, "ZPosCorner.BelowLimit.MinReturnedValue": 0.5,
             "XNegCorner.BelowLimit.Min": 2, "XNegCorner.BelowLimit.MinReturnedValue": 0.5,
-            "Increment": 0.14
+            "Increment": 0.22
         }
     ],
     ["minecraft:cherry_leaves",
         {
-            "ZNegCorner.BelowLimit.Min": 2, "ZNegCorner.BelowLimit.MinReturnedValue": 0.5,
-            "XPosCorner.BelowLimit.Min": 2, "XPosCorner.BelowLimit.MinReturnedValue": 0.5,
-            "ZPosCorner.BelowLimit.Min": 2, "ZPosCorner.BelowLimit.MinReturnedValue": 0.5,
-            "XNegCorner.BelowLimit.Min": 2, "XNegCorner.BelowLimit.MinReturnedValue": 0.5,
-            "Increment": 0.14
+            "ZNegCorner.BelowLimit.Min": 1, "ZNegCorner.BelowLimit.MinReturnedValue": 0.75,
+            "XPosCorner.BelowLimit.Min": 1, "XPosCorner.BelowLimit.MinReturnedValue": 0.75,
+            "ZPosCorner.BelowLimit.Min": 1, "ZPosCorner.BelowLimit.MinReturnedValue": 0.75,
+            "XNegCorner.BelowLimit.Min": 1, "XNegCorner.BelowLimit.MinReturnedValue": 0.75,
+            "Increment": 0.22
         }
     ]
 ]
