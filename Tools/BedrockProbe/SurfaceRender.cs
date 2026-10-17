@@ -3,82 +3,143 @@ using System.IO.Compression;
 using System.Text.RegularExpressions;
 using WorldEditor;
 
-// A rough top-down render: the highest non-air block per column, coloured from Mapee's Java colour table.
-// Names with no colour are drawn magenta and counted, which shows what still needs translating
+// A rough top-down render from the converted chunks Mapee's renderer would receive. It isn't Mapee's
+// renderer, just enough to check blocks, heightmaps, sky light and biomes line up. Water is drawn over
+// the block beneath it, shaded by that block's sky light. Names with no colour are magenta and counted.
+// A second image, <name>-biomes.png, colours each column by its biome
 static partial class SurfaceRender
 {
-    public static void Render(LevelDbReader db, int dimension, IEnumerable<(int X, int Z)> chunks, string colorDirectory, string output)
+    public static void Render(ICollection<ConvertedApiChunk> chunks, short startY, string colorDirectory, string output)
     {
         Dictionary<string, uint> colors = LoadColors(colorDirectory);
-        (int X, int Z)[] list = [.. chunks];
 
-        int minX = list.Min(c => c.X), maxX = list.Max(c => c.X);
-        int minZ = list.Min(c => c.Z), maxZ = list.Max(c => c.Z);
+        int minX = chunks.Min(c => c.X), maxX = chunks.Max(c => c.X);
+        int minZ = chunks.Min(c => c.Z), maxZ = chunks.Max(c => c.Z);
         int width = (maxX - minX + 1) * 16, height = (maxZ - minZ + 1) * 16;
-        uint[] pixels = new uint[width * height];
+        uint[] pixels = new uint[width * height], biomePixels = new uint[width * height];
 
-        BedrockSubChunkReader reader = new();
-        Dictionary<string, int> missing = [];
+        Dictionary<string, int> missing = [], biomes = [];
         int columns = 0;
-        short[] unlocked = new short[4096];
 
-        foreach (var (cx, cz) in list)
+        foreach (ConvertedApiChunk chunk in chunks)
         {
-            List<BedrockSubChunkReader.SubChunk> subChunks = [];
-            foreach (var record in db.GetByPrefix(BedrockKey.ChunkPrefix(cx, cz, dimension)))
+            if (chunk.BlockState is null) continue;
+
+            Dictionary<int, (PaletteSection<Block> Section, short[] Indexes)> sections = [];
+            foreach (var section in chunk.BlockState.Sections)
             {
-                if (!BedrockKey.TryParse(record.Key, out BedrockKey key) || key.Dimension != dimension || key.Tag != BedrockChunkTag.SubChunkPrefix) continue;
-                var subChunk = reader.Read(record.Value, key.SubChunkY);
-                if (subChunk is not null && subChunk.Layers.Count > 0) subChunks.Add(subChunk);
+                short[] indexes = new short[4096];
+                if (section.Type == SectionType.Normal) section.Unlock(indexes);
+                sections[section.Y] = (section, indexes);
+            }
+            Dictionary<int, LightChunk.Section> light = chunk.SkyLight?.Sections.ToDictionary(x => (int)x.Y) ?? [];
+            Dictionary<int, (PaletteSection<string> Section, short[] Indexes)> biomeSections = [];
+            foreach (var section in chunk.Biome?.Sections ?? [])
+            {
+                short[] indexes = new short[64];
+                if (section.Type == SectionType.Normal) section.Unlock(indexes);
+                biomeSections[section.Y] = (section, indexes);
             }
 
-            string?[] top = new string?[256];
-            foreach (var subChunk in subChunks.OrderByDescending(s => s.Y))
-            {
-                var layer = subChunk.Layers[0];
-                layer.Unlock(unlocked);
-                for (int column = 0; column < 256; column++)
-                {
-                    if (top[column] is not null) continue;
-                    for (int y = 15; y >= 0; y--)
-                    {
-                        string name = layer.Palette[unlocked[y * 256 + column]].Name;
-                        if (name == "minecraft:air" || name.EndsWith("_air")) continue;
-                        top[column] = name;
-                        break;
-                    }
-                }
-            }
+            short[] heights = new short[256];
+            bool hasHeightmap = startY > 300 && chunk.Heightmap is not null && chunk.Heightmap.Heightmaps.TryGetValue("WORLD_SURFACE", out var heightmap);
+            if (hasHeightmap) chunk.Heightmap!.Heightmaps["WORLD_SURFACE"].Unlock(heights);
 
+            int lowest = sections.Count > 0 ? sections.Keys.Min() * 16 : 0;
             for (int column = 0; column < 256; column++)
             {
-                string? name = top[column];
-                if (name is null) continue;
+                int x = column % 16, z = column / 16;
+                int y = hasHeightmap ? heights[column] - 1 : startY;
+
+                // Below a roof, as in the Nether, skip down to the first air before looking for ground
+                bool seenAir = hasHeightmap;
+                string? surface = null, ground = null;
+                int surfaceY = 0, groundY = 0;
+                for (; y >= lowest; y--)
+                {
+                    string name = BlockAt(sections, x, y, z);
+                    if (name.EndsWith("air")) { seenAir = true; continue; }
+                    if (!seenAir) continue;
+
+                    surface ??= IsWater(name) ? "minecraft:water" : name;
+                    if (surface == "minecraft:water" && IsWater(name)) { surfaceY = surfaceY == 0 ? y : surfaceY; continue; }
+                    ground = name;
+                    groundY = y;
+                    break;
+                }
+                if (ground is null) continue;
                 columns++;
 
-                if (!colors.TryGetValue(name, out uint color))
+                uint color = ColorOf(colors, ground, missing);
+                float shade = Math.Clamp(0.55f + (groundY - 62) / 160f, 0.3f, 1.2f);
+                if (surface == "minecraft:water")
                 {
-                    missing[name] = missing.GetValueOrDefault(name) + 1;
-                    color = 0xFFFF00FF;
+                    byte skyLight = LightAt(light, x, groundY + 1, z);
+                    color = Blend(Scale(color, 0.25f + 0.75f * skyLight / 15f), colors["minecraft:water"], 0.55f);
+                    shade = 1;
                 }
 
-                int px = (cx - minX) * 16 + column % 16, pz = (cz - minZ) * 16 + column / 16;
-                pixels[pz * width + px] = color;
+                int px = (chunk.X - minX) * 16 + x, pz = (chunk.Z - minZ) * 16 + z;
+                pixels[pz * width + px] = Scale(color, shade);
+
+                string biome = BiomeAt(biomeSections, x, groundY, z);
+                biomes[biome] = biomes.GetValueOrDefault(biome) + 1;
+                biomePixels[pz * width + px] = 0xFF000000 | (uint)biome.GetHashCode() & 0xFFFFFF;
             }
         }
 
         WritePng(output, width, height, pixels);
+        WritePng(Path.ChangeExtension(output, null) + "-biomes.png", width, height, biomePixels);
 
         int missed = missing.Values.Sum();
-        Console.WriteLine($"rendered {width}x{height} to {output}; {missed} of {columns} surface columns ({100.0 * missed / Math.Max(1, columns):F1}%) had no colour");
-        foreach (var name in missing.OrderByDescending(x => x.Value).Take(25)) Console.WriteLine($"  {name.Key}: {name.Value}");
+        Console.WriteLine($"  rendered {width}x{height} to {output}; {missed} of {columns} columns ({100.0 * missed / Math.Max(1, columns):F2}%) had no colour");
+        foreach (var name in missing.OrderByDescending(x => x.Value).Take(15)) Console.WriteLine($"    {name.Key}: {name.Value}");
+        Console.WriteLine("  biomes: " + string.Join(", ", biomes.OrderByDescending(x => x.Value).Take(10).Select(x => $"{x.Key.Replace("minecraft:", "")} {x.Value}")));
+    }
+
+    private static bool IsWater(string name) => name is "minecraft:water" or "minecraft:seagrass" or "minecraft:tall_seagrass" or "minecraft:kelp" or "minecraft:kelp_plant" or "minecraft:bubble_column";
+
+    private static string BlockAt(Dictionary<int, (PaletteSection<Block> Section, short[] Indexes)> sections, int x, int y, int z)
+    {
+        if (!sections.TryGetValue(y >> 4, out var section)) return "minecraft:air";
+        int index = section.Section.Type == SectionType.Uniform ? 0 : section.Indexes[(y & 15) << 8 | z << 4 | x];
+        return section.Section.Palette[index].Name;
+    }
+    private static byte LightAt(Dictionary<int, LightChunk.Section> light, int x, int y, int z)
+    {
+        return light.TryGetValue(y >> 4, out var section) ? section.GetLight((y & 15) << 8 | z << 4 | x) : (byte)0;
+    }
+    private static string BiomeAt(Dictionary<int, (PaletteSection<string> Section, short[] Indexes)> sections, int x, int y, int z)
+    {
+        if (!sections.TryGetValue(y >> 4, out var section)) return "none";
+        int index = section.Section.Type == SectionType.Uniform ? 0 : section.Indexes[MathUtilities.FindBiomeIndex(x, y, z)];
+        return section.Section.Palette[index];
+    }
+
+    private static uint ColorOf(Dictionary<string, uint> colors, string name, Dictionary<string, int> missing)
+    {
+        if (colors.TryGetValue(name, out uint color)) return color;
+        missing[name] = missing.GetValueOrDefault(name) + 1;
+        return 0xFFFF00FF;
+    }
+    private static uint Scale(uint color, float factor)
+    {
+        uint r = (uint)Math.Clamp(((color >> 16) & 0xFF) * factor, 0, 255);
+        uint g = (uint)Math.Clamp(((color >> 8) & 0xFF) * factor, 0, 255);
+        uint b = (uint)Math.Clamp((color & 0xFF) * factor, 0, 255);
+        return 0xFF000000 | r << 16 | g << 8 | b;
+    }
+    private static uint Blend(uint under, uint over, float amount)
+    {
+        uint Mix(int shift) => (uint)(((under >> shift) & 0xFF) * (1 - amount) + ((over >> shift) & 0xFF) * amount);
+        return 0xFF000000 | Mix(16) << 16 | Mix(8) << 8 | Mix(0);
     }
 
     // Biome-tinted blocks are grey in the colour table; give the common ones a plain tint so the image reads
     private static readonly Dictionary<string, uint> Tinted = new()
     {
         ["minecraft:grass_block"] = 0xFF7CBD6B, ["minecraft:short_grass"] = 0xFF7CBD6B, ["minecraft:tall_grass"] = 0xFF7CBD6B,
-        ["minecraft:water"] = 0xFF3F76E4, ["minecraft:flowing_water"] = 0xFF3F76E4, ["minecraft:vine"] = 0xFF59AE30
+        ["minecraft:fern"] = 0xFF6AA85A, ["minecraft:large_fern"] = 0xFF6AA85A, ["minecraft:water"] = 0xFF3F76E4, ["minecraft:vine"] = 0xFF59AE30
     };
 
     private static Dictionary<string, uint> LoadColors(string directory)
@@ -86,10 +147,11 @@ static partial class SurfaceRender
         Dictionary<string, uint> output = [];
         foreach (string file in Directory.GetFiles(directory, "*.json"))
         {
-            foreach (string line in File.ReadLines(file))
+            // Entries with property conditions span lines; take the first colour after each name
+            string text = File.ReadAllText(file);
+            foreach (Match entry in EntryPattern().Matches(text))
             {
-                Match name = NamePattern().Match(line), color = ColorPattern().Match(line);
-                if (name.Success && color.Success) output.TryAdd(name.Groups[1].Value, Convert.ToUInt32(color.Groups[1].Value, 16));
+                output.TryAdd(entry.Groups[1].Value, Convert.ToUInt32(entry.Groups[2].Value, 16) | 0xFF000000);
             }
         }
 
@@ -98,10 +160,8 @@ static partial class SurfaceRender
         return output;
     }
 
-    [GeneratedRegex("\"(minecraft:[a-z0-9_]+)\"")]
-    private static partial Regex NamePattern();
-    [GeneratedRegex("\"#([0-9A-Fa-f]{8})\"")]
-    private static partial Regex ColorPattern();
+    [GeneratedRegex("\"(minecraft:[a-z0-9_]+)\\*?\"[^#]*?\"#([0-9A-Fa-f]{8})\"", RegexOptions.Singleline)]
+    private static partial Regex EntryPattern();
 
     private static void WritePng(string file, int width, int height, uint[] argb)
     {

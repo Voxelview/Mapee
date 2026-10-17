@@ -28,13 +28,13 @@
             {
                 From = new VersionRange(Version.Snapshot_21w06a, Version.experimentalSnapshot_1_18_experimentalSnapshot_7),
                 To = new VersionRange(Version.Snapshot_21w37a, Version.Snapshot_21w39a),
-                Translator = BiomeIdTranslator.FromFile($"Resources\\WorldEditor\\Translators\\Biome\\Flattened.json")
+                Translator = BiomeIdTranslator.FromFile(Path.Combine("Resources", "WorldEditor", "Translators", "Biome", "Flattened.json"))
             });
             Converters.Add(new BiomeRenamerInstanceConverter()
             {
                 From = new VersionRange(Version.Snapshot_21w37a, Version.Newest),
                 To = new VersionRange(Version.Snapshot_21w37a, Version.Newest),
-                Renamer = BiomeRenamer.FromFile($"Resources\\WorldEditor\\Translators\\Biome\\Renamed.json")
+                Renamer = BiomeRenamer.FromFile(Path.Combine("Resources", "WorldEditor", "Translators", "Biome", "Renamed.json"))
             });
         }
     }

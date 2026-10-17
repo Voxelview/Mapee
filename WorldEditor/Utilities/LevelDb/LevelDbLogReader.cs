@@ -11,7 +11,7 @@ namespace WorldEditor
         public static IEnumerable<byte[]> ReadRecords(string file)
         {
             byte[] data;
-            using (FileStream stream = new(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (FileStream stream = new(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             {
                 data = new byte[stream.Length];
                 stream.ReadExactly(data);

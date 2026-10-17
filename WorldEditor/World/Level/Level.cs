@@ -3,6 +3,7 @@
 namespace WorldEditor {
     public class Level {
         public string? Directory { get; set; }
+        public Edition Edition { get; set; }
         public CompoundTag? Tag { get; set; }
 
         public LevelVersion Version { get; set; }

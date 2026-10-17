@@ -4,6 +4,7 @@
     {
         Anvil,
         McRegion,
-        Alpha
+        Alpha,
+        Bedrock
     }
 }

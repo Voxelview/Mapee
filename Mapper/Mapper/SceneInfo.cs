@@ -13,9 +13,12 @@ namespace Mapper
         {
             Level = level;
             Dimension = dimension;
-            RegionStore = RegionStoreFactory.CreateRegionStore(Level.Version.Version);
+            RegionStore = RegionStoreFactory.CreateRegionStore(Level, Dimension);
 
-            string regionDirectory = $"{Level.Directory}\\{Dimension.GetRegionFolder(Level.Version.Version)}";
+            // A Bedrock store reads the whole world database, so it takes the world folder itself
+            string regionDirectory = Level.Edition == Edition.Bedrock
+                ? Level.Directory ?? string.Empty
+                : $"{Level.Directory}\\{Dimension.GetRegionFolder(Level.Version.Version)}";
             RegionStore.Itemize(regionDirectory);
         }
     }

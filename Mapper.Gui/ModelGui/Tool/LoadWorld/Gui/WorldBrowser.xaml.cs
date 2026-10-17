@@ -16,7 +16,7 @@ namespace Mapper.Gui
     /// </summary>
     public partial class WorldBrowser : Window
     {
-        public string BaseDirectory { get; private set; }
+        public IList<string> BaseDirectories { get; private set; }
         public IObjectReader<string, Level?> LevelReader { get; private set; }
 
         public WorldPanelEntry Selected { get; private set; }
@@ -29,14 +29,14 @@ namespace Mapper.Gui
 
         private bool _wasDown = false;
 
-        public WorldBrowser(string baseDirectory, IObjectReader<string, Level?> levelReader)
+        public WorldBrowser(IList<string> baseDirectories, IObjectReader<string, Level?> levelReader)
         {
             InitializeComponent();
 
-            BaseDirectory = baseDirectory;
+            BaseDirectories = baseDirectories;
             LevelReader = levelReader;
 
-            _entries = LoadEntries(BaseDirectory);
+            _entries = BaseDirectories.SelectMany(LoadEntries).OrderByDescending(x => x.Level.LastPlayed).ToList();
             foreach (WorldPanelEntry entry in _entries)
             {
                 AddWorld(entry);
@@ -76,10 +76,13 @@ namespace Mapper.Gui
                 
                 BitmapImage icon;
 
+                // Bedrock worlds keep their thumbnail in world_icon.jpeg
                 string iconFile = $"{world}\\icon.png";
+                if (!File.Exists(iconFile)) iconFile = $"{world}\\world_icon.jpeg";
+
                 if (File.Exists(iconFile))
                 {
-                    using (FileStream imageStream = File.OpenRead($"{world}\\icon.png"))
+                    using (FileStream imageStream = File.OpenRead(iconFile))
                     {
                         icon = new BitmapImage();
                         icon.BeginInit();

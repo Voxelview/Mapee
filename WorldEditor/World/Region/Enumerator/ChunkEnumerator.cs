@@ -5,6 +5,7 @@ namespace WorldEditor
     public class ChunkEnumerator : IChunkEnumerator
     {
         public int RegionsPerTask { get; }
+        public int TasksPerRegion { get; }
         public Func<IRegionStore> RegionStoreProvider { get; }
 
         private IChunkEnumeratorFromRegion[] _enumerators;
@@ -16,6 +17,7 @@ namespace WorldEditor
             if (factory is null) throw new ArgumentNullException(nameof(factory));
 
             RegionsPerTask = regionsPerTask;
+            TasksPerRegion = tasksPerRegion;
             RegionStoreProvider = regionStoreProvider;
             _enumerators = new IChunkEnumeratorFromRegion[regionsPerTask];
 
@@ -45,7 +47,16 @@ namespace WorldEditor
 
                     body.BeginReadingRegion(iterator, regions[index]);
 
-                    ChunkEnumerateFromRegionArgs? args = CreateArgs(regions[index], iterator);
+                    ChunkEnumerateFromRegionArgs? args = null;
+                    if (RegionStoreProvider.Invoke() is IChunkSourceRegionStore chunkSource)
+                    {
+                        chunkSource.EnumerateChunks(regions[index], TasksPerRegion, (r, chunk) => body.EndReadingChunk(iterator, r, chunk));
+                    }
+                    else
+                    {
+                        args = CreateArgs(regions[index], iterator);
+                    }
+
                     if (args is not null)
                     {
                         var enumerator = _enumerators[iterator];

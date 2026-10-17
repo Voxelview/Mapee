@@ -37,9 +37,7 @@ namespace Mapper.Gui.Controller
         {
             _isActive = true;
 
-            string saves = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\.minecraft\\saves";
-
-            WorldBrowser browser = new(saves, new LevelReader());
+            WorldBrowser browser = new(AnyEditionLevelReader.DefaultWorldDirectories(), new AnyEditionLevelReader());
             browser.ShowDialog();
 
             _isActive = false;

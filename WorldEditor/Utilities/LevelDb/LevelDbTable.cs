@@ -20,7 +20,7 @@ namespace WorldEditor
         public LevelDbTable(string file, ulong number)
         {
             Number = number;
-            _handle = File.OpenHandle(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.RandomAccess);
+            _handle = File.OpenHandle(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, FileOptions.RandomAccess);
 
             long length = RandomAccess.GetLength(_handle);
             byte[] footer = new byte[FOOTER_SIZE];
