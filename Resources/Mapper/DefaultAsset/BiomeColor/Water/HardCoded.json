@@ -159,6 +159,7 @@
         },
 
         ["minecraft:pale_garden", "#6D8095"],
-        ["minecraft:dappled_forest", "#4B6C78"]
+        ["minecraft:dappled_forest", "#4B6C78"],
+        ["minecraft:ice_caves", "#095599"]
     ]
 }

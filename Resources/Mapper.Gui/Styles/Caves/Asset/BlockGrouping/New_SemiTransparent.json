@@ -63,5 +63,8 @@
     "minecraft:poplar_sapling",
     "minecraft:potted_poplar_sapling",
     "minecraft:red_shrub",
-    "minecraft:shelf_mushroom"
+    "minecraft:shelf_mushroom",
+    "minecraft:brittle_ice",
+    "minecraft:icicle",
+    "minecraft:ice_crystal"
 ]
