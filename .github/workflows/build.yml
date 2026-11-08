@@ -1,0 +1,47 @@
+# Builds the app and the installer on every push to master and every pull request, so a broken
+# build or installer shows up here rather than during a release. The portable app is uploaded as a
+# downloadable artifact (Actions tab -> the run -> Artifacts): unzip it and run Mapee.exe.
+#
+# Test builds are versioned 0.0.<run number>, so they never look for updates (UpdateChecker skips
+# 0.x versions). The MSI isn't uploaded: Windows would treat it as a downgrade and refuse to install
+# it over a released Mapee, and the Release workflow builds its own. To test installer changes, run
+# scripts/build-installer.ps1 locally with a real version.
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build installer
+    runs-on: windows-latest
+    env:
+      VERSION: 0.0.${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build installer
+        shell: pwsh
+        run: ./scripts/build-installer.ps1 -Version $env:VERSION
+
+      - name: Upload portable app
+        uses: actions/upload-artifact@v7
+        with:
+          name: Mapee-portable-${{ env.VERSION }}
+          path: artifacts/publish/
+          if-no-files-found: error
+          retention-days: 30

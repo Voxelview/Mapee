@@ -1,14 +1,12 @@
 # Mapee
 
 A simple, yet powerful Minecraft mapper & filter.<br>Can load worlds from Alpha to the newest release.<br>
-Website: [mapee.net](https://www.mapee.net/home)
+Website: [mapee.net](https://mapee.net)
 
-[Newest release](https://github.com/GoldenTadpole/Mapee/releases/tag/1.2.0)
+[Newest release](https://github.com/Voxelview/Mapee/releases/latest)
 
 # What's New?
-**Version 1.2.0**
-- Added Alpha support
-- Added new blocks in 26.2
+See the [release notes](https://github.com/Voxelview/Mapee/releases) for what changed in each version.
 
 # Sample gui images
 

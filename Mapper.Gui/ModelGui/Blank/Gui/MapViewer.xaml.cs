@@ -53,7 +53,8 @@ namespace Mapper.Gui
 
             FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Environment.GetCommandLineArgs()[0]);
             Title = fileInfo.ProductName;
-            frameInitializer.SetSecondaryTitle($"v{fileInfo.FileVersion}");
+            // Use the numeric parts: the FileVersion string is four-part (1.4.0.0), and the title shows v1.4.0.
+            frameInitializer.SetSecondaryTitle($"v{fileInfo.FileMajorPart}.{fileInfo.FileMinorPart}.{fileInfo.FileBuildPart}");
 
             Activate();
             Topmost = true;

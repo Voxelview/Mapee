@@ -1,0 +1,39 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Gui/">
+    <Project Path="Mapper.Gui/Mapper.Gui.csproj">
+      <Platform Solution="Release|x64" Project="x64" />
+    </Project>
+  </Folder>
+  <Folder Name="/Mapper/">
+    <Project Path="AssetSystem/AssetSystem.csproj">
+      <BuildType Solution="Debug|Any CPU" Project="Release" />
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="Mapper/Mapper.csproj">
+      <Platform Solution="*|x86" Project="x86" />
+      <Platform Solution="Release|x64" Project="x64" />
+    </Project>
+    <Project Path="MapScanner/MapScanner.csproj">
+      <Platform Solution="Release|x64" Project="x64" />
+    </Project>
+  </Folder>
+  <Folder Name="/WorldEditor/">
+    <Project Path="CommonUtilities/CommonUtilities.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="NbtEditor/NbtEditor.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+    <Project Path="WorldEditor/WorldEditor.csproj">
+      <Platform Solution="*|x86" Project="x86" />
+      <Platform Solution="Release|x64" Project="x64" />
+    </Project>
+  </Folder>
+</Solution>
