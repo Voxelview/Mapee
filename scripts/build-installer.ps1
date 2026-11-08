@@ -69,42 +69,75 @@ finally {
     $env:SolutionDir = $previousSolutionDir
 }
 
+# WiX's incremental build doesn't notice a version-only change, and it hard-links its obj\ output
+# into the output folder. Reusing either would ship a stale MSI, so always build from scratch.
+foreach ($dir in 'obj', 'bin') {
+    $path = Join-Path $root "Mapee.Installer\$dir"
+    if (Test-Path $path) { Remove-Item $path -Recurse -Force }
+}
+
 Invoke-Step "Build installer" {
     dotnet build "$root\Mapee.Installer\Mapee.Installer.wixproj" `
         --configuration Release `
+        --no-incremental `
         -p:Version=$Version `
         -p:AppPublishDir=$publishDir `
         --output $installerBuildDir
 }
 
-function Get-MsiFileCount([string]$path) {
-    $installer = New-Object -ComObject WindowsInstaller.Installer
-    $db = $installer.GetType().InvokeMember('OpenDatabase', 'InvokeMethod', $null, $installer, @($path, 0))
-    $view = $db.GetType().InvokeMember('OpenView', 'InvokeMethod', $null, $db, @('SELECT `File` FROM `File`'))
-    $view.GetType().InvokeMember('Execute', 'InvokeMethod', $null, $view, $null) | Out-Null
-    $count = 0
-    while ($view.GetType().InvokeMember('Fetch', 'InvokeMethod', $null, $view, $null)) { $count++ }
-    $view.GetType().InvokeMember('Close', 'InvokeMethod', $null, $view, $null) | Out-Null
-    # Release the database now, or the MSI stays locked and the next build can't replace it.
-    foreach ($com in $view, $db, $installer) { [Runtime.InteropServices.Marshal]::ReleaseComObject($com) | Out-Null }
-    [GC]::Collect()
-    [GC]::WaitForPendingFinalizers()
-    $count
+function Invoke-Com($object, [string]$member, [Reflection.BindingFlags]$kind, [object[]]$arguments) {
+    $object.GetType().InvokeMember($member, $kind, $null, $object, $arguments)
 }
 
-# Guard against shipping an installer that's missing files (e.g. if the publish path in
-# Package.wxs ever stops matching). The MSI holds every published file plus Icon.ico.
-$builtMsi = Join-Path $installerBuildDir 'Mapee.msi'
-$expected = (Get-ChildItem $publishDir -Recurse -File).Count + 1
-$actual = Get-MsiFileCount $builtMsi
-if ($actual -ne $expected) {
-    throw "The installer contains $actual files but $expected were expected. Check the Files element in Mapee.Installer\Package.wxs."
+# Reads what matters about a built MSI, the way Windows Installer will see it.
+function Get-MsiFacts([string]$path) {
+    $installer = New-Object -ComObject WindowsInstaller.Installer
+    $com = [System.Collections.Generic.List[object]]::new()
+    try {
+        $summary = Invoke-Com $installer 'SummaryInformation' GetProperty @($path, 0); $com.Add($summary)
+        $wordCount = Invoke-Com $summary 'Property' GetProperty @(15)
+
+        $db = Invoke-Com $installer 'OpenDatabase' InvokeMethod @($path, 0); $com.Add($db)
+        $files = Invoke-Com $db 'OpenView' InvokeMethod @('SELECT `File` FROM `File`'); $com.Add($files)
+        Invoke-Com $files 'Execute' InvokeMethod $null | Out-Null
+        $fileCount = 0
+        while ($record = Invoke-Com $files 'Fetch' InvokeMethod $null) { $fileCount++; $com.Add($record) }
+
+        $props = Invoke-Com $db 'OpenView' InvokeMethod @("SELECT ``Value`` FROM ``Property`` WHERE ``Property`` = 'ProductVersion'"); $com.Add($props)
+        Invoke-Com $props 'Execute' InvokeMethod $null | Out-Null
+        $record = Invoke-Com $props 'Fetch' InvokeMethod $null; $com.Add($record)
+        $productVersion = Invoke-Com $record 'StringData' GetProperty @(1)
+
+        # Load the package like msiexec does, without installing anything (1 = ignore machine state).
+        $opens = $true
+        try { $com.Add((Invoke-Com $installer 'OpenPackage' InvokeMethod @($path, 1))) } catch { $opens = $false }
+
+        [pscustomobject]@{ Opens = $opens; ProductVersion = $productVersion; WordCount = $wordCount; FileCount = $fileCount }
+    }
+    finally {
+        # Release everything now, or the MSI stays locked and the next build can't replace it.
+        foreach ($o in @($com) + @($installer)) { if ($o) { [Runtime.InteropServices.Marshal]::ReleaseComObject($o) | Out-Null } }
+        [GC]::Collect()
+        [GC]::WaitForPendingFinalizers()
+    }
 }
-Write-Host "Installer contains all $actual files."
 
 $msi = Join-Path $OutputDir "$baseName.msi"
 $zip = Join-Path $OutputDir "$baseName.zip"
-Copy-Item $builtMsi $msi -Force
+Copy-Item (Join-Path $installerBuildDir 'Mapee.msi') $msi -Force
+
+# Check the MSI that ships before packaging it.
+$facts = Get-MsiFacts $msi
+$expectedFiles = (Get-ChildItem $publishDir -Recurse -File).Count + 1   # every published file plus Icon.ico
+$problems = @(
+    if (-not $facts.Opens) { 'Windows Installer cannot open it.' }
+    if ($facts.ProductVersion -ne $Version) { "It says version '$($facts.ProductVersion)' instead of $Version (a stale build?)." }
+    if ($facts.WordCount -ne 2) { "Its Word Count is '$($facts.WordCount)' instead of 2 (compressed, needs elevation)." }
+    if ($facts.FileCount -ne $expectedFiles) { "It contains $($facts.FileCount) files instead of $expectedFiles. Check the Files element in Mapee.Installer\Package.wxs." }
+)
+if ($problems) { throw "The built installer is broken:`n  " + ($problems -join "`n  ") }
+Write-Host "Installer checks passed: opens in Windows Installer, version $($facts.ProductVersion), $($facts.FileCount) files, requires elevation."
+
 Compress-Archive -Path $msi -DestinationPath $zip -CompressionLevel Optimal -Force
 
 Write-Host ''
