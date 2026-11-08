@@ -1,0 +1,173 @@
+# Releases a new version of Mapee: Actions tab -> Release -> Run workflow -> enter e.g. 1.4.0.
+#
+#   1. build           Builds the installer with that version baked in.
+#   2. github-release  Creates the tag and the GitHub release "Mapee <version>" with the .msi and .zip.
+#   3. go-live         Uploads the update files to Google Cloud Storage. Running copies of Mapee
+#                      offer the update on their next start, and mapee.net shows the new download.
+#
+# Users only see the release once step 3 succeeds. If a job fails, fix the cause and use
+# "Re-run failed jobs": steps 2 and 3 are safe to repeat. See RELEASING.md for the one-time setup.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release, like 1.4.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  VERSION: ${{ inputs.version }}
+
+jobs:
+  build:
+    name: Build ${{ inputs.version }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check version
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          $version = $env:VERSION
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Version must look like 1.4.0 (got '$version')." }
+          if ($env:GITHUB_REF -ne "refs/heads/$env:DEFAULT_BRANCH") { throw "Run releases from the $env:DEFAULT_BRANCH branch." }
+          if (git ls-remote --tags origin "refs/tags/$version") { throw "Tag $version already exists." }
+
+          $latest = gh release view --json tagName --jq .tagName 2>$null
+          if ($LASTEXITCODE -eq 0 -and $latest -and ([version]$version -le [version]$latest)) {
+            throw "Version $version must be newer than the latest release ($latest)."
+          }
+          Write-Host "Releasing $version (latest release: $(if ($latest) { $latest } else { 'none' }))"
+          exit 0
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build installer
+        shell: pwsh
+        run: ./scripts/build-installer.ps1 -Version $env:VERSION
+
+      - name: Write update files
+        shell: pwsh
+        run: ./scripts/write-release-manifests.ps1 -Version $env:VERSION -Repository $env:GITHUB_REPOSITORY
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ inputs.version }}
+          path: |
+            artifacts/*.msi
+            artifacts/*.zip
+            artifacts/manifests/
+          if-no-files-found: error
+
+  github-release:
+    name: Publish GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-${{ inputs.version }}
+          path: release
+
+      - name: Create release
+        run: |
+          files=(
+            "release/MapeeInstaller.$VERSION-self-win64.msi"
+            "release/MapeeInstaller.$VERSION-self-win64.zip"
+          )
+          if gh release view "$VERSION" > /dev/null 2>&1; then
+            echo "Release $VERSION already exists (this is a re-run), re-uploading its files."
+            gh release upload "$VERSION" "${files[@]}" --clobber
+          else
+            gh release create "$VERSION" "${files[@]}" \
+              --target "$GITHUB_SHA" \
+              --title "Mapee $VERSION" \
+              --generate-notes
+          fi
+
+      - name: Check downloads work
+        run: |
+          for ext in msi zip; do
+            url="https://github.com/$GITHUB_REPOSITORY/releases/download/$VERSION/MapeeInstaller.$VERSION-self-win64.$ext"
+            curl --fail --silent --show-error --location --head --retry 5 --retry-delay 5 --retry-all-errors "$url" > /dev/null
+            echo "OK $url"
+          done
+
+  go-live:
+    name: Announce update (app + website)
+    needs: github-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # lets Google Cloud verify this workflow (Workload Identity Federation), no stored key
+    env:
+      GCS_BUCKET: ${{ vars.GCS_BUCKET || 'mapee_update_bucket_goldentadpole' }}
+      # Must match the URL in Mapper.Gui/Shared/Utilities/UpdateChecker.cs.
+      UPDATE_INFO_OBJECT: self_win64/MapeeVersionInfo-self-win64.xml
+      # Read by mapee.net's download page.
+      WEBSITE_INFO_OBJECT: website/installer-info.xml
+    steps:
+      - name: Check Google Cloud settings
+        env:
+          WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$WIF_PROVIDER" ] || [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "::error::Set the GCP_WORKLOAD_IDENTITY_PROVIDER and GCP_SERVICE_ACCOUNT repository variables (see RELEASING.md), then use 'Re-run failed jobs'. The GitHub release is already published."
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-${{ inputs.version }}
+          path: release
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Upload update files
+        env:
+          # Only needed if the bucket uses fine-grained ACLs instead of uniform access: set to publicRead.
+          PREDEFINED_ACL: ${{ vars.GCS_PREDEFINED_ACL }}
+        run: |
+          options=(--cache-control="no-cache, max-age=0" --content-type="application/xml")
+          if [ -n "$PREDEFINED_ACL" ]; then options+=(--predefined-acl="$PREDEFINED_ACL"); fi
+
+          # Website first, app last: users start updating as soon as the app's file changes.
+          gcloud storage cp release/manifests/installer-info.xml "gs://$GCS_BUCKET/$WEBSITE_INFO_OBJECT" "${options[@]}"
+          gcloud storage cp release/manifests/MapeeVersionInfo-self-win64.xml "gs://$GCS_BUCKET/$UPDATE_INFO_OBJECT" "${options[@]}"
+
+      - name: Check update files are public
+        run: |
+          for object in "$WEBSITE_INFO_OBJECT" "$UPDATE_INFO_OBJECT"; do
+            url="https://storage.googleapis.com/$GCS_BUCKET/$object"
+            body=$(curl --fail --silent --show-error --retry 3 "$url?release=$VERSION")
+            if grep -q "<version>$VERSION" <<< "$body"; then
+              echo "OK $url"
+            else
+              echo "::warning::$url is public but doesn't show $VERSION yet. It was probably cached before this release; it should update within an hour."
+            fi
+          done

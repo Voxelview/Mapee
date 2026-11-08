@@ -1,0 +1,35 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <!--
+    Builds the Mapee MSI from a `dotnet publish` folder.
+    Don't build this directly: run scripts/build-installer.ps1, which publishes the app first
+    and passes Version and AppPublishDir.
+
+    WiX is pinned to v5: it is MS-RL licensed. WiX v6 and later ship under the OSMF EULA.
+  -->
+  <PropertyGroup>
+    <OutputName>Mapee</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <Version Condition="'$(Version)' == ''">0.0.0</Version>
+    <AppPublishDir Condition="'$(AppPublishDir)' == ''">$(MSBuildThisFileDirectory)..\artifacts\publish</AppPublishDir>
+    <!-- No trailing backslashes: Package.wxs adds the separators itself. -->
+    <AppPublishDir>$([System.IO.Path]::GetFullPath('$(AppPublishDir)').TrimEnd('\'))</AppPublishDir>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..').TrimEnd('\'))</RepoRoot>
+    <DefineConstants>ProductVersion=$(Version);AppPublishDir=$(AppPublishDir);RepoRoot=$(RepoRoot)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <!--
+    Mapee 1.3.0 and older were built with a Visual Studio Installer Project, which installs
+    per-user (ALLUSERS unset) but elevated, into Program Files. Windows Installer only upgrades
+    a product installed in the same context, so this package must match it. WiX's
+    Scope="perUser" gives the per-user context but also marks the package as "no elevation
+    needed" (summary info Word Count bit 8), which would make writing to Program Files fail.
+    Clear that bit after linking so the MSI asks for elevation, exactly like the old installer.
+  -->
+  <Target Name="RequireElevation" AfterTargets="Build" Condition="Exists('$(TargetPath)')">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)Set-MsiRequiresElevation.ps1&quot; -Path &quot;$(TargetPath)&quot;" />
+  </Target>
+</Project>

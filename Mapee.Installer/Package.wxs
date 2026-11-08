@@ -1,0 +1,68 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!--
+    UpgradeCode must never change: it is how Windows finds older Mapee installs to replace.
+    It matches the old Mapee.Gui.Setup.vdproj. Scope is per-user to match that installer too
+    (see the RequireElevation target in Mapee.Installer.wixproj).
+  -->
+  <Package Name="Mapee"
+           Manufacturer="GoldenTadpole"
+           Version="$(var.ProductVersion)"
+           UpgradeCode="D4CEFD60-94DE-4F23-A30C-BCFD6BDB264A"
+           Scope="perUser"
+           Language="1033">
+
+    <SummaryInformation Description="Mapee $(var.ProductVersion) installer" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="Mapee.ico" SourceFile="$(var.RepoRoot)\Icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="Mapee.ico" />
+    <Property Id="ARPCOMMENTS" Value="A fast and easy to use Minecraft mapper" />
+    <Property Id="ARPCONTACT" Value="GoldenTadpole" />
+    <Property Id="ARPURLINFOABOUT" Value="https://mapee.net" />
+
+    <!-- Reuse the folder chosen on a previous install (written by InstallFolderMemory). -->
+    <Property Id="INSTALLFOLDER" Secure="yes">
+      <RegistrySearch Id="PreviousInstallFolder" Root="HKCU" Key="Software\GoldenTadpole\Mapee" Name="InstallFolder" Type="raw" />
+    </Property>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="ManufacturerFolder" Name="GoldenTadpole">
+        <Directory Id="INSTALLFOLDER" Name="Mapee" />
+      </Directory>
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="Mapee">
+      <!-- Everything dotnet publish produced, including Resources\**. New files are picked up automatically. -->
+      <Files Directory="INSTALLFOLDER" Include="$(var.AppPublishDir)\**" />
+
+      <Component Directory="INSTALLFOLDER">
+        <File Source="$(var.RepoRoot)\Icon.ico" />
+      </Component>
+
+      <Component Id="InstallFolderMemory" Directory="INSTALLFOLDER">
+        <RegistryValue Root="HKCU" Key="Software\GoldenTadpole\Mapee" Name="InstallFolder" Type="string" Value="[INSTALLFOLDER]" KeyPath="yes" />
+      </Component>
+
+      <Component Id="DesktopShortcut" Directory="DesktopFolder">
+        <Shortcut Id="DesktopShortcut" Name="Mapee" Target="[INSTALLFOLDER]Mapee.exe" WorkingDirectory="INSTALLFOLDER" Icon="Mapee.ico" />
+        <RegistryValue Root="HKCU" Key="Software\GoldenTadpole\Mapee" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <Component Id="StartMenuShortcut" Directory="ProgramMenuFolder">
+        <Shortcut Id="StartMenuShortcut" Name="Mapee" Target="[INSTALLFOLDER]Mapee.exe" WorkingDirectory="INSTALLFOLDER" Icon="Mapee.ico" />
+        <RegistryValue Root="HKCU" Key="Software\GoldenTadpole\Mapee" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </Feature>
+
+    <!-- Welcome -> choose folder -> install, like the old installer (no license page). -->
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
+    <UI>
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2" />
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" />
+    </UI>
+  </Package>
+</Wix>
