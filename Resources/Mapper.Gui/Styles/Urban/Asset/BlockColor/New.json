@@ -330,5 +330,32 @@
     ["minecraft:brown_concrete_stairs", "#FF603B1F"],
     ["minecraft:green_concrete_stairs", "#FF495B24"],
     ["minecraft:red_concrete_stairs", "#FF8E2020"],
-    ["minecraft:black_concrete_stairs", "#FF080A0F"]
+    ["minecraft:black_concrete_stairs", "#FF080A0F"],
+    ["minecraft:brittle_ice", "#C1C8D8F6"],
+    ["minecraft:icicle", "#9ECDDAF4"],
+    ["minecraft:ice_crystal", "#7AD2DFF6"],
+    ["minecraft:packed_ice_bricks", "#FFC2D0EE"],
+    ["minecraft:packed_ice_brick_slab", "#FFC2D0EE"],
+    ["minecraft:packed_ice_brick_stairs", "#FFC2D0EE"],
+    ["minecraft:packed_ice_brick_wall", "#FFC2D0EE"],
+    ["minecraft:chiseled_packed_ice", "#FFC4D1EE"],
+    ["minecraft:snow_bricks", "#FFEEF9F9"],
+    ["minecraft:snow_brick_slab", "#FFEEF9F9"],
+    ["minecraft:snow_brick_stairs", "#FFEEF9F9"],
+    ["minecraft:snow_brick_wall", "#FFEEF9F9"],
+    ["minecraft:calcite_pillar*", [
+        ["axis ||== [x z]", "#FFD9DAD8"]
+    ], {"Default": "#FFDDDEDB"}],
+    ["minecraft:calcite_slab", "#FFDFE0DC"],
+    ["minecraft:calcite_stairs", "#FFDFE0DC"],
+    ["minecraft:calcite_wall", "#FFDFE0DC"],
+    ["minecraft:polished_calcite", "#FFD9DAD9"],
+    ["minecraft:polished_calcite_slab", "#FFD9DAD9"],
+    ["minecraft:polished_calcite_stairs", "#FFD9DAD9"],
+    ["minecraft:polished_calcite_wall", "#FFD9DAD9"],
+    ["minecraft:polished_calcite_bricks", "#FFD4D5D5"],
+    ["minecraft:polished_calcite_brick_slab", "#FFD4D5D5"],
+    ["minecraft:polished_calcite_brick_stairs", "#FFD4D5D5"],
+    ["minecraft:polished_calcite_brick_wall", "#FFD4D5D5"],
+    ["minecraft:chiseled_soulshale", "#FF214E4F"]
 ]

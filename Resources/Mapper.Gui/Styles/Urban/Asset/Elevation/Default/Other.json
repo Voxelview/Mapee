@@ -13,5 +13,9 @@
     ["minecraft:ice", {"Max": 10}],
     ["minecraft:packed_ice", {"Max": 10}],
     ["minecraft:blue_ice", {"Max": 10}],
+    ["minecraft:packed_ice_bricks", {"Max": 10}],
+    ["minecraft:packed_ice_brick_slab", {"Max": 10}],
+    ["minecraft:packed_ice_brick_stairs", {"Max": 10}],
+    ["minecraft:chiseled_packed_ice", {"Max": 10}],
     ["minecraft:end_stone", {"Max": 10, "MaxIncr": 0.06, "MinIncr": 0.025}]
 ]
