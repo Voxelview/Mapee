@@ -15,7 +15,11 @@
 
     <SummaryInformation Description="Mapee $(var.ProductVersion) installer" />
 
-    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <!--
+      AllowSameVersionUpgrades: installing a rebuilt release over an install of the same version
+      (e.g. a re-released 1.4.0) replaces it. Without it, Windows would install the two side by side.
+    -->
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 
     <!--
       Mapee 1.0.0 and 1.1.0-1.2.0 were built with other UpgradeCodes, so 1.3.0 didn't replace
@@ -72,11 +76,25 @@
       </Component>
     </Feature>
 
+    <!--
+      "Launch Mapee" on the last page, ticked by default. AutoUpdater closes Mapee to run this installer
+      and doesn't start it again, so without this an update leaves the user with no Mapee open.
+      It runs from the installer's UI process, as the user who started the installer.
+    -->
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Mapee" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <CustomAction Id="LaunchMapee" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixShellExec" Impersonate="yes" />
+
     <!-- Welcome -> choose folder -> install, like the old installer (no license page). -->
     <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="INSTALLFOLDER" />
     <UI>
       <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Order="2" />
       <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="2" />
+      <!-- Not after an uninstall or repair (the product is already installed then). -->
+      <Publish Dialog="ExitDialog" Control="Finish" Property="WixShellExecTarget" Value="[INSTALLFOLDER]Mapee.exe" Order="1"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchMapee" Order="2"
+               Condition="WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 AND NOT Installed" />
     </UI>
   </Package>
 </Wix>

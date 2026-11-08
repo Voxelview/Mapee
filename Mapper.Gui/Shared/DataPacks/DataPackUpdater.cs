@@ -92,7 +92,7 @@ namespace Mapper.Gui
                 }
 
                 _store.Install(extracted, pack.Revision);
-                DataPackLog.Write($"Installed data r{pack.Revision} ({pack.Size:N0} bytes) from {pack.Url}");
+                DataPackLog.Write($"Installed data r{pack.Revision} (Minecraft {manifest.MinecraftVersion ?? "?"}, {pack.Size:N0} bytes) from {pack.Url}");
             }
             finally
             {

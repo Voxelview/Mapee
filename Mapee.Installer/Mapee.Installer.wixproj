@@ -15,10 +15,14 @@
     <AppPublishDir>$([System.IO.Path]::GetFullPath('$(AppPublishDir)').TrimEnd('\'))</AppPublishDir>
     <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..').TrimEnd('\'))</RepoRoot>
     <DefineConstants>ProductVersion=$(Version);AppPublishDir=$(AppPublishDir);RepoRoot=$(RepoRoot)</DefineConstants>
+    <!-- ICE61 flags MajorUpgrade/@AllowSameVersionUpgrades in Package.wxs, which is intentional. -->
+    <SuppressIces>ICE61</SuppressIces>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <!-- WixShellExec, for "Launch Mapee" on the last page. -->
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
   </ItemGroup>
 
   <!--

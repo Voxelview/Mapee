@@ -60,7 +60,8 @@ jobs:
         id: revision
         shell: pwsh
         run: |
-          $revision = [int](git rev-list --count HEAD -- Resources)
+          $revision = ./scripts/get-data-revision.ps1
+          if ($revision -lt 1) { throw "Nothing in Resources/ has changed since data revisions were reset, so there's nothing to publish." }
           $format = [int](Get-Content Resources/manifest.json -Raw | ConvertFrom-Json).format
           "revision=$revision" >> $env:GITHUB_OUTPUT
           "format=$format" >> $env:GITHUB_OUTPUT

@@ -17,6 +17,14 @@ Users don't see anything until **go-live** succeeds. If a job fails, fix the cau
 
 If a release turns out to be broken, release a fixed version (for example `1.4.1`). Users who haven't updated yet go straight to it.
 
+To **rebuild a release under the same version** instead, delete it first (the workflow refuses an existing tag), then run Release again with the same number:
+
+```bash
+gh release delete 1.4.0 --repo Voxelview/Mapee --cleanup-tag --yes
+```
+
+Users already on that version aren't offered the rebuilt one (the updater only offers newer versions). Installing the rebuilt installer over the old one replaces it, thanks to `AllowSameVersionUpgrades` in `Package.wxs`.
+
 ## Publishing data
 
 Block colors, biomes, styles and the other files in `Resources/` can reach users **without an app release**, as a *data pack*.
@@ -26,7 +34,9 @@ Block colors, biomes, styles and the other files in `Resources/` can reach users
 
 When Mapee starts, it checks for a newer pack. If there is one, it downloads it (a small progress window shows) and uses it straight away, with no restart. The title bar shows the data in use, for example `v1.5.0 · data r57`.
 
-**Version numbers.** Publishing data doesn't change the app version. Each pack gets a *data revision* (`r57`): the number of commits that changed `Resources/`, counted automatically. An app release bundles the data of its commit with the same numbering, so a pack is only downloaded if it's newer than what the app already has.
+**Version numbers.** Publishing data doesn't change the app version. Each pack gets a *data revision* (`r57`): the number of commits that changed `Resources/` since revisions were reset (counted by `scripts/get-data-revision.ps1`, starting at r1). An app release bundles the data of its commit with the same numbering, so a pack is only downloaded if it's newer than what the app already has.
+
+**Minecraft version.** `Resources/manifest.json` also says which Minecraft version the data covers (`"minecraftVersion": "26.3"`). Update it by hand when you add data for a new Minecraft version; packs, `latest.json` and the download log carry it, and the data check fails without it.
 
 **Trying a pack first.** Run Publish data with `channel: test`. Only apps started with the environment variable `MAPEE_DATA_CHANNEL=test` download it. That's also how to test with a local build, which otherwise never downloads data:
 

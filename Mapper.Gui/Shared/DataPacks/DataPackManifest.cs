@@ -18,6 +18,12 @@ namespace Mapper.Gui
         /// <summary>Number of commits that changed Resources/. 0 for local builds.</summary>
         public int Revision { get; set; }
 
+        /// <summary>
+        /// Newest Minecraft version the data covers (e.g. "26.3"), for tracking. Set by hand in
+        /// Resources/manifest.json when data for a new Minecraft version is added.
+        /// </summary>
+        public string? MinecraftVersion { get; set; }
+
         public string? Commit { get; set; }
         public DateTimeOffset? Created { get; set; }
 
@@ -50,6 +56,7 @@ namespace Mapper.Gui
     {
         public int Format { get; set; }
         public int Revision { get; set; }
+        public string? MinecraftVersion { get; set; }
         public string Url { get; set; } = "";
         public string Sha256 { get; set; } = "";
         public long Size { get; set; }

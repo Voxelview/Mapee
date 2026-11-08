@@ -71,9 +71,15 @@ namespace Mapper.Gui
                 return 1;
             }
 
+            if (string.IsNullOrWhiteSpace(manifest.MinecraftVersion))
+            {
+                report.AppendLine($"FAILED: {DataPackManifest.FileName} has no \"minecraftVersion\" (the newest Minecraft version the data covers, e.g. \"26.3\").");
+                return 1;
+            }
+
             ProgramDomain domain = new(root);
 
-            report.AppendLine($"OK: format {manifest.Format}, revision {manifest.Revision}");
+            report.AppendLine($"OK: format {manifest.Format}, revision {manifest.Revision}, Minecraft {manifest.MinecraftVersion}");
             report.AppendLine($"  {domain.Styles.Count} styles: {string.Join(", ", domain.Styles.Select(s => s.Metadata?.Name))}");
             return 0;
         }
