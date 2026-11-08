@@ -16,6 +16,20 @@
     <SummaryInformation Description="Mapee $(var.ProductVersion) installer" />
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+    <!--
+      Mapee 1.0.0 and 1.1.0-1.2.0 were built with other UpgradeCodes, so 1.3.0 didn't replace
+      them: users who updated from them still have an old "Mapee" entry in Apps, and its files
+      share this install folder. Remove those installs as part of the upgrade too. They were
+      per-user like this package, so Windows Installer can find them.
+    -->
+    <Upgrade Id="D8483D2E-296C-4A44-B875-8D364BF6D023">
+      <UpgradeVersion Property="LEGACYMAPEE100FOUND" Minimum="0.0.0" IncludeMinimum="yes" />
+    </Upgrade>
+    <Upgrade Id="9C606522-1E64-4DD4-A88F-FD5848038034">
+      <UpgradeVersion Property="LEGACYMAPEE110FOUND" Minimum="0.0.0" IncludeMinimum="yes" />
+    </Upgrade>
+
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
     <Icon Id="Mapee.ico" SourceFile="$(var.RepoRoot)\Icon.ico" />
