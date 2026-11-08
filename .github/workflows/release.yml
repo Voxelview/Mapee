@@ -62,7 +62,7 @@ jobs:
         shell: pwsh
         run: |
           # Stamps the bundled data, so installed apps know whether a published data pack is newer.
-          $dataRevision = [int](git rev-list --count HEAD -- Resources)
+          $dataRevision = ./scripts/get-data-revision.ps1
           ./scripts/build-installer.ps1 -Version $env:VERSION -DataRevision $dataRevision
 
       - name: Check data

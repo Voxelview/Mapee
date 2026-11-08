@@ -17,6 +17,9 @@ namespace Mapper.Gui
             if (version is null || version.Major == 0) return;
 
             AutoUpdater.ClearAppDirectory = true;
+            // Start the installer as the user: the MSI asks for admin rights itself when it installs.
+            // Started as administrator, its "Launch Mapee" option would start Mapee as administrator too.
+            AutoUpdater.RunUpdateAsAdmin = false;
             AutoUpdater.Start(_versionInfoUrl);
         }
     }

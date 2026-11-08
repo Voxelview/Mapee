@@ -12,10 +12,10 @@
     gs://mapee_update_bucket_goldentadpole/<data|data-test>/format-<format>/.
 
 .EXAMPLE
-    ./scripts/build-data-pack.ps1 -Revision (git rev-list --count HEAD -- Resources)
+    ./scripts/build-data-pack.ps1 -Revision (./scripts/get-data-revision.ps1)
 #>
 param(
-    # Number of commits that changed Resources\ (git rev-list --count HEAD -- Resources).
+    # The data revision (scripts/get-data-revision.ps1).
     [Parameter(Mandatory)]
     [ValidateRange(1, [int]::MaxValue)]
     [int]$Revision,
@@ -52,16 +52,19 @@ function Write-Json([string]$path, $value) {
     [IO.File]::WriteAllText($path, ($value | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
 }
 
-# Copy Resources\ and stamp its manifest.
+# Copy Resources\ and stamp its manifest, keeping what the repository's manifest says
+# (format, minecraftVersion, ...).
 Copy-Item (Join-Path $ResourcesDir '*') $packDir -Recurse
-$format = [int](Get-Content (Join-Path $packDir 'manifest.json') -Raw | ConvertFrom-Json).format
+$manifestPath = Join-Path $packDir 'manifest.json'
+$manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+$format = [int]$manifest.format
+$minecraftVersion = [string]$manifest.minecraftVersion
 $created = [DateTimeOffset]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
-Write-Json (Join-Path $packDir 'manifest.json') ([ordered]@{
-    format   = $format
-    revision = $Revision
-    commit   = $Commit
-    created  = $created
-})
+$stamps = [ordered]@{ revision = $Revision; commit = $Commit; created = $created }
+foreach ($name in $stamps.Keys) {
+    $manifest | Add-Member -NotePropertyName $name -NotePropertyValue $stamps[$name] -Force
+}
+Write-Json $manifestPath $manifest
 
 # ZipFile writes '/' separators on every PowerShell version (Compress-Archive in Windows PowerShell doesn't).
 [IO.Compression.ZipFile]::CreateFromDirectory($packDir, $zipPath, [IO.Compression.CompressionLevel]::Optimal, $false)
@@ -69,14 +72,15 @@ $zip = Get-Item $zipPath
 
 $folder = if ($Channel -eq 'test') { 'data-test' } else { 'data' }
 Write-Json (Join-Path $OutputDir 'latest.json') ([ordered]@{
-    format   = $format
-    revision = $Revision
-    url      = "$bucketUrl/$folder/format-$format/$($zip.Name)"
-    sha256   = (Get-FileHash $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-    size     = $zip.Length
-    commit   = $Commit
-    created  = $created
+    format           = $format
+    revision         = $Revision
+    minecraftVersion = $minecraftVersion
+    url              = "$bucketUrl/$folder/format-$format/$($zip.Name)"
+    sha256           = (Get-FileHash $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+    size             = $zip.Length
+    commit           = $Commit
+    created          = $created
 })
 
-Write-Host ("Data pack r{0} (format {1}, {2} channel): {3}  ({4:N2} MB)" -f $Revision, $format, $Channel, $zip.FullName, ($zip.Length / 1MB))
+Write-Host ("Data pack r{0} (format {1}, Minecraft {2}, {3} channel): {4}  ({5:N2} MB)" -f $Revision, $format, $minecraftVersion, $Channel, $zip.FullName, ($zip.Length / 1MB))
 Get-Content (Join-Path $OutputDir 'latest.json')
