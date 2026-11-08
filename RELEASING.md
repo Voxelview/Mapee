@@ -17,6 +17,49 @@ Users don't see anything until **go-live** succeeds. If a job fails, fix the cau
 
 If a release turns out to be broken, release a fixed version (for example `1.4.1`). Users who haven't updated yet go straight to it.
 
+## Publishing data
+
+Block colors, biomes, styles and the other files in `Resources/` can reach users **without an app release**, as a *data pack*.
+
+1. Merge the data change into `master`. The **Build** workflow loads `Resources/` with the app on every pull request, so broken JSON fails the PR.
+2. Open **Actions → Publish data → Run workflow** and keep `channel: live`.
+
+When Mapee starts, it checks for a newer pack. If there is one, it downloads it (a small progress window shows) and uses it straight away, with no restart. The title bar shows the data in use, for example `v1.5.0 · data r57`.
+
+**Version numbers.** Publishing data doesn't change the app version. Each pack gets a *data revision* (`r57`): the number of commits that changed `Resources/`, counted automatically. An app release bundles the data of its commit with the same numbering, so a pack is only downloaded if it's newer than what the app already has.
+
+**Trying a pack first.** Run Publish data with `channel: test`. Only apps started with the environment variable `MAPEE_DATA_CHANNEL=test` download it. That's also how to test with a local build, which otherwise never downloads data:
+
+```powershell
+$env:MAPEE_DATA_CHANNEL = 'test'; .\Build\Debug\Mapee.exe
+```
+
+Ticking `validate only` builds and checks the pack without publishing anything, from any branch.
+
+### What can ship as data, and what needs an app release
+
+Each pack has a **data format** number (`Resources/manifest.json`), and each app build reads exactly one format (`DataFormat.Supported` in `Mapper.Gui/Shared/DataPacks/DataFormat.cs`). Apps only download packs of their format, from `data/format-<N>/` in the bucket.
+
+**Safe as data** (same format):
+- Block colors, grouping, step, elevation and depth opacity, including entries for **new block ids**
+- Property variants using the existing expression operators
+- Biome colors and new biomes
+- Block and biome renames, including future Minecraft data versions
+- Style settings, and whole new styles (style folders are discovered automatically)
+- Colormap PNGs (keep them at 96 DPI)
+
+**Needs an app release and a format bump:**
+- New JSON keys or value types, new enum values (`BlockType`, `StepType`, `ScanType`, …), new operators or asset categories
+- Changing a file's root type, a schema, or the folder layout
+- Anything that also needs code, such as a new chunk or region format
+
+To bump the format, change `"format"` in `Resources/manifest.json` and `DataFormat.Supported` together, in the same pull request as the code (`--check-data` fails if they differ). Then release the app. Data published afterwards goes to `data/format-<N+1>/`; older apps never read it and keep their last pack until they update.
+
+### If something goes wrong
+- **On the user's PC:** packs live in `%LocalAppData%\Mapee\Data`. If a downloaded pack fails to load, Mapee uses its bundled data instead and never uses that revision again. Startup never fails because of a pack. Details are in `%LocalAppData%\Mapee\Logs\data-packs.log`.
+- **A bad pack is live:** fix the data and publish again; the new revision replaces it.
+- **Check data locally:** `./scripts/check-data.ps1` loads `Resources/` with the app. `./scripts/build-data-pack.ps1 -Revision 1` builds a pack into `artifacts/data/` without publishing it.
+
 ## Test builds
 
 The **Build** workflow runs on every push to `master` and every pull request. It builds the app and the installer, so a broken build fails on the pull request instead of during a release.
@@ -45,6 +88,8 @@ The output goes to `artifacts/`. You need the .NET 10 SDK; WiX is downloaded fro
 - **Update files** in the bucket `mapee_update_bucket_goldentadpole`:
   - `self_win64/MapeeVersionInfo-self-win64.xml` is read by the app's updater (AutoUpdater.NET). It points at the MSI and includes its SHA256, which the updater verifies.
   - `website/installer-info.xml` is read by the download page on mapee.net.
+  - `data/format-<N>/latest.json` and `mapee-data-r<revision>.zip` are the current data pack (see "Publishing data"). `data-test/` holds the test channel.
+- **Where data is loaded from.** `Mapper.Gui/Shared/DataPacks/DataPacks.cs` picks the bundled `Resources` folder next to `Mapee.exe` or a newer downloaded pack, and loads it through `ProgramDomain`. Paths no longer depend on the working directory.
 
 ## One-time setup
 

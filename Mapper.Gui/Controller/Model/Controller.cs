@@ -25,11 +25,12 @@ namespace Mapper.Gui.Controller
 
         public MapViewer MainWindow { get; }
 
-        public Controller() 
+        /// <param name="domain">The loaded data (see <see cref="ProgramDomain"/>), so loading can fail and fall back before any UI exists.</param>
+        public Controller(ProgramDomain domain)
         {
             GraphicsCanvas = new CanvasControl(8);
 
-            Domain = new ProgramDomain();
+            Domain = domain;
             ImplementedScene = new Scene(GraphicsCanvas, Domain);
             ImplementedRenderer = new Renderer(ImplementedScene, GraphicsCanvas);
 
