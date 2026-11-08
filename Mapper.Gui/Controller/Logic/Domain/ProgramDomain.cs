@@ -18,25 +18,36 @@ namespace Mapper.Gui.Logic
 
         public WorldDomain? CurrentWorld { get; set; }
 
-        public ProgramDomain()
+        /// <summary>The Resources folder this domain was loaded from (bundled or a downloaded data pack).</summary>
+        public string ResourceRoot { get; }
+
+        /// <param name="resourceRoot">A Resources folder: the one next to Mapee.exe, or an extracted data pack.</param>
+        /// <exception cref="Exception">Any file in it is missing or invalid. Loading reads everything up front.</exception>
+        public ProgramDomain(string resourceRoot)
         {
+            ResourceRoot = resourceRoot;
+
             AssetPackFactory assetPackFactory = new();
-            DefaultAssetPack = assetPackFactory.Create(new DataReader("Resources\\Mapper\\DefaultAsset"));
+            DefaultAssetPack = assetPackFactory.Create(new DataReader(Path.Combine(resourceRoot, "Mapper", "DefaultAsset")));
 
             Styles = LoadStyles();
+            if (Styles.Count == 0) throw new InvalidDataException($"No valid styles found in {Path.Combine(resourceRoot, "Mapper.Gui", "Styles")}.");
             CurrentStyle = Styles[0];
 
             TexturePack = LoadTexturePack();
-            ChunkMapperPack = new ChunkMapperPack(DefaultAssetPack);
+            ChunkMapperPack = new ChunkMapperPack(DefaultAssetPack, Path.Combine(resourceRoot, "WorldEditor", "Translators"));
         }
 
-        private IList<Style> LoadStyles() 
+        private IList<Style> LoadStyles()
         {
             List<Style> styles = new List<Style>();
+            string stylesDirectory = Path.Combine(ResourceRoot, "Mapper.Gui", "Styles");
 
+            // A style is a folder or a .zip file. Other files (README, Thumbs.db, ...) are skipped:
+            // DataReader would try to open them as zips and fail.
             ISet<string> entries = new HashSet<string>();
-            entries.UnionWith(Directory.GetFiles("Resources\\Mapper.Gui\\Styles"));
-            entries.UnionWith(Directory.GetDirectories("Resources\\Mapper.Gui\\Styles"));
+            entries.UnionWith(Directory.GetFiles(stylesDirectory, "*.zip"));
+            entries.UnionWith(Directory.GetDirectories(stylesDirectory));
 
             StyleReader styleReader = new(DefaultAssetPack);
             foreach (string entry in entries) 
@@ -51,11 +62,12 @@ namespace Mapper.Gui.Logic
             return styles.OrderBy(x => x.Metadata?.OrderedIndex).ToList();
         }
 
-        private static TexturedAssetPack LoadTexturePack() 
+        private TexturedAssetPack LoadTexturePack()
         {
+            string colormapDirectory = Path.Combine(ResourceRoot, "Mapper", "Textured", "colormap");
             Colormap colormap = new Colormap(
-                new ReadOnlyBitmap(new Uri("Resources\\Mapper\\Textured\\colormap\\grass.png", UriKind.Relative)),
-                new ReadOnlyBitmap(new Uri("Resources\\Mapper\\\\Textured\\colormap\\foliage.png", UriKind.Relative)));
+                new ReadOnlyBitmap(new Uri(Path.Combine(colormapDirectory, "grass.png"), UriKind.Absolute)),
+                new ReadOnlyBitmap(new Uri(Path.Combine(colormapDirectory, "foliage.png"), UriKind.Absolute)));
 
             return new TexturedAssetPack(new Mapper.TexturedAssetPack()
             {

@@ -1,0 +1,169 @@
+# Publishes the block, biome and style data in Resources/ as a data pack, without an app release:
+# Actions tab -> Publish data -> Run workflow. Installed apps (with data pack support) download it on
+# their next start. See RELEASING.md, "Publishing data".
+#
+#   1. build    Builds the pack from this commit's Resources/ and loads it with the app (--check-data),
+#               exactly as users will get it. Nothing is published if that fails.
+#   2. publish  Uploads the pack, then latest.json (the "go live" step), to the bucket.
+#
+# Only publish data that installed apps can read. If a change needs new code, bump the data format
+# (Resources/manifest.json and DataFormat.Supported) and release the app: packs then go to the new
+# format's folder, which older apps never read.
+name: Publish data
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "live: all users. test: only apps started with MAPEE_DATA_CHANNEL=test."
+        type: choice
+        options: [live, test]
+        default: live
+      validate_only:
+        description: Build and check the pack, but don't publish it
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-data
+  cancel-in-progress: false
+
+env:
+  CHANNEL: ${{ inputs.channel }}
+
+jobs:
+  build:
+    name: Build and check pack
+    runs-on: windows-latest
+    outputs:
+      revision: ${{ steps.revision.outputs.revision }}
+      format: ${{ steps.revision.outputs.format }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the revision counts commits that changed Resources/
+
+      - name: Check branch
+        if: ${{ !inputs.validate_only }}
+        shell: pwsh
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if ($env:GITHUB_REF -ne "refs/heads/$env:DEFAULT_BRANCH") {
+            throw "Publish data from the $env:DEFAULT_BRANCH branch, or tick 'validate only' to just check a branch."
+          }
+
+      - name: Data revision
+        id: revision
+        shell: pwsh
+        run: |
+          $revision = [int](git rev-list --count HEAD -- Resources)
+          $format = [int](Get-Content Resources/manifest.json -Raw | ConvertFrom-Json).format
+          "revision=$revision" >> $env:GITHUB_OUTPUT
+          "format=$format" >> $env:GITHUB_OUTPUT
+          Write-Host "Data r$revision, format $format"
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build pack
+        shell: pwsh
+        env:
+          REVISION: ${{ steps.revision.outputs.revision }}
+        run: ./scripts/build-data-pack.ps1 -Revision $env:REVISION -Channel $env:CHANNEL -Commit $env:GITHUB_SHA
+
+      - name: Check pack
+        shell: pwsh
+        run: ./scripts/check-data.ps1 -ResourcesDir artifacts/data/pack
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: data-pack-r${{ steps.revision.outputs.revision }}
+          path: |
+            artifacts/data/*.zip
+            artifacts/data/latest.json
+          if-no-files-found: error
+
+  publish:
+    name: Publish r${{ needs.build.outputs.revision }} (${{ inputs.channel }})
+    needs: build
+    if: ${{ !inputs.validate_only }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # lets Google Cloud verify this workflow (Workload Identity Federation), no stored key
+    env:
+      GCS_BUCKET: ${{ vars.GCS_BUCKET || 'mapee_update_bucket_goldentadpole' }}
+      REVISION: ${{ needs.build.outputs.revision }}
+      # Must match DataPackChannels.BucketFolder and DataPackUpdater.LatestUrl in the app.
+      FOLDER: ${{ inputs.channel == 'test' && 'data-test' || 'data' }}/format-${{ needs.build.outputs.format }}
+    steps:
+      - name: Check Google Cloud settings
+        env:
+          WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$WIF_PROVIDER" ] || [ -z "$SERVICE_ACCOUNT" ]; then
+            echo "::error::Set the GCP_WORKLOAD_IDENTITY_PROVIDER and GCP_SERVICE_ACCOUNT repository variables (see RELEASING.md)."
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: data-pack-r${{ needs.build.outputs.revision }}
+          path: pack
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Check what's published
+        id: published
+        run: |
+          if json=$(gcloud storage cat "gs://$GCS_BUCKET/$FOLDER/latest.json" 2>/dev/null); then
+            current=$(jq -r '.revision // 0' <<< "$json")
+          else
+            current=0
+          fi
+          echo "Published now: r$current. This pack: r$REVISION."
+          if [ "$current" -eq "$REVISION" ]; then
+            echo "::notice::r$REVISION is already published to $FOLDER. Nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          elif [ "$current" -gt "$REVISION" ]; then
+            echo "::error::A newer pack (r$current) is already published to $FOLDER. Publish from a newer commit."
+            exit 1
+          fi
+
+      - name: Upload pack
+        if: steps.published.outputs.skip != 'true'
+        env:
+          # Only needed if the bucket uses fine-grained ACLs instead of uniform access: set to publicRead.
+          PREDEFINED_ACL: ${{ vars.GCS_PREDEFINED_ACL }}
+        run: |
+          acl=()
+          if [ -n "$PREDEFINED_ACL" ]; then acl=(--predefined-acl="$PREDEFINED_ACL"); fi
+
+          # The pack first, latest.json last: apps start downloading as soon as latest.json changes.
+          gcloud storage cp "pack/mapee-data-r$REVISION.zip" "gs://$GCS_BUCKET/$FOLDER/mapee-data-r$REVISION.zip" \
+            --cache-control="public, max-age=86400" --content-type="application/zip" "${acl[@]}"
+          gcloud storage cp pack/latest.json "gs://$GCS_BUCKET/$FOLDER/latest.json" \
+            --cache-control="no-cache, max-age=0" --content-type="application/json" "${acl[@]}"
+
+      - name: Check the pack downloads like an app would
+        if: steps.published.outputs.skip != 'true'
+        run: |
+          latest=$(curl --fail --silent --show-error --retry 3 "https://storage.googleapis.com/$GCS_BUCKET/$FOLDER/latest.json?release=$REVISION")
+          if [ "$(jq -r .revision <<< "$latest")" != "$REVISION" ]; then
+            echo "::warning::latest.json doesn't show r$REVISION yet (probably cached); it should within an hour."
+            latest=$(cat pack/latest.json)
+          fi
+          curl --fail --silent --show-error --retry 3 --output pack.zip "$(jq -r .url <<< "$latest")"
+          echo "$(jq -r .sha256 <<< "$latest")  pack.zip" | sha256sum --check
+          echo "Published data r$REVISION to $FOLDER."

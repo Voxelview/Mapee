@@ -4,10 +4,18 @@
     {
         public IList<IInstanceConverter<IObject?>> Converters { get; set; }
 
-        public VersionConverter()
+        public VersionConverter() : this(initialize: true)
+        {
+        }
+
+        /// <summary>
+        /// Pass <c>false</c> when the subclass needs to store its own settings first; it must then
+        /// call <see cref="InitializeConverters"/> itself at the end of its constructor.
+        /// </summary>
+        protected VersionConverter(bool initialize)
         {
             Converters = new List<IInstanceConverter<IObject?>>();
-            InitializeConverters();
+            if (initialize) InitializeConverters();
         }
 
         public IObject? Convert(IObject input, Version from, Version to, UsageIntent intent)

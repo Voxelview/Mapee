@@ -2,11 +2,18 @@
 {
     public class ApiChunkVersionConverter : IVersionConverter
     {
-        public IVersionConverter BlockStateVersionConverter { get; set; } = new BlockStateVersionConverter();
-        public IVersionConverter BiomeVersionConverter { get; set; } = new BiomeVersionConverter();
+        public IVersionConverter BlockStateVersionConverter { get; set; }
+        public IVersionConverter BiomeVersionConverter { get; set; }
         public IVersionConverter BlockLightVersionConverter { get; set; } = new LightVersionConverter();
         public IVersionConverter SkyLightVersionConverter { get; set; } = new LightVersionConverter();
         public IVersionConverter HeightmapVersionConverter { get; set; } = new HeightmapVersionConverter();
+
+        /// <param name="translatorsDirectory">The Translators folder, with Block\ and Biome\ inside.</param>
+        public ApiChunkVersionConverter(string translatorsDirectory)
+        {
+            BlockStateVersionConverter = new BlockStateVersionConverter(Path.Combine(translatorsDirectory, "Block"));
+            BiomeVersionConverter = new BiomeVersionConverter(Path.Combine(translatorsDirectory, "Biome"));
+        }
 
         public IObject? Convert(IObject input, Version from, Version to, UsageIntent intent)
         {

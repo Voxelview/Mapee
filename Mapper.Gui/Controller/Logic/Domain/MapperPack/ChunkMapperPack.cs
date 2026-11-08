@@ -20,9 +20,13 @@ namespace Mapper.Gui.Logic
         private LightPainter? _lightPainter;
         private ElevationPainter? _elevationPainter;
 
-        public ChunkMapperPack(AssetPack assetPack)
+        private readonly string _translatorsDirectory;
+
+        /// <param name="translatorsDirectory">The Resources\WorldEditor\Translators folder of the data in use.</param>
+        public ChunkMapperPack(AssetPack assetPack, string translatorsDirectory)
         {
             AssetPack = assetPack;
+            _translatorsDirectory = translatorsDirectory;
             NbtHeightmaps = new List<string>() 
             {
                 "WORLD_SURFACE",
@@ -72,7 +76,7 @@ namespace Mapper.Gui.Logic
         }
         protected IVersionConverter CreateVersionConverter()
         {
-            return new ApiChunkVersionConverter();
+            return new ApiChunkVersionConverter(_translatorsDirectory);
         }
         protected IObjectScanner<ConvertedApiChunk, IScannedChunk> CreateChunkScanner()
         {

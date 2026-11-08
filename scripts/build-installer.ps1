@@ -18,6 +18,11 @@ param(
     [ValidatePattern('^\d+\.\d+\.\d+$')]
     [string]$Version,
 
+    # Data revision of the bundled Resources\ (git rev-list --count HEAD -- Resources). Written into
+    # Resources\manifest.json so the app knows whether a downloaded data pack is newer. 0 = local build.
+    [ValidateRange(0, [int]::MaxValue)]
+    [int]$DataRevision = 0,
+
     [string]$OutputDir = (Join-Path $PSScriptRoot '..\artifacts')
 )
 
@@ -68,6 +73,13 @@ try {
 finally {
     $env:SolutionDir = $previousSolutionDir
 }
+
+# Stamp the bundled data with its revision (the repository's manifest only has the format).
+$manifestPath = Join-Path $publishDir 'Resources\manifest.json'
+$manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+$manifest | Add-Member -NotePropertyName revision -NotePropertyValue $DataRevision -Force
+[IO.File]::WriteAllText($manifestPath, ($manifest | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
+Write-Host "Bundled data: format $($manifest.format), revision $DataRevision"
 
 # WiX's incremental build doesn't notice a version-only change, and it hard-links its obj\ output
 # into the output folder. Reusing either would ship a stale MSI, so always build from scratch.

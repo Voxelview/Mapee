@@ -1,5 +1,7 @@
 # Builds the app and the installer on every push to master and every pull request, so a broken
-# build or installer shows up here rather than during a release. The portable app is uploaded as a
+# build or installer shows up here rather than during a release. It also loads Resources\ with the
+# built app (scripts/check-data.ps1), so broken JSON fails the pull request instead of crashing Mapee
+# for users after a data publish. The portable app is uploaded as a
 # downloadable artifact (Actions tab -> the run -> Artifacts): unzip it and run Mapee.exe.
 #
 # Test builds are versioned 0.0.<run number>, so they never look for updates (UpdateChecker skips
@@ -37,6 +39,10 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: ./scripts/build-installer.ps1 -Version $env:VERSION
+
+      - name: Check data
+        shell: pwsh
+        run: ./scripts/check-data.ps1 -AppExe artifacts/publish/Mapee.exe
 
       - name: Upload portable app
         uses: actions/upload-artifact@v7

@@ -54,7 +54,9 @@ namespace Mapper.Gui
             FileVersionInfo fileInfo = FileVersionInfo.GetVersionInfo(Environment.GetCommandLineArgs()[0]);
             Title = fileInfo.ProductName;
             // Use the numeric parts: the FileVersion string is four-part (1.4.0.0), and the title shows v1.4.0.
-            frameInitializer.SetSecondaryTitle($"v{fileInfo.FileMajorPart}.{fileInfo.FileMinorPart}.{fileInfo.FileBuildPart}");
+            string version = $"v{fileInfo.FileMajorPart}.{fileInfo.FileMinorPart}.{fileInfo.FileBuildPart}";
+            if (DataPacks.LoadedRevision > 0) version += $" · data r{DataPacks.LoadedRevision}";
+            frameInitializer.SetSecondaryTitle(version);
 
             Activate();
             Topmost = true;

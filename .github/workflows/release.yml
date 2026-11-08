@@ -33,6 +33,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the data revision counts commits that changed Resources/
 
       - name: Check version
         shell: pwsh
@@ -58,7 +60,14 @@ jobs:
 
       - name: Build installer
         shell: pwsh
-        run: ./scripts/build-installer.ps1 -Version $env:VERSION
+        run: |
+          # Stamps the bundled data, so installed apps know whether a published data pack is newer.
+          $dataRevision = [int](git rev-list --count HEAD -- Resources)
+          ./scripts/build-installer.ps1 -Version $env:VERSION -DataRevision $dataRevision
+
+      - name: Check data
+        shell: pwsh
+        run: ./scripts/check-data.ps1 -ResourcesDir artifacts/publish/Resources -AppExe artifacts/publish/Mapee.exe
 
       - name: Write update files
         shell: pwsh
