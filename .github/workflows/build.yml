@@ -1,10 +1,11 @@
-# Builds the installer and the portable app on every push to master and every pull request,
-# and uploads both as downloadable artifacts (Actions tab -> the run -> Artifacts).
+# Builds the app and the installer on every push to master and every pull request, so a broken
+# build or installer shows up here rather than during a release. The portable app is uploaded as a
+# downloadable artifact (Actions tab -> the run -> Artifacts): unzip it and run Mapee.exe.
 #
-# Test builds are versioned 0.0.<run number>, so:
-#   - they never look for updates (UpdateChecker skips 0.x versions), and
-#   - the MSI won't install over a released Mapee (Windows sees it as a downgrade).
-#     Uninstall Mapee first, or use the portable app.
+# Test builds are versioned 0.0.<run number>, so they never look for updates (UpdateChecker skips
+# 0.x versions). The MSI isn't uploaded: Windows would treat it as a downgrade and refuse to install
+# it over a released Mapee, and the Release workflow builds its own. To test installer changes, run
+# scripts/build-installer.ps1 locally with a real version.
 name: Build
 
 on:
@@ -36,14 +37,6 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: ./scripts/build-installer.ps1 -Version $env:VERSION
-
-      - name: Upload installer
-        uses: actions/upload-artifact@v7
-        with:
-          name: Mapee-installer-${{ env.VERSION }}
-          path: artifacts/*.msi
-          if-no-files-found: error
-          retention-days: 30
 
       - name: Upload portable app
         uses: actions/upload-artifact@v7

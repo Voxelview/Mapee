@@ -19,12 +19,11 @@ If a release turns out to be broken, release a fixed version (for example `1.4.1
 
 ## Test builds
 
-The **Build** workflow runs on every push to `master` and every pull request. Each run has two downloadable artifacts:
+The **Build** workflow runs on every push to `master` and every pull request. It builds the app and the installer, so a broken build fails on the pull request instead of during a release.
 
-- `Mapee-installer-0.0.N`: the MSI
-- `Mapee-portable-0.0.N`: the app folder. Unzip it anywhere and run `Mapee.exe`; no install needed.
+Each run has one downloadable artifact, `Mapee-portable-0.0.N`: the app folder. Unzip it anywhere and run `Mapee.exe`; no install needed. Test builds are versioned `0.0.N` and never check for updates.
 
-Test builds are versioned `0.0.N`. They never check for updates, and the MSI won't install over a released Mapee because Windows sees it as a downgrade. Uninstall Mapee first, or use the portable build.
+The MSI isn't uploaded. It's numbered `0.0.N`, so Windows treats it as a downgrade and won't install it over a released Mapee. To test installer changes, build locally with a real version (see below).
 
 ## Build locally
 
